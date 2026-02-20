@@ -1,0 +1,31 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"composite": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist", "src/**/*.spec.ts"],
+	"references": [
+		{ "path": "../../libs/shared/kernel" },
+		{ "path": "../../libs/shared/exceptions" },
+		{ "path": "../../libs/shared/config" },
+		{ "path": "../../libs/shared/context" },
+		{ "path": "../../libs/shared/event-store" },
+		{ "path": "../../libs/shared/cqrs" },
+		{ "path": "../../libs/shared/eda" },
+		{ "path": "../../libs/shared/database" },
+		{ "path": "../../libs/shared/messaging" },
+		{ "path": "../../libs/shared/auth" },
+		{ "path": "../../libs/shared/authorization" },
+		{ "path": "../../libs/domains/tenant" },
+		{ "path": "../../libs/domains/identity" },
+		{ "path": "../../libs/composition/app-kit" }
+	]
+}

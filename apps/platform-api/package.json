@@ -1,0 +1,59 @@
+{
+	"name": "@oksai/platform-api",
+	"version": "0.1.0",
+	"description": "平台业务 API - 多租户 SaaS 数据分析平台主入口",
+	"license": "AGPL-3.0",
+	"private": true,
+	"main": "./dist/main.js",
+	"scripts": {
+		"build": "nest build",
+		"start": "nest start",
+		"start:dev": "nest start --watch",
+		"start:debug": "nest start --debug --watch",
+		"start:prod": "node dist/main",
+		"typecheck": "tsc --noEmit",
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"test:coverage": "jest --coverage",
+		"test:e2e": "jest --config ./jest-e2e.config.js",
+		"lint": "eslint src/ --ext .ts",
+		"lint:fix": "eslint src/ --ext .ts --fix",
+		"clean": "rimraf dist coverage"
+	},
+	"dependencies": {
+		"@nestjs/common": "^11.0.0",
+		"@nestjs/core": "^11.0.0",
+		"@nestjs/platform-express": "^11.0.0",
+		"@oksai/kernel": "workspace:*",
+		"@oksai/exceptions": "workspace:*",
+		"@oksai/config": "workspace:*",
+		"@oksai/context": "workspace:*",
+		"@oksai/event-store": "workspace:*",
+		"@oksai/cqrs": "workspace:*",
+		"@oksai/eda": "workspace:*",
+		"@oksai/database": "workspace:*",
+		"@oksai/messaging": "workspace:*",
+		"@oksai/auth": "workspace:*",
+		"@oksai/authorization": "workspace:*",
+		"@oksai/tenant": "workspace:*",
+		"@oksai/identity": "workspace:*",
+		"@oksai/app-kit": "workspace:*",
+		"reflect-metadata": "^0.2.0",
+		"rxjs": "^7.8.0"
+	},
+	"devDependencies": {
+		"@nestjs/cli": "^11.0.0",
+		"@nestjs/schematics": "^11.0.0",
+		"@nestjs/testing": "^11.0.0",
+		"@types/express": "^5.0.0",
+		"@types/jest": "^30.0.0",
+		"@types/node": "^22.10.7",
+		"jest": "^30.0.0",
+		"rimraf": "^6.0.1",
+		"ts-jest": "^29.2.5",
+		"typescript": "^5.7.3"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}

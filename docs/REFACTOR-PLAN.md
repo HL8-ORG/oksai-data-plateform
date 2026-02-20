@@ -155,8 +155,8 @@ oksai-saas-api-archi/
 | **P3-1** | `@oksai/tenant` | 以上所有 | 租户领域 |
 | **P3-2** | `@oksai/identity` | 以上所有, tenant | 身份领域 |
 | **P4-1** | `@oksai/app-kit` | 以上所有 | 组装层 |
-| **P5-1** | `@oksai/app/platform-api` | app-kit | 业务 API |
-| **P5-2** | `@oksai/app/platform-admin-api` | app-kit | 管理 API |
+| **P5-1** | `@oksai/platform-api` | app-kit | 业务 API |
+| **P5-2** | `@oksai/platform-admin-api` | app-kit | 管理 API |
 
 ---
 

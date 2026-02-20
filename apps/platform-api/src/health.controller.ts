@@ -1,0 +1,35 @@
+import { Controller, Get } from '@nestjs/common';
+
+/**
+ * 健康检查控制器
+ *
+ * 提供服务健康状态检查接口
+ */
+@Controller('health')
+export class HealthController {
+	/**
+	 * 健康检查接口
+	 *
+	 * @returns 服务状态信息
+	 */
+	@Get()
+	check(): { status: string; timestamp: string; service: string } {
+		return {
+			status: 'ok',
+			timestamp: new Date().toISOString(),
+			service: '@oksai/platform-api',
+		};
+	}
+
+	/**
+	 * 就绪检查接口
+	 *
+	 * @returns 就绪状态
+	 */
+	@Get('ready')
+	ready(): { ready: boolean } {
+		return {
+			ready: true,
+		};
+	}
+}
