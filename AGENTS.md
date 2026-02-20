@@ -119,7 +119,9 @@ alwaysApply: true
 @oksai/kernel
 @oksai/event-store
 @oksai/cqrs
-@oksai/domain/tenant
+@oksai/tenant
+@oksai/identity
+@oksai/app-kit
 @oksai/app/platform-api
 ```
 
