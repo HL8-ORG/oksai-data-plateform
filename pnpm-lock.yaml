@@ -716,6 +716,43 @@ importers:
         specifier: ^5.7.3
         version: 5.9.3
 
+  libs/shared/redis:
+    dependencies:
+      '@nestjs/common':
+        specifier: ^11.0.0
+        version: 11.1.14(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/config':
+        specifier: ^3.0.0
+        version: 3.3.0(@nestjs/common@11.1.14(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(rxjs@7.8.2)
+      '@nestjs/core':
+        specifier: ^11.0.0
+        version: 11.1.14(@nestjs/common@11.1.14(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.14)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@oksai/config':
+        specifier: workspace:*
+        version: link:../config
+      ioredis:
+        specifier: ^5.0.0
+        version: 5.9.3
+    devDependencies:
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
+      '@types/node':
+        specifier: ^22.10.7
+        version: 22.19.11
+      jest:
+        specifier: ^30.0.0
+        version: 30.2.0(@types/node@22.19.11)(ts-node@10.9.2(@types/node@22.19.11)(typescript@5.9.3))
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.3
+      ts-jest:
+        specifier: ^29.2.5
+        version: 29.4.6(@babel/core@7.29.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.29.0))(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.11)(ts-node@10.9.2(@types/node@22.19.11)(typescript@5.9.3)))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+
 packages:
 
   '@angular-devkit/core@19.2.17':
@@ -1361,6 +1398,9 @@ packages:
       '@types/node':
         optional: true
 
+  '@ioredis/commands@1.5.0':
+    resolution: {integrity: sha512-eUgLqrMf8nJkZxT24JvVRrQya1vZkQh8BBeYNwGDqa5I0VUi8ACx7uFvAaLxintokpTenkK6DASvo/bvNbBGow==}
+
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
@@ -1509,6 +1549,12 @@ packages:
         optional: true
       class-validator:
         optional: true
+
+  '@nestjs/config@3.3.0':
+    resolution: {integrity: sha512-pdGTp8m9d0ZCrjTpjkUbZx6gyf2IKf+7zlkrPNMsJzYZ4bFRRTpXrnj+556/5uiI6AfL5mMrJc2u7dB6bvM+VA==}
+    peerDependencies:
+      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
+      rxjs: ^7.1.0
 
   '@nestjs/core@11.1.14':
     resolution: {integrity: sha512-7OXPPMoDr6z+5NkoQKu4hOhfjz/YYqM3bNilPqv1WVFWrzSmuNXxvhbX69YMmNmRYascPXiwESqf5jJdjKXEww==}
@@ -2242,6 +2288,10 @@ packages:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
     engines: {node: '>=0.8'}
 
+  cluster-key-slot@1.1.2:
+    resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==}
+    engines: {node: '>=0.10.0'}
+
   co@4.6.0:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
     engines: {iojs: '>= 1.0.0', node: '>= 0.12.0'}
@@ -2427,6 +2477,10 @@ packages:
   defaults@1.0.4:
     resolution: {integrity: sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==}
 
+  denque@2.1.0:
+    resolution: {integrity: sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw==}
+    engines: {node: '>=0.10'}
+
   depd@2.0.0:
     resolution: {integrity: sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==}
     engines: {node: '>= 0.8'}
@@ -2442,6 +2496,14 @@ packages:
   dot-prop@5.3.0:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
+
+  dotenv-expand@10.0.0:
+    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
+    engines: {node: '>=12'}
+
+  dotenv@16.4.5:
+    resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
+    engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -2940,6 +3002,10 @@ packages:
     resolution: {integrity: sha512-7PnF4oN3CvZF23ADhA5wRaYEQpJ8qygSkbtTXWBeXWXmEVRXK+1ITciHWwHhsjv1TmW0MgacIv6hEi5pX5NQdA==}
     engines: {node: '>=10'}
 
+  ioredis@5.9.3:
+    resolution: {integrity: sha512-VI5tMCdeoxZWU5vjHWsiE/Su76JGhBvWF1MJnV9ZtGltHk9BmD48oDq8Tj8haZ85aceXZMxLNDQZRVo5QKNgXA==}
+    engines: {node: '>=12.22.0'}
+
   ipaddr.js@1.9.1:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}
     engines: {node: '>= 0.10'}
@@ -3266,6 +3332,12 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
+  lodash.defaults@4.2.0:
+    resolution: {integrity: sha512-qjxPLHd3r5DnsdGacqOMU6pb/avJzdh9tFX2ymgoZE27BmjXrNy/y4LoaiTeAb+O3gL8AfpJGtqfX/ae2leYYQ==}
+
+  lodash.isarguments@3.1.0:
+    resolution: {integrity: sha512-chi4NHZlZqZD18a0imDHnZPrDeBbTtVN7GXMwuGdRH9qotxAjYs3aVLKc7zNOG9eddR5Ksd8rvFEBc9SsggPpg==}
+
   lodash.memoize@4.1.2:
     resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==}
 
@@ -3277,6 +3349,9 @@ packages:
 
   lodash.sortby@4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
+
+  lodash@4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
   lodash@4.17.23:
     resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
@@ -3741,6 +3816,14 @@ packages:
     resolution: {integrity: sha512-57frrGM/OCTLqLOAh0mhVA9VBMHd+9U7Zb2THMGdBUoZVOtGbJzjxsYGDJ3A9AYYCP4hn6y1TVbaOfzWtm5GFg==}
     engines: {node: '>= 12.13.0'}
 
+  redis-errors@1.2.0:
+    resolution: {integrity: sha512-1qny3OExCf0UvUV/5wpYKf2YwPcOqXzkwKKSmKHiE6ZMQs5heeE/c8eXK+PNllPvmjgAbfnsbpkGZWy8cBpn9w==}
+    engines: {node: '>=4'}
+
+  redis-parser@3.0.0:
+    resolution: {integrity: sha512-DJnGAeenTdpMEH6uAJRK/uiyEIH9WVsUmoLwzudwGJUwZPp80PDBWPHXSAGNPwNvIXAbe7MSUB1zQFugFml66A==}
+    engines: {node: '>=4'}
+
   reflect-metadata@0.2.2:
     resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
 
@@ -3953,6 +4036,9 @@ packages:
 
   stackframe@1.3.4:
     resolution: {integrity: sha512-oeVtt7eWQS+Na6F//S4kJ2K2VbRlS9D43mAlMyVpVWovy9o+jfgH8O9agzANzaiLjclA0oYzUXEM4PurhSUChw==}
+
+  standard-as-callback@2.1.0:
+    resolution: {integrity: sha512-qoRRSyROncaz1z0mvYqIE4lCd9p2R90i6GxW3uZv5ucSu8tU7B5HXUP1gG8pVZsYNVaXjk8ClXHPttLyxAL48A==}
 
   statuses@2.0.2:
     resolution: {integrity: sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==}
@@ -5194,6 +5280,8 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.19.11
 
+  '@ioredis/commands@1.5.0': {}
+
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
@@ -5470,6 +5558,14 @@ snapshots:
       class-validator: 0.14.3
     transitivePeerDependencies:
       - supports-color
+
+  '@nestjs/config@3.3.0(@nestjs/common@11.1.14(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(rxjs@7.8.2)':
+    dependencies:
+      '@nestjs/common': 11.1.14(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      dotenv: 16.4.5
+      dotenv-expand: 10.0.0
+      lodash: 4.17.21
+      rxjs: 7.8.2
 
   '@nestjs/core@11.1.14(@nestjs/common@11.1.14(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.14)(reflect-metadata@0.2.2)(rxjs@7.8.2)':
     dependencies:
@@ -6252,6 +6348,8 @@ snapshots:
 
   clone@1.0.4: {}
 
+  cluster-key-slot@1.1.2: {}
+
   co@4.6.0: {}
 
   collect-v8-coverage@1.0.3: {}
@@ -6463,6 +6561,8 @@ snapshots:
     dependencies:
       clone: 1.0.4
 
+  denque@2.1.0: {}
+
   depd@2.0.0: {}
 
   detect-newline@3.1.0: {}
@@ -6472,6 +6572,10 @@ snapshots:
   dot-prop@5.3.0:
     dependencies:
       is-obj: 2.0.0
+
+  dotenv-expand@10.0.0: {}
+
+  dotenv@16.4.5: {}
 
   dunder-proto@1.0.1:
     dependencies:
@@ -7008,6 +7112,20 @@ snapshots:
 
   ini@2.0.0: {}
 
+  ioredis@5.9.3:
+    dependencies:
+      '@ioredis/commands': 1.5.0
+      cluster-key-slot: 1.1.2
+      debug: 4.4.3(supports-color@8.1.1)
+      denque: 2.1.0
+      lodash.defaults: 4.2.0
+      lodash.isarguments: 3.1.0
+      redis-errors: 1.2.0
+      redis-parser: 3.0.0
+      standard-as-callback: 2.1.0
+    transitivePeerDependencies:
+      - supports-color
+
   ipaddr.js@1.9.1: {}
 
   is-arrayish@0.2.1: {}
@@ -7509,6 +7627,10 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
+  lodash.defaults@4.2.0: {}
+
+  lodash.isarguments@3.1.0: {}
+
   lodash.memoize@4.1.2: {}
 
   lodash.merge@4.6.2: {}
@@ -7516,6 +7638,8 @@ snapshots:
   lodash.mergewith@4.6.2: {}
 
   lodash.sortby@4.7.0: {}
+
+  lodash@4.17.21: {}
 
   lodash@4.17.23: {}
 
@@ -7977,6 +8101,12 @@ snapshots:
 
   real-require@0.2.0: {}
 
+  redis-errors@1.2.0: {}
+
+  redis-parser@3.0.0:
+    dependencies:
+      redis-errors: 1.2.0
+
   reflect-metadata@0.2.2: {}
 
   regexp-match-indices@1.0.2:
@@ -8198,6 +8328,8 @@ snapshots:
       escape-string-regexp: 2.0.0
 
   stackframe@1.3.4: {}
+
+  standard-as-callback@2.1.0: {}
 
   statuses@2.0.2: {}
 
