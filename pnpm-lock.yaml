@@ -69,6 +69,97 @@ importers:
         specifier: ^8.56.0
         version: 8.56.0(eslint@9.39.2)(typescript@5.9.3)
 
+  apps/platform-admin-api:
+    dependencies:
+      '@nestjs/common':
+        specifier: ^11.0.0
+        version: 11.1.14(class-transformer@0.5.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core':
+        specifier: ^11.0.0
+        version: 11.1.14(@nestjs/common@11.1.14(class-transformer@0.5.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.14)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/platform-express':
+        specifier: ^11.0.0
+        version: 11.1.14(@nestjs/common@11.1.14(class-transformer@0.5.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.14)
+      '@oksai/app-kit':
+        specifier: workspace:*
+        version: link:../../libs/composition/app-kit
+      '@oksai/auth':
+        specifier: workspace:*
+        version: link:../../libs/shared/auth
+      '@oksai/authorization':
+        specifier: workspace:*
+        version: link:../../libs/shared/authorization
+      '@oksai/config':
+        specifier: workspace:*
+        version: link:../../libs/shared/config
+      '@oksai/context':
+        specifier: workspace:*
+        version: link:../../libs/shared/context
+      '@oksai/cqrs':
+        specifier: workspace:*
+        version: link:../../libs/shared/cqrs
+      '@oksai/database':
+        specifier: workspace:*
+        version: link:../../libs/shared/database
+      '@oksai/eda':
+        specifier: workspace:*
+        version: link:../../libs/shared/eda
+      '@oksai/event-store':
+        specifier: workspace:*
+        version: link:../../libs/shared/event-store
+      '@oksai/exceptions':
+        specifier: workspace:*
+        version: link:../../libs/shared/exceptions
+      '@oksai/identity':
+        specifier: workspace:*
+        version: link:../../libs/domains/identity
+      '@oksai/kernel':
+        specifier: workspace:*
+        version: link:../../libs/shared/kernel
+      '@oksai/messaging':
+        specifier: workspace:*
+        version: link:../../libs/shared/messaging
+      '@oksai/tenant':
+        specifier: workspace:*
+        version: link:../../libs/domains/tenant
+      reflect-metadata:
+        specifier: ^0.2.0
+        version: 0.2.2
+      rxjs:
+        specifier: ^7.8.0
+        version: 7.8.2
+    devDependencies:
+      '@nestjs/cli':
+        specifier: ^11.0.0
+        version: 11.0.16(@types/node@22.19.11)
+      '@nestjs/schematics':
+        specifier: ^11.0.0
+        version: 11.0.9(chokidar@4.0.3)(typescript@5.9.3)
+      '@nestjs/testing':
+        specifier: ^11.0.0
+        version: 11.1.14(@nestjs/common@11.1.14(class-transformer@0.5.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.14)(@nestjs/platform-express@11.1.14)
+      '@types/express':
+        specifier: ^5.0.0
+        version: 5.0.6
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
+      '@types/node':
+        specifier: ^22.10.7
+        version: 22.19.11
+      jest:
+        specifier: ^30.0.0
+        version: 30.2.0(@types/node@22.19.11)(ts-node@10.9.2(@types/node@22.19.11)(typescript@5.9.3))
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.3
+      ts-jest:
+        specifier: ^29.2.5
+        version: 29.4.6(@babel/core@7.29.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.29.0))(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.11)(ts-node@10.9.2(@types/node@22.19.11)(typescript@5.9.3)))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+
   apps/platform-api:
     dependencies:
       '@nestjs/common':
