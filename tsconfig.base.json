@@ -1,0 +1,36 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"display": "Oksai Data Plateform Base",
+	"compilerOptions": {
+		"target": "ES2023",
+		"lib": ["ES2023"],
+
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"resolvePackageJsonExports": true,
+
+		"strictNullChecks": true,
+		"noImplicitAny": false,
+		"strictBindCallApply": false,
+		"noFallthroughCasesInSwitch": false,
+
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"incremental": true,
+
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"useDefineForClassFields": false,
+
+		"sourceMap": true,
+		"declaration": true,
+		"removeComments": true,
+
+		"isolatedModules": true,
+
+		"types": ["node", "jest"]
+	}
+}

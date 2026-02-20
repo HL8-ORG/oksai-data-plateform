@@ -1,0 +1,45 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"globalDependencies": ["package.json", "tsconfig.json", "tsconfig.base.json"],
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+			"env": ["NODE_ENV"]
+		},
+		"@oksai/**#build": {
+			"outputs": ["dist/**"]
+		},
+		"build:prod": {
+			"dependsOn": ["^build:prod"],
+			"outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+			"env": ["NODE_ENV"]
+		},
+		"test": {
+			"dependsOn": ["^build"],
+			"outputs": ["coverage/**"],
+			"cache": false
+		},
+		"lint": {
+			"outputs": [],
+			"cache": false
+		},
+		"lint:fix": {
+			"outputs": [],
+			"cache": false
+		},
+		"typecheck": {
+			"dependsOn": ["^build"],
+			"outputs": [],
+			"cache": false
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"start": {
+			"cache": false,
+			"persistent": true
+		}
+	}
+}

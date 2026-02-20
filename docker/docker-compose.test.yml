@@ -1,0 +1,27 @@
+services:
+  # E2E 测试专用数据库
+  test-db:
+    image: postgres:17-alpine
+    container_name: test-db
+    environment:
+      POSTGRES_DB: test_oksai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test_password
+    ports:
+      # 宿主机 5433 -> 容器 5432（Postgres 默认端口）
+      - '5433:5432'
+    networks:
+      - overlay
+
+  # E2E 测试专用 Redis
+  test-redis:
+    image: redis:alpine
+    container_name: test-redis
+    ports:
+      - '6380:6379'
+    networks:
+      - overlay
+
+networks:
+  overlay:
+    driver: bridge

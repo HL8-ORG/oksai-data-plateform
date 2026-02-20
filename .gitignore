@@ -1,0 +1,130 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/dist
+/tmp
+/out-tsc
+.turbo
+**/*.js
+**/*.d.ts
+**/*.js.map
+**/*.d.ts.map
+!**/jest.config.js
+!**/babel.config.js
+
+guides
+references
+
+# dependencies
+node_modules/
+apps/fastify-api/
+# sqlite3 database
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-shm
+*.sqlite3-wal
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.angular/cache
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+lerna-debug.log
+testem.log
+/typings
+migrations.json
+
+# System Files
+.DS_Store
+Thumbs.db
+
+.env
+.env.prod
+
+# Nx
+.nx
+
+# Ignore opencode tool workspace
+.opencode/
+
+# Typeorm Logs
+ormlogs.log
+
+# Cache File
+/.cache
+/apps/**/.cache
+/apps/**/build
+/packages/**/.cache
+/packages/**/build
+/packages/**/dist
+
+/.deploy/nginx/log
+
+
+
+/export
+/import
+/apps/api/*.tsbuildinfo
+*.tsbuildinfo
+
+
+megalinter-reports/
+
+/.deploy/jitsu/configurator/data/logs/*.log
+/.deploy/jitsu/server/data/logs/*.log
+/.deploy/redis/data/*.rdb
+/.deploy/redis/jitsu_users_recognition/data/*.rdb
+/.deploy/jitsu/server/data/logs/events
+
+
+
+# Ignore cursor AI Rules
+.cursor/rules/codacy.mdc
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
+
+# MCP Server certificates (contains sensitive data)
+**/certs/**
+**/certs/**/*.{pem,key,crt,csr,pfx,p12}
+!**/certs/**/README.md
+!**/certs/**/.gitkeep
+*.js.map
+packages/mcp-server/src/**/*.js
+# Dependencies
+dist/
+build/
+# Logs
+# Environment
+.env.local
+.env.*.local
+.idea/
+*.swp
+*.swo
+# OS
+# Testing
+coverage/
+.nyc_output/
+# Temporary files
+.tmp/
+*.tmp
+/qauzy-backup
+forks/
