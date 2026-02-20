@@ -1,0 +1,26 @@
+{
+	"extends": "../../../tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"composite": true
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist", "src/**/*.spec.ts"],
+	"references": [
+		{ "path": "../../shared/kernel" },
+		{ "path": "../../shared/exceptions" },
+		{ "path": "../../shared/config" },
+		{ "path": "../../shared/context" },
+		{ "path": "../../shared/event-store" },
+		{ "path": "../../shared/cqrs" },
+		{ "path": "../../shared/eda" },
+		{ "path": "../../shared/database" },
+		{ "path": "../../shared/messaging" },
+		{ "path": "../../shared/auth" },
+		{ "path": "../../shared/authorization" }
+	]
+}
