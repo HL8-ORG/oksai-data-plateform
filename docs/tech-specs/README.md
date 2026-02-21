@@ -58,7 +58,7 @@ docs/tech-specs/
 | auth | ✅ 已完成 |
 | kernel | ✅ 已完成 |
 | context | ✅ 已完成 |
-| analytics | 📝 待编写 |
-| event-store | 📝 待编写 |
-| messaging | 📝 待编写 |
-| cqrs | 📝 待编写 |
+| analytics | ✅ 已完成 |
+| event-store | ✅ 已完成 |
+| messaging | ✅ 已完成 |
+| cqrs | ✅ 已完成 |
