@@ -66,6 +66,8 @@
 - [命名规范 - 测试文件](../spec/spec-07-testing.md)
 - [架构设计](../archi/archi.md)
 - [项目宪章](../.cursor/rules/XS-project-charter.md)
+- [用户故事文档](../user-stories/README.md)
+- [BDD 场景文档](../features/README.md)
 
 ---
 
