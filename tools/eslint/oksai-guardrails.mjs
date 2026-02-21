@@ -1,0 +1,307 @@
+/**
+ * Oksai ESLint 护栏工具
+ *
+ * 用于沉淀可复用的边界约束规则，减少各包 eslint.config.mjs 的重复
+ *
+ * @module oksai-guardrails
+ */
+
+// ============ 约束等级定义 ============
+
+/**
+ * 约束等级说明
+ *
+ * L1 - domains: 领域层基础约束，禁止依赖装配层
+ * L2 - pure-domains: 严格领域层约束，禁止依赖任何框架
+ * L3 - shared-pure: 共享层纯模块，禁止依赖框架和运行时环境
+ * L4 - shared-framework: 共享层框架模块，允许依赖框架但禁止依赖领域层
+ */
+
+// ============ 禁止导入清单 ============
+
+/**
+ * 领域层基础禁止清单（L1）
+ *
+ * 适用于所有领域模块
+ */
+export const DOMAINS_BASE_FORBIDDEN_IMPORTS = [
+	{
+		group: ['@oksai/app-kit', '@oksai/app-kit/*'],
+		message: '领域层禁止依赖装配层；请通过 Port/Adapter 模式解耦'
+	},
+	{
+		group: ['@oksai/platform-api-adapters', '@oksai/platform-admin-adapters'],
+		message: '领域层禁止依赖应用专属适配器'
+	}
+];
+
+/**
+ * 纯领域层禁止清单（L2）
+ *
+ * 适用于需要严格 Clean Architecture 的领域模块
+ */
+export const PURE_DOMAINS_FORBIDDEN_IMPORTS = [
+	...DOMAINS_BASE_FORBIDDEN_IMPORTS,
+	{
+		group: ['@nestjs/*'],
+		message: '纯领域层禁止依赖 NestJS 框架；请使用领域服务或 Port 接口'
+	},
+	{
+		group: ['@mikro-orm/*'],
+		message: '纯领域层禁止依赖 MikroORM；请使用仓储接口'
+	},
+	{
+		group: ['ioredis', 'kafkajs', 'amqplib'],
+		message: '纯领域层禁止依赖基础设施组件'
+	},
+	{
+		group: ['@oksai/logger', '@oksai/config', '@oksai/database', '@oksai/redis', '@oksai/messaging-postgres'],
+		message: '纯领域层禁止依赖框架感知的共享模块'
+	}
+];
+
+/**
+ * 共享层纯模块禁止清单（L3）
+ *
+ * 适用于 kernel、event-store、cqrs、eda、exceptions 等核心模块
+ */
+export const SHARED_PURE_FORBIDDEN_IMPORTS = [
+	{
+		group: ['@nestjs/*'],
+		message: '共享层纯模块禁止依赖 NestJS；请使用依赖注入接口'
+	},
+	{
+		group: ['@mikro-orm/*'],
+		message: '共享层纯模块禁止依赖 MikroORM'
+	},
+	{
+		group: ['ioredis', 'kafkajs', 'amqplib', 'prom-client'],
+		message: '共享层纯模块禁止依赖基础设施组件'
+	}
+];
+
+/**
+ * 共享层框架模块禁止清单（L4）
+ *
+ * 适用于 logger、config、database、redis 等框架感知模块
+ */
+export const SHARED_FRAMEWORK_FORBIDDEN_IMPORTS = [
+	{
+		group: ['@oksai/app-kit'],
+		message: '共享层禁止依赖装配层'
+	},
+	{
+		group: ['@oksai/identity', '@oksai/tenant', '@oksai/billing'],
+		message: '共享层禁止依赖领域模块；请使用事件或通用接口'
+	}
+];
+
+// ============ 工厂函数 ============
+
+/**
+ * 创建领域层边界护栏（L1）
+ *
+ * @param {object} options - 配置选项
+ * @param {string[]} [options.files] - 文件匹配模式
+ * @param {object[]} [options.extraForbiddenImports] - 额外的禁止导入
+ * @param {string} [options.packageName] - 包名称，用于错误消息
+ * @returns {object} ESLint 配置对象
+ */
+export function createDomainsBoundaryGuardrail(options = {}) {
+	const { files = ['src/**/*.ts'], extraForbiddenImports = [], packageName = '领域层' } = options;
+
+	const patterns = [...DOMAINS_BASE_FORBIDDEN_IMPORTS, ...extraForbiddenImports].map((p) => ({
+		...p,
+		message: `[${packageName}] ${p.message}`
+	}));
+
+	return {
+		files,
+		rules: {
+			'no-restricted-imports': ['error', { patterns }]
+		}
+	};
+}
+
+/**
+ * 创建纯领域层边界护栏（L2）
+ *
+ * @param {object} options - 配置选项
+ * @param {string[]} [options.files] - 文件匹配模式
+ * @param {object[]} [options.extraForbiddenImports] - 额外的禁止导入
+ * @param {string} [options.packageName] - 包名称
+ * @returns {object} ESLint 配置对象
+ */
+export function createPureDomainsBoundaryGuardrail(options = {}) {
+	const { files = ['src/**/*.ts'], extraForbiddenImports = [], packageName = '纯领域层' } = options;
+
+	const patterns = [...PURE_DOMAINS_FORBIDDEN_IMPORTS, ...extraForbiddenImports].map((p) => ({
+		...p,
+		message: `[${packageName}] ${p.message}`
+	}));
+
+	return {
+		files,
+		rules: {
+			'no-restricted-imports': ['error', { patterns }]
+		}
+	};
+}
+
+/**
+ * 创建共享层纯模块边界护栏（L3）
+ *
+ * @param {object} options - 配置选项
+ * @param {string[]} [options.files] - 文件匹配模式
+ * @param {object[]} [options.extraForbiddenImports] - 额外的禁止导入
+ * @param {string} [options.packageName] - 包名称
+ * @param {boolean} [options.forbidProcessEnv] - 是否禁止 process.env
+ * @returns {object} ESLint 配置对象
+ */
+export function createSharedPureBoundaryGuardrail(options = {}) {
+	const {
+		files = ['src/**/*.ts'],
+		extraForbiddenImports = [],
+		packageName = '共享层纯模块',
+		forbidProcessEnv = true
+	} = options;
+
+	const patterns = [...SHARED_PURE_FORBIDDEN_IMPORTS, ...extraForbiddenImports].map((p) => ({
+		...p,
+		message: `[${packageName}] ${p.message}`
+	}));
+
+	const config = {
+		files,
+		rules: {
+			'no-restricted-imports': ['error', { patterns }]
+		}
+	};
+
+	if (forbidProcessEnv) {
+		config.rules['no-restricted-properties'] = [
+			'error',
+			{
+				object: 'process',
+				property: 'env',
+				message: `[${packageName}] 禁止使用 process.env；请在外层读取并显式注入配置`
+			}
+		];
+	}
+
+	return config;
+}
+
+/**
+ * 创建共享层框架模块边界护栏（L4）
+ *
+ * @param {object} options - 配置选项
+ * @param {string[]} [options.files] - 文件匹配模式
+ * @param {object[]} [options.extraForbiddenImports] - 额外的禁止导入
+ * @param {string} [options.packageName] - 包名称
+ * @returns {object} ESLint 配置对象
+ */
+export function createSharedFrameworkBoundaryGuardrail(options = {}) {
+	const { files = ['src/**/*.ts'], extraForbiddenImports = [], packageName = '共享层框架模块' } = options;
+
+	const patterns = [...SHARED_FRAMEWORK_FORBIDDEN_IMPORTS, ...extraForbiddenImports].map((p) => ({
+		...p,
+		message: `[${packageName}] ${p.message}`
+	}));
+
+	return {
+		files,
+		rules: {
+			'no-restricted-imports': ['error', { patterns }]
+		}
+	};
+}
+
+// ============ 模块分类 ============
+
+/**
+ * 共享层纯模块清单（L3）
+ *
+ * 这些模块禁止依赖任何框架
+ */
+export const SHARED_PURE_MODULES = [
+	'kernel',
+	'event-store',
+	'cqrs',
+	'eda',
+	'exceptions',
+	'context',
+	'auth',
+	'authorization',
+	'i18n',
+	'aggregate-metadata',
+	'analytics',
+	'ai-embeddings'
+];
+
+/**
+ * 共享层框架模块清单（L4）
+ *
+ * 这些模块允许依赖框架，但禁止依赖领域层
+ */
+export const SHARED_FRAMEWORK_MODULES = [
+	'logger',
+	'config',
+	'database',
+	'redis',
+	'messaging',
+	'messaging-postgres',
+	'plugin'
+];
+
+/**
+ * 领域模块清单（L2）
+ *
+ * 这些模块应用严格的 Clean Architecture 约束
+ */
+export const DOMAIN_MODULES = ['identity', 'tenant', 'billing'];
+
+// ============ 辅助函数 ============
+
+/**
+ * 根据包名自动选择合适的护栏
+ *
+ * @param {string} packageName - 包名（如 '@oksai/kernel'）
+ * @param {object} options - 配置选项
+ * @returns {object|null} ESLint 配置对象或 null
+ */
+export function autoSelectGuardrail(packageName, options = {}) {
+	const moduleName = packageName.replace('@oksai/', '');
+
+	if (SHARED_PURE_MODULES.includes(moduleName)) {
+		return createSharedPureBoundaryGuardrail({ ...options, packageName });
+	}
+
+	if (SHARED_FRAMEWORK_MODULES.includes(moduleName)) {
+		return createSharedFrameworkBoundaryGuardrail({ ...options, packageName });
+	}
+
+	if (DOMAIN_MODULES.includes(moduleName)) {
+		return createPureDomainsBoundaryGuardrail({ ...options, packageName });
+	}
+
+	return null;
+}
+
+/**
+ * 创建测试文件配置
+ *
+ * @param {object} options - 配置选项
+ * @param {string[]} [options.testPatterns] - 测试文件匹配模式
+ * @returns {object} ESLint 配置对象
+ */
+export function createTestFileConfig(options = {}) {
+	const { testPatterns = ['src/**/*.spec.ts', 'src/**/*.test.ts'] } = options;
+
+	return {
+		files: testPatterns,
+		rules: {
+			'@typescript-eslint/no-explicit-any': 'off'
+		}
+	};
+}
