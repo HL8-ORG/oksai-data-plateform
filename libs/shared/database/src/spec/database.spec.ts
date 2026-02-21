@@ -3,7 +3,14 @@
  *
  * 测试数据库访问功能
  */
-import { DatabaseConfig, ConnectionPool, IConnectionPool, TransactionManager, RepositoryBase, Transaction } from '../index';
+import {
+	DatabaseConfig,
+	ConnectionPool,
+	IConnectionPool,
+	TransactionManager,
+	RepositoryBase,
+	Transaction
+} from '../index';
 
 describe('Database', () => {
 	describe('DatabaseConfig', () => {

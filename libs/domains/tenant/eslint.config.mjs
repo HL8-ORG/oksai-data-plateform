@@ -1,8 +1,8 @@
-import rootConfig from '../../../../eslint.config.mjs';
+import rootConfig from '../../../eslint.config.mjs';
 import {
 	createPureDomainsBoundaryGuardrail,
 	createTestFileConfig
-} from '../../../../tools/eslint/oksai-guardrails.mjs';
+} from '../../../tools/eslint/oksai-guardrails.mjs';
 
 /**
  * @oksai/tenant ESLint 配置

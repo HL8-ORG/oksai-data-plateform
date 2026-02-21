@@ -71,11 +71,14 @@ export class Tenant extends AggregateRoot<TenantProps> {
 	 */
 	public static create(props: { name: TenantName; plan: TenantPlan }, id?: UniqueEntityID): Result<Tenant, Error> {
 		const tenantId = id ?? new UniqueEntityID();
-		const tenant = new Tenant({
-			name: props.name,
-			plan: props.plan,
-			status: TenantStatus.pending()
-		}, tenantId);
+		const tenant = new Tenant(
+			{
+				name: props.name,
+				plan: props.plan,
+				status: TenantStatus.pending()
+			},
+			tenantId
+		);
 
 		// 添加领域事件
 		tenant.addDomainEvent(
@@ -96,11 +99,14 @@ export class Tenant extends AggregateRoot<TenantProps> {
 	 * @param props - 完整属性
 	 * @returns Tenant 实例
 	 */
-	public static reconstitute(props: {
-		name: TenantName;
-		plan: TenantPlan;
-		status: TenantStatus;
-	}, id: UniqueEntityID): Tenant {
+	public static reconstitute(
+		props: {
+			name: TenantName;
+			plan: TenantPlan;
+			status: TenantStatus;
+		},
+		id: UniqueEntityID
+	): Tenant {
 		return new Tenant(props, id);
 	}
 

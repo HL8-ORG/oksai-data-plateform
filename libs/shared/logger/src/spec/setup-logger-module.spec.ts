@@ -135,7 +135,7 @@ describe('pinoHttp 内部函数', () => {
 	/**
 	 * 从模块配置中提取 pinoHttp 配置的辅助函数
 	 */
-	function extractPinoHttpConfig(options: SetupLoggerModuleOptions = {}) {
+	function _extractPinoHttpConfig(options: SetupLoggerModuleOptions = {}) {
 		const module = setupLoggerModule(options);
 		const provider = module.providers?.find((p: any) => p.provide === 'pino-params');
 		if (provider && 'useFactory' in provider) {

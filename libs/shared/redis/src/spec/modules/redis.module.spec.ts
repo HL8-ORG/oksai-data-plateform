@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { setupRedisModule, OksaiRedisRuntimeModule } from '../../lib/modules/redis.module';
 import { OKSAI_REDIS } from '../../lib/tokens';
@@ -33,9 +33,7 @@ describe('setupRedisModule', () => {
 		it('应该创建带有 ConfigService 依赖的 Redis provider', () => {
 			const dynamicModule = setupRedisModule({ url: 'redis://localhost:6379' });
 
-			const redisProvider = dynamicModule.providers?.find(
-				(p: any) => p.provide === OKSAI_REDIS
-			);
+			const redisProvider = dynamicModule.providers?.find((p: any) => p.provide === OKSAI_REDIS);
 
 			expect(redisProvider).toBeDefined();
 			expect((redisProvider as any).inject).toContain(ConfigService);
@@ -47,9 +45,7 @@ describe('setupRedisModule', () => {
 			const Redis = require('ioredis');
 			const dynamicModule = setupRedisModule({ url: 'redis://localhost:6379' });
 
-			const redisProvider = dynamicModule.providers?.find(
-				(p: any) => p.provide === OKSAI_REDIS
-			) as any;
+			const redisProvider = dynamicModule.providers?.find((p: any) => p.provide === OKSAI_REDIS) as any;
 
 			const mockConfigService = {
 				get: jest.fn()
@@ -67,9 +63,7 @@ describe('setupRedisModule', () => {
 			const Redis = require('ioredis');
 			const dynamicModule = setupRedisModule();
 
-			const redisProvider = dynamicModule.providers?.find(
-				(p: any) => p.provide === OKSAI_REDIS
-			) as any;
+			const redisProvider = dynamicModule.providers?.find((p: any) => p.provide === OKSAI_REDIS) as any;
 
 			const mockConfigService = {
 				get: jest.fn((key: string) => {
@@ -89,9 +83,7 @@ describe('setupRedisModule', () => {
 		it('应该在缺少 URL 时抛出错误', () => {
 			const dynamicModule = setupRedisModule();
 
-			const redisProvider = dynamicModule.providers?.find(
-				(p: any) => p.provide === OKSAI_REDIS
-			) as any;
+			const redisProvider = dynamicModule.providers?.find((p: any) => p.provide === OKSAI_REDIS) as any;
 
 			const mockConfigService = {
 				get: jest.fn().mockReturnValue(undefined)
@@ -107,9 +99,7 @@ describe('setupRedisModule', () => {
 				keyPrefix: 'oksai:'
 			});
 
-			const redisProvider = dynamicModule.providers?.find(
-				(p: any) => p.provide === OKSAI_REDIS
-			) as any;
+			const redisProvider = dynamicModule.providers?.find((p: any) => p.provide === OKSAI_REDIS) as any;
 
 			const mockConfigService = {
 				get: jest.fn()
@@ -127,9 +117,7 @@ describe('setupRedisModule', () => {
 			const Redis = require('ioredis');
 			const dynamicModule = setupRedisModule();
 
-			const redisProvider = dynamicModule.providers?.find(
-				(p: any) => p.provide === OKSAI_REDIS
-			) as any;
+			const redisProvider = dynamicModule.providers?.find((p: any) => p.provide === OKSAI_REDIS) as any;
 
 			const mockConfigService = {
 				get: jest.fn((key: string) => {
@@ -154,9 +142,7 @@ describe('setupRedisModule', () => {
 				lazyConnect: true
 			});
 
-			const redisProvider = dynamicModule.providers?.find(
-				(p: any) => p.provide === OKSAI_REDIS
-			) as any;
+			const redisProvider = dynamicModule.providers?.find((p: any) => p.provide === OKSAI_REDIS) as any;
 
 			const mockConfigService = {
 				get: jest.fn()
@@ -174,9 +160,7 @@ describe('setupRedisModule', () => {
 			const Redis = require('ioredis');
 			const dynamicModule = setupRedisModule({ url: 'redis://localhost:6379' });
 
-			const redisProvider = dynamicModule.providers?.find(
-				(p: any) => p.provide === OKSAI_REDIS
-			) as any;
+			const redisProvider = dynamicModule.providers?.find((p: any) => p.provide === OKSAI_REDIS) as any;
 
 			const mockConfigService = {
 				get: jest.fn()

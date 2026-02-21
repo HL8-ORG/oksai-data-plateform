@@ -1,4 +1,9 @@
-import { getRequestIdFromReq, resolveOptionalDependency, serializeRequest, computeLogLevel } from '../lib/setup-logger-module';
+import {
+	getRequestIdFromReq,
+	resolveOptionalDependency,
+	serializeRequest,
+	computeLogLevel
+} from '../lib/setup-logger-module';
 
 describe('serializeRequest', () => {
 	it('应该提取 method 和 url', () => {

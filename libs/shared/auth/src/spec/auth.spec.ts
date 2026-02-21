@@ -252,12 +252,14 @@ describe('Auth', () => {
 				// 手动创建一个已过期的令牌
 				const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
 				const now = Math.floor(Date.now() / 1000);
-				const body = Buffer.from(JSON.stringify({
-					userId: 'user-123',
-					tenantId: 'tenant-456',
-					iat: now - 7200,
-					exp: now - 3600 // 1小时前过期
-				})).toString('base64url');
+				const body = Buffer.from(
+					JSON.stringify({
+						userId: 'user-123',
+						tenantId: 'tenant-456',
+						iat: now - 7200,
+						exp: now - 3600 // 1小时前过期
+					})
+				).toString('base64url');
 				const crypto = require('crypto');
 				const signature = crypto.createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
 				const token = `${header}.${body}.${signature}`;
@@ -275,7 +277,10 @@ describe('Auth', () => {
 				const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
 				const invalidBody = Buffer.from('not valid json{{{').toString('base64url');
 				const crypto = require('crypto');
-				const signature = crypto.createHmac('sha256', secret).update(`${header}.${invalidBody}`).digest('base64url');
+				const signature = crypto
+					.createHmac('sha256', secret)
+					.update(`${header}.${invalidBody}`)
+					.digest('base64url');
 				const invalidToken = `${header}.${invalidBody}.${signature}`;
 
 				const result = tokenService.verifyToken(invalidToken);

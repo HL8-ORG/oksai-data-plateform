@@ -1,4 +1,4 @@
-import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
+import { DynamicModule, Inject, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import { OKSAI_REDIS } from '../tokens';

@@ -188,10 +188,13 @@ describe('Tenant Domain', () => {
 				}
 
 				// Act
-				const result = Tenant.create({
-					name: nameResult.value,
-					plan: planResult.value
-				}, specifiedId);
+				const result = Tenant.create(
+					{
+						name: nameResult.value,
+						plan: planResult.value
+					},
+					specifiedId
+				);
 
 				// Assert
 				expect(result.isOk()).toBe(true);

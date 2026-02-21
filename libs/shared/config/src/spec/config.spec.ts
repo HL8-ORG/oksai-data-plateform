@@ -454,7 +454,10 @@ describe('Config', () => {
 			});
 
 			expect(module.providers).toBeDefined();
-			const provider = module.providers?.[0] as { provide: typeof ConfigService; useFactory: () => Promise<ConfigService> };
+			const provider = module.providers?.[0] as {
+				provide: typeof ConfigService;
+				useFactory: () => Promise<ConfigService>;
+			};
 			expect(provider.provide).toBe(ConfigService);
 
 			const service = await provider.useFactory();
