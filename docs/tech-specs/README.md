@@ -52,16 +52,24 @@ docs/tech-specs/
 
 | 模块 | 状态 |
 |------|------|
-| config | ✅ 已完成 |
-| logger | ✅ 已完成 |
-| redis | ✅ 已完成 |
-| database | ✅ 已完成 |
-| auth | ✅ 已完成 |
-| kernel | ✅ 已完成 |
-| context | ✅ 已完成 |
+| aggregate-metadata | ✅ 已完成 |
+| ai-embeddings | ✅ 已完成 |
 | analytics | ✅ 已完成 |
-| event-store | ✅ 已完成 |
-| messaging | ✅ 已完成 |
+| auth | ✅ 已完成 |
+| authorization | ✅ 已完成 |
+| config | ✅ 已完成 |
+| context | ✅ 已完成 |
 | cqrs | ✅ 已完成 |
+| database | ✅ 已完成 |
 | eda | ✅ 已完成 |
+| event-store | ✅ 已完成 |
 | exceptions | ✅ 已完成 |
+| i18n | ✅ 已完成 |
+| kernel | ✅ 已完成 |
+| logger | ✅ 已完成 |
+| messaging | ✅ 已完成 |
+| messaging-postgres | ✅ 已完成 |
+| plugin | ✅ 已完成 |
+| redis | ✅ 已完成 |
+
+**全部 19 个 shared 模块技术规范已完成**
