@@ -262,9 +262,7 @@ export function resolveOptionalDependency(name: string): string | null {
 		// 3. 从 monorepo 根目录解析
 		...(process.cwd().includes('/apps/') ? [process.cwd().split('/apps/')[0]] : []),
 		// 4. 从 pnpm 虚拟存储位置解析
-		...(process.cwd().includes('/node_modules/.pnpm/')
-			? [process.cwd().split('/node_modules/.pnpm/')[0]]
-			: [])
+		...(process.cwd().includes('/node_modules/.pnpm/') ? [process.cwd().split('/node_modules/.pnpm/')[0]] : [])
 	];
 
 	for (const basePath of pathsToTry) {

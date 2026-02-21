@@ -23,8 +23,11 @@
 	"dependencies": {
 		"@mikro-orm/core": "catalog:",
 		"@nestjs/common": "catalog:",
-		"@oksai/event-store": "workspace:*",
-		"@oksai/aggregate-metadata": "workspace:*"
+		"@oksai/aggregate-metadata": "workspace:*",
+		"@oksai/event-store": "workspace:*"
+	},
+	"devDependencies": {
+		"@nestjs/testing": "catalog:"
 	},
 	"peerDependencies": {
 		"openai": "^4.0.0"
@@ -34,10 +37,7 @@
 			"optional": true
 		}
 	},
-	"devDependencies": {
-		"@nestjs/testing": "catalog:",
-		"@types/jest": "catalog:",
-		"jest": "catalog:",
-		"ts-jest": "catalog:"
+	"engines": {
+		"node": ">=20"
 	}
 }

@@ -26,18 +26,10 @@
 		"clean": "rimraf dist coverage"
 	},
 	"dependencies": {
-		"@mikro-orm/core": "^6.0.0",
-		"@mikro-orm/nestjs": "^6.0.0",
-		"@mikro-orm/postgresql": "^6.0.0",
-		"@nestjs/common": "^11.0.0"
-	},
-	"devDependencies": {
-		"@types/jest": "^30.0.0",
-		"@types/node": "^22.10.7",
-		"jest": "^30.0.0",
-		"rimraf": "^6.0.1",
-		"ts-jest": "^29.2.5",
-		"typescript": "^5.7.3"
+		"@mikro-orm/core": "catalog:",
+		"@mikro-orm/nestjs": "catalog:",
+		"@mikro-orm/postgresql": "catalog:",
+		"@nestjs/common": "catalog:"
 	},
 	"peerDependencies": {
 		"@mikro-orm/core": "^6.0.0",

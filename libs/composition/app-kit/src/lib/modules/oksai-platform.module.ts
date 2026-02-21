@@ -1,7 +1,7 @@
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { TenantContextService, AsyncLocalStorageProvider } from '@oksai/context';
-import { ConfigService, ConfigModule } from '@oksai/config';
-import { LoggerModule, OksaiLoggerService } from '@oksai/logger';
+import { ConfigModule } from '@oksai/config';
+import { LoggerModule } from '@oksai/logger';
 import { CommandBus, QueryBus } from '@oksai/cqrs';
 import { EventBus } from '@oksai/eda';
 import type { PluginInput } from '../plugins/plugin-registry';
@@ -184,13 +184,7 @@ export class OksaiPlatformModule {
 				})
 			],
 			// ConfigService 由 ConfigModule 提供，OksaiLoggerService 由 LoggerModule（global）提供
-			providers: [
-				AsyncLocalStorageProvider,
-				TenantContextService,
-				CommandBus,
-				QueryBus,
-				EventBus
-			],
+			providers: [AsyncLocalStorageProvider, TenantContextService, CommandBus, QueryBus, EventBus],
 			// ConfigService 通过 ConfigModule 的 exports 暴露，OksaiLoggerService 由 LoggerModule（global）提供
 			exports: [TenantContextService, CommandBus, QueryBus, EventBus]
 		};

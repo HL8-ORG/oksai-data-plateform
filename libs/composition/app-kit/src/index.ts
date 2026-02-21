@@ -20,6 +20,9 @@ export {
 // 平台模块
 export { OksaiPlatformModule, type OksaiPlatformModuleOptions } from './lib/modules/oksai-platform.module';
 
+// Swagger API 文档
+export { setupSwagger, type SwaggerOptions, type SwaggerSetupResult, type OAuth2Options } from './lib/swagger';
+
 // 重导出常用服务
 export { OksaiLoggerService } from '@oksai/logger';
 export { ConfigService } from '@oksai/config';

@@ -62,18 +62,24 @@ describe('OksaiPlatformModule', () => {
 			expect(providerNames).toContain('EventBus');
 		});
 
-		it('应该包含 OksaiLoggerService', () => {
+		it('应该包含 OksaiLoggerService（通过 LoggerModule）', () => {
 			const module = OksaiPlatformModule.init();
 
-			const providerNames = module.providers?.map((p: any) => p?.name).filter(Boolean);
-			expect(providerNames).toContain('OksaiLoggerService');
+			// OksaiLoggerService 由 LoggerModule 提供（全局模块）
+			expect(module.imports).toBeDefined();
+			const hasLoggerModule = module.imports?.some(
+				(m: any) => m?.module?.name === 'LoggerModule' || m?.name === 'LoggerModule'
+			);
+			expect(hasLoggerModule).toBe(true);
 		});
 
-		it('禁用 Logger 时不应该包含 OksaiLoggerService', () => {
+		it('禁用 Logger 时不应该导入 LoggerModule', () => {
 			const module = OksaiPlatformModule.init({ enableLogger: false });
 
-			const providerNames = module.providers?.map((p: any) => p?.name).filter(Boolean);
-			expect(providerNames).not.toContain('OksaiLoggerService');
+			const hasLoggerModule = module.imports?.some(
+				(m: any) => m?.module?.name === 'LoggerModule' || m?.name === 'LoggerModule'
+			);
+			expect(hasLoggerModule).toBe(false);
 		});
 
 		it('启用所有选项时应该包含所有 providers', () => {
@@ -83,7 +89,8 @@ describe('OksaiPlatformModule', () => {
 				enableLogger: true
 			});
 
-			expect(module.providers?.length).toBeGreaterThanOrEqual(6);
+			// AsyncLocalStorageProvider, TenantContextService, CommandBus, QueryBus, EventBus
+			expect(module.providers?.length).toBeGreaterThanOrEqual(5);
 		});
 	});
 
