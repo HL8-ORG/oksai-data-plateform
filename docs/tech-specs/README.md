@@ -52,6 +52,7 @@ docs/tech-specs/
 
 | 模块 | 状态 |
 |------|------|
+| config | ✅ 已完成 |
 | logger | ✅ 已完成 |
 | redis | ✅ 已完成 |
 | database | ✅ 已完成 |
