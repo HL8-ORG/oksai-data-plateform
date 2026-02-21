@@ -30,7 +30,7 @@ export interface SetupRequestIdResponseHeaderOptions {
  */
 export function setupRequestIdResponseHeader(
 	app: INestApplication,
-	options: SetupRequestIdResponseHeaderOptions = {},
+	options: SetupRequestIdResponseHeaderOptions = {}
 ): void {
 	const headerName = options.headerName ?? 'x-request-id';
 
@@ -46,8 +46,8 @@ export function setupRequestIdResponseHeader(
 					req: { id?: unknown },
 					reply: { header: (k: string, v: string) => void },
 					payload: unknown,
-					done: (err: Error | null, payload?: unknown) => void,
-				) => void,
+					done: (err: Error | null, payload?: unknown) => void
+				) => void
 			) => void;
 		}
 	).addHook('onSend', (req, reply, payload, done) => {

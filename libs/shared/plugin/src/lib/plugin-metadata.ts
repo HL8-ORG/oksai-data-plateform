@@ -10,5 +10,5 @@ export const PLUGIN_METADATA = {
 	SUBSCRIBERS: Symbol.for('oksai:plugin:subscribers'),
 	INTEGRATION_EVENT_SUBSCRIBERS: Symbol.for('oksai:plugin:integrationEventSubscribers'),
 	EXTENSIONS: Symbol.for('oksai:plugin:extensions'),
-	CONFIGURATION: Symbol.for('oksai:plugin:configuration'),
+	CONFIGURATION: Symbol.for('oksai:plugin:configuration')
 } as const;

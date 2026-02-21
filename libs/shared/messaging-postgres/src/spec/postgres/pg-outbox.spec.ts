@@ -53,19 +53,19 @@ describe('PgOutbox', () => {
 
 	beforeEach(() => {
 		mockConnection = {
-			execute: jest.fn(),
+			execute: jest.fn()
 		};
 
 		mockEm = {
-			getConnection: jest.fn().mockReturnValue(mockConnection),
+			getConnection: jest.fn().mockReturnValue(mockConnection)
 		};
 
 		mockOrm = {
-			em: mockEm as unknown,
+			em: mockEm as unknown
 		};
 
 		mockTxHost = {
-			getCurrentEntityManager: jest.fn().mockReturnValue(mockEm),
+			getCurrentEntityManager: jest.fn().mockReturnValue(mockEm)
 		};
 
 		pgOutbox = new PgOutbox(mockOrm as MikroORM, mockTxHost as any);
@@ -78,14 +78,14 @@ describe('PgOutbox', () => {
 			const envelope = new MockIntegrationEventEnvelope({
 				eventType: 'UserCreated',
 				messageId: 'msg-1',
-				payload: { userId: 'u-1' },
+				payload: { userId: 'u-1' }
 			});
 
 			await pgOutbox.append(envelope as any);
 
 			expect(mockConnection.execute).toHaveBeenCalledWith(
 				expect.stringContaining('insert into messaging_outbox'),
-				expect.arrayContaining([expect.any(String), 'msg-1', 'UserCreated']),
+				expect.arrayContaining([expect.any(String), 'msg-1', 'UserCreated'])
 			);
 		});
 
@@ -95,7 +95,7 @@ describe('PgOutbox', () => {
 			const envelope = new MockIntegrationEventEnvelope({
 				eventType: 'TestEvent',
 				messageId: 'dup-msg',
-				payload: {},
+				payload: {}
 			});
 
 			await expect(pgOutbox.append(envelope as any)).rejects.toThrow('Outbox 追加失败');
@@ -111,7 +111,7 @@ describe('PgOutbox', () => {
 				tenantId: 'tenant-1',
 				userId: 'user-1',
 				requestId: 'req-1',
-				payload: { data: 'test' },
+				payload: { data: 'test' }
 			});
 
 			await pgOutbox.append(envelope as any);
@@ -131,7 +131,7 @@ describe('PgOutbox', () => {
 			const envelope = new MockIntegrationEventEnvelope({
 				eventType: 'TestEvent',
 				messageId: 'msg-3',
-				payload: {},
+				payload: {}
 			});
 
 			await pgOutbox.append(envelope as any);
@@ -148,8 +148,8 @@ describe('PgOutbox', () => {
 			await pgOutbox.append(
 				new MockIntegrationEventEnvelope({
 					eventType: 'TestEvent',
-					payload: {},
-				}) as any,
+					payload: {}
+				}) as any
 			);
 
 			expect(mockTxHost.getCurrentEntityManager).toHaveBeenCalled();
@@ -174,8 +174,8 @@ describe('PgOutbox', () => {
 					next_attempt_at: now,
 					last_error: null,
 					created_at: now,
-					updated_at: now,
-				},
+					updated_at: now
+				}
 			]);
 
 			const result = await pgOutbox.listPending({ now, limit: 10 });
@@ -239,8 +239,8 @@ describe('PgOutbox', () => {
 					next_attempt_at: now,
 					last_error: '连接超时',
 					created_at: now,
-					updated_at: now,
-				},
+					updated_at: now
+				}
 			]);
 
 			const result = await pgOutbox.listPending();
@@ -269,8 +269,8 @@ describe('PgOutbox', () => {
 					next_attempt_at: now,
 					last_error: null,
 					created_at: now,
-					updated_at: now,
-				},
+					updated_at: now
+				}
 			]);
 
 			const result = await pgOutbox.listPending();
@@ -290,7 +290,7 @@ describe('PgOutbox', () => {
 
 			expect(mockConnection.execute).toHaveBeenCalledWith(
 				expect.stringContaining("status = 'published'"),
-				expect.arrayContaining(['msg-1']),
+				expect.arrayContaining(['msg-1'])
 			);
 		});
 
@@ -313,12 +313,12 @@ describe('PgOutbox', () => {
 				messageId: 'msg-1',
 				attempts: 1,
 				nextAttemptAt,
-				lastError: '连接超时',
+				lastError: '连接超时'
 			});
 
 			expect(mockConnection.execute).toHaveBeenCalledWith(
 				expect.stringContaining('attempts = ?'),
-				expect.arrayContaining([1, nextAttemptAt, '连接超时']),
+				expect.arrayContaining([1, nextAttemptAt, '连接超时'])
 			);
 		});
 
@@ -329,7 +329,7 @@ describe('PgOutbox', () => {
 			await pgOutbox.markFailed({
 				messageId: 'msg-2',
 				attempts: 2,
-				nextAttemptAt,
+				nextAttemptAt
 			});
 
 			const callArgs = mockConnection.execute.mock.calls[0][1];
@@ -342,7 +342,7 @@ describe('PgOutbox', () => {
 			await pgOutbox.markFailed({
 				messageId: 'msg-3',
 				attempts: 1,
-				nextAttemptAt: new Date(),
+				nextAttemptAt: new Date()
 			});
 
 			const callArgs = mockConnection.execute.mock.calls[0][1];
@@ -371,15 +371,15 @@ describe('PgOutbox', () => {
 						next_attempt_at: now,
 						last_error: null,
 						created_at: now,
-						updated_at: now,
-					},
+						updated_at: now
+					}
 				])
 				.mockResolvedValueOnce({ rowCount: 1 });
 
 			const envelope = new MockIntegrationEventEnvelope({
 				eventType: 'OrderCreated',
 				messageId: 'msg-flow-1',
-				payload: { orderId: 'o-1' },
+				payload: { orderId: 'o-1' }
 			});
 
 			await pgOutbox.append(envelope as any);

@@ -1,4 +1,9 @@
-import { EmbeddingStatus, SyncStatus, type AIProcessingMetadata, type ETLMetadata } from '../../lib/extensions/enums-and-interfaces';
+import {
+	EmbeddingStatus,
+	SyncStatus,
+	type AIProcessingMetadata,
+	type ETLMetadata
+} from '../../lib/extensions/enums-and-interfaces';
 
 describe('Extensions Enums and Interfaces', () => {
 	describe('EmbeddingStatus', () => {
@@ -49,7 +54,7 @@ describe('Extensions Enums and Interfaces', () => {
 				processingTimeMs: 1000,
 				tokenCount: 500,
 				errorMessage: undefined,
-				extra: { temperature: 0.7 },
+				extra: { temperature: 0.7 }
 			};
 
 			expect(metadata.modelName).toBe('gpt-4');
@@ -72,7 +77,7 @@ describe('Extensions Enums and Interfaces', () => {
 				version: '1.0.0',
 				transformRules: ['rule1', 'rule2'],
 				errorMessage: undefined,
-				extra: { source: 'erp' },
+				extra: { source: 'erp' }
 			};
 
 			expect(metadata.jobId).toBe('job-123');

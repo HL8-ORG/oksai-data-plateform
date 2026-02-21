@@ -14,11 +14,8 @@ export {
 	resolvePluginsFromEnv,
 	type PluginInput,
 	type RegisterPluginsOptions,
-	type ResolvePluginsFromEnvOptions,
+	type ResolvePluginsFromEnvOptions
 } from './lib/plugins/plugin-registry';
 
 // 平台模块
-export {
-	OksaiPlatformModule,
-	type OksaiPlatformModuleOptions,
-} from './lib/modules/oksai-platform.module';
+export { OksaiPlatformModule, type OksaiPlatformModuleOptions } from './lib/modules/oksai-platform.module';

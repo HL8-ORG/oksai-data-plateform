@@ -44,7 +44,7 @@ describe('setupLoggerModule', () => {
 	describe('配置选项', () => {
 		it('应该支持自定义 redact 路径', () => {
 			const options: SetupLoggerModuleOptions = {
-				redact: ['req.headers.custom-secret'],
+				redact: ['req.headers.custom-secret']
 			};
 			const module = setupLoggerModule(options);
 
@@ -60,8 +60,8 @@ describe('setupLoggerModule', () => {
 		it('应该支持 customProps 选项', () => {
 			const module = setupLoggerModule({
 				customProps: (req) => ({
-					tenantId: (req as any).tenantId,
-				}),
+					tenantId: (req as any).tenantId
+				})
 			});
 
 			expect(module).toBeDefined();
@@ -74,8 +74,8 @@ describe('setupLoggerModule', () => {
 					colorize: true,
 					timeFormat: 'HH:MM:ss.l',
 					singleLine: true,
-					ignore: 'pid,hostname',
-				},
+					ignore: 'pid,hostname'
+				}
 			});
 
 			expect(module).toBeDefined();

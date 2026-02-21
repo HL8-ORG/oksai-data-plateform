@@ -77,7 +77,7 @@ describe('AggregateMetadataEntity', () => {
 			entity.analyticsDimensions = {
 				region: 'cn-north',
 				priority: 1,
-				isActive: true,
+				isActive: true
 			};
 
 			expect(entity.analyticsDimensions?.region).toBe('cn-north');
@@ -137,7 +137,7 @@ describe('AggregateMetadataEntity', () => {
 			entity.aiMetadata = {
 				modelName: 'text-embedding-3',
 				processedAt: new Date(),
-				tokenCount: 1500,
+				tokenCount: 1500
 			};
 
 			expect(entity.aiMetadata?.modelName).toBe('text-embedding-3');
@@ -159,7 +159,7 @@ describe('AggregateMetadataEntity', () => {
 			const entity = new AggregateMetadataEntity();
 			entity.externalIds = {
 				erpId: 'ERP-001',
-				crmId: 'CRM-002',
+				crmId: 'CRM-002'
 			};
 
 			expect(entity.externalIds?.erpId).toBe('ERP-001');
@@ -200,7 +200,7 @@ describe('AggregateMetadataEntity', () => {
 			entity.etlMetadata = {
 				jobId: 'etl-job-123',
 				processedAt: new Date(),
-				version: '2.0.0',
+				version: '2.0.0'
 			};
 
 			expect(entity.etlMetadata?.jobId).toBe('etl-job-123');

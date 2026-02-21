@@ -39,7 +39,7 @@ export class OksaiRedisHealthService {
 			return {
 				ok: false,
 				latencyMs,
-				error: e instanceof Error ? e.message : String(e),
+				error: e instanceof Error ? e.message : String(e)
 			};
 		}
 	}

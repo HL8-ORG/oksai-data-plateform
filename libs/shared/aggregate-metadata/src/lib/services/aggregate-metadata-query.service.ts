@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import type {
 	IFullAggregateMetadata,
 	AggregateMetadataFilter,
-	AggregateMetadataQueryResult,
+	AggregateMetadataQueryResult
 } from '../interfaces/aggregate-metadata.interface';
 
 /**
@@ -78,20 +78,20 @@ export class AggregateMetadataQueryService {
 		// 查询总数
 		const countResult = await conn.execute<{ count: string }[]>(
 			`SELECT COUNT(*) as count FROM aggregate_metadata WHERE ${whereClause}`,
-			params,
+			params
 		);
 		const total = parseInt(countResult[0]?.count ?? '0', 10);
 
 		// 查询数据
 		const items = await conn.execute<IFullAggregateMetadata[]>(
 			`SELECT * FROM aggregate_metadata WHERE ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-			[...params, limit, offset],
+			[...params, limit, offset]
 		);
 
 		return {
 			items: items.map((row) => this.mapRowToMetadata(row)),
 			total,
-			hasMore: offset + limit < total,
+			hasMore: offset + limit < total
 		};
 	}
 
@@ -106,12 +106,12 @@ export class AggregateMetadataQueryService {
 	async getById(
 		tenantId: string,
 		aggregateType: string,
-		aggregateId: string,
+		aggregateId: string
 	): Promise<IFullAggregateMetadata | null> {
 		const conn = this.orm.em.getConnection();
 		const rows = await conn.execute<IFullAggregateMetadata[]>(
 			`SELECT * FROM aggregate_metadata WHERE tenant_id = ? AND aggregate_type = ? AND aggregate_id = ?`,
-			[tenantId, aggregateType, aggregateId],
+			[tenantId, aggregateType, aggregateId]
 		);
 
 		if (rows.length === 0) {
@@ -131,7 +131,7 @@ export class AggregateMetadataQueryService {
 		const conn = this.orm.em.getConnection();
 		const rows = await conn.execute<{ aggregate_type: string }[]>(
 			`SELECT DISTINCT aggregate_type FROM aggregate_metadata WHERE tenant_id = ? ORDER BY aggregate_type`,
-			[tenantId],
+			[tenantId]
 		);
 
 		return rows.map((r) => r.aggregate_type);
@@ -197,7 +197,7 @@ export class AggregateMetadataQueryService {
 			updatedBy: row.updated_by,
 			deletedAt: row.deleted_at,
 			deletedBy: row.deleted_by,
-			isDeleted: row.is_deleted,
+			isDeleted: row.is_deleted
 		};
 
 		// 可分析扩展
@@ -207,7 +207,7 @@ export class AggregateMetadataQueryService {
 				category: row.category ?? undefined,
 				analyticsDimensions: row.analytics_dimensions ?? undefined,
 				qualityScore: row.quality_score ?? undefined,
-				includeInAnalytics: row.include_in_analytics ?? true,
+				includeInAnalytics: row.include_in_analytics ?? true
 			};
 		}
 
@@ -218,7 +218,7 @@ export class AggregateMetadataQueryService {
 				embeddingVersion: row.embedding_version ?? undefined,
 				embeddingId: row.embedding_id ?? undefined,
 				aiMetadata: row.ai_metadata ?? undefined,
-				needsReembedding: ['PENDING', 'STALE', 'FAILED'].includes(row.embedding_status),
+				needsReembedding: ['PENDING', 'STALE', 'FAILED'].includes(row.embedding_status)
 			};
 		}
 
@@ -231,7 +231,7 @@ export class AggregateMetadataQueryService {
 				lastSyncedAt: row.last_synced_at ?? undefined,
 				syncVersion: row.sync_version ?? 1,
 				etlMetadata: row.etl_metadata ?? undefined,
-				needsSync: ['PENDING', 'FAILED'].includes(row.sync_status),
+				needsSync: ['PENDING', 'FAILED'].includes(row.sync_status)
 			};
 		}
 

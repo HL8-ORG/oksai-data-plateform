@@ -19,14 +19,12 @@ export interface SetupMessagingPostgresModuleOptions {
  * - 需要上层先装配 `@oksai/database`
  * - 需要同时装配 `@oksai/messaging`（提供 outer token 与 publisher）
  */
-export function setupMessagingPostgresModule(
-	options: SetupMessagingPostgresModuleOptions = {},
-): DynamicModule {
+export function setupMessagingPostgresModule(options: SetupMessagingPostgresModuleOptions = {}): DynamicModule {
 	return {
 		module: class OksaiMessagingPostgresModule {},
 		global: options.isGlobal ?? false,
 		imports: [MikroOrmModule.forFeature([OutboxRecordEntity, InboxRecordEntity])],
 		providers: [PgOutbox, PgInbox],
-		exports: [PgOutbox, PgInbox],
+		exports: [PgOutbox, PgInbox]
 	};
 }

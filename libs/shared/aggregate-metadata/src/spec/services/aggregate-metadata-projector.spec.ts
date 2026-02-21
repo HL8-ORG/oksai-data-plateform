@@ -14,13 +14,13 @@ describe('AggregateMetadataProjector', () => {
 
 	beforeEach(() => {
 		mockConnection = {
-			execute: jest.fn().mockResolvedValue(undefined),
+			execute: jest.fn().mockResolvedValue(undefined)
 		};
 		mockEm = {
-			getConnection: jest.fn().mockReturnValue(mockConnection),
+			getConnection: jest.fn().mockReturnValue(mockConnection)
 		};
 		mockOrm = {
-			em: mockEm,
+			em: mockEm
 		};
 		projector = new AggregateMetadataProjector(mockOrm as any);
 	});
@@ -35,7 +35,7 @@ describe('AggregateMetadataProjector', () => {
 				updatedAt: new Date('2026-01-02'),
 				createdBy: 'user-001',
 				updatedBy: 'user-002',
-				isDeleted: false,
+				isDeleted: false
 			};
 
 			await projector.upsert(metadata);
@@ -53,7 +53,7 @@ describe('AggregateMetadataProjector', () => {
 				tenantId: 'tenant-001',
 				createdAt: new Date(),
 				updatedAt: new Date(),
-				isDeleted: false,
+				isDeleted: false
 			};
 
 			await projector.upsert(metadata);
@@ -75,7 +75,7 @@ describe('AggregateMetadataProjector', () => {
 				updatedBy: 'user-002',
 				deletedAt: new Date(),
 				deletedBy: 'admin-001',
-				isDeleted: true,
+				isDeleted: true
 			};
 
 			await projector.upsert(metadata);
@@ -100,8 +100,8 @@ describe('AggregateMetadataProjector', () => {
 					category: 'billing',
 					analyticsDimensions: { region: 'cn-north' },
 					qualityScore: 85,
-					includeInAnalytics: true,
-				},
+					includeInAnalytics: true
+				}
 			};
 
 			await projector.upsert(metadata);
@@ -124,8 +124,8 @@ describe('AggregateMetadataProjector', () => {
 					embeddingStatus: 'SYNCED',
 					embeddingVersion: 'v1.0.0',
 					embeddingId: 'emb-001',
-					aiMetadata: { modelName: 'text-embedding-3' },
-				},
+					aiMetadata: { modelName: 'text-embedding-3' }
+				}
 			};
 
 			await projector.upsert(metadata);
@@ -151,8 +151,8 @@ describe('AggregateMetadataProjector', () => {
 					syncStatus: 'SYNCED',
 					lastSyncedAt: syncTime,
 					syncVersion: 5,
-					etlMetadata: { jobId: 'etl-001' },
-				},
+					etlMetadata: { jobId: 'etl-001' }
+				}
 			};
 
 			await projector.upsert(metadata);
@@ -168,7 +168,7 @@ describe('AggregateMetadataProjector', () => {
 				tenantId: 'tenant-001',
 				createdAt: new Date(),
 				updatedAt: new Date(),
-				isDeleted: false,
+				isDeleted: false
 			};
 
 			await projector.upsert(metadata);
@@ -185,7 +185,7 @@ describe('AggregateMetadataProjector', () => {
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				isDeleted: false,
-				analyzable: {},
+				analyzable: {}
 			};
 
 			await projector.upsert(metadata);
@@ -202,7 +202,7 @@ describe('AggregateMetadataProjector', () => {
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				isDeleted: false,
-				syncable: {},
+				syncable: {}
 			};
 
 			await projector.upsert(metadata);

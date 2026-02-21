@@ -46,9 +46,7 @@ export class TenantPlan extends ValueObject<TenantPlanProps> {
 	 */
 	public static create(plan: string): Result<TenantPlan, Error> {
 		if (!TenantPlan.VALID_PLANS.includes(plan)) {
-			return Result.fail(
-				new Error(`无效的租户计划: ${plan}。有效计划: ${TenantPlan.VALID_PLANS.join(', ')}`)
-			);
+			return Result.fail(new Error(`无效的租户计划: ${plan}。有效计划: ${TenantPlan.VALID_PLANS.join(', ')}`));
 		}
 
 		return Result.ok(new TenantPlan({ value: plan }));

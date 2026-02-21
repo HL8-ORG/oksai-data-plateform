@@ -34,7 +34,7 @@ export function getPluginModules(plugins: PluginInput[]): Array<Type<unknown>> {
  */
 export function hasLifecycleMethod(
 	instance: unknown,
-	method: keyof PluginLifecycleMethods,
+	method: keyof PluginLifecycleMethods
 ): instance is PluginLifecycleMethods {
 	return !!instance && typeof (instance as any)[method] === 'function';
 }
@@ -65,26 +65,19 @@ export function getSubscribersFromPlugins(plugins: PluginInput[]): Array<Type<un
  * @param plugins - 插件列表
  * @returns 集成事件订阅者类数组
  */
-export function getIntegrationEventSubscribersFromPlugins(
-	plugins: PluginInput[],
-): Array<Type<unknown>> {
+export function getIntegrationEventSubscribersFromPlugins(plugins: PluginInput[]): Array<Type<unknown>> {
 	return resolveLazyArrayFromPlugins(plugins, PLUGIN_METADATA.INTEGRATION_EVENT_SUBSCRIBERS);
 }
 
 /**
  * 解析延迟数组
  */
-function resolveLazyArrayFromPlugins(
-	plugins: PluginInput[],
-	metadataKey: symbol,
-): Array<Type<unknown>> {
+function resolveLazyArrayFromPlugins(plugins: PluginInput[], metadataKey: symbol): Array<Type<unknown>> {
 	const modules = getPluginModules(plugins);
 	const out: Array<Type<unknown>> = [];
 
 	for (const m of modules) {
-		const raw = Reflect.getMetadata(metadataKey, m) as
-			| PluginMetadata[keyof PluginMetadata]
-			| undefined;
+		const raw = Reflect.getMetadata(metadataKey, m) as PluginMetadata[keyof PluginMetadata] | undefined;
 		if (!raw) continue;
 		const value = typeof raw === 'function' ? (raw as any)() : raw;
 		if (Array.isArray(value)) out.push(...(value as Array<Type<unknown>>));

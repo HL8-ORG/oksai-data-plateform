@@ -15,9 +15,9 @@ import { HealthController } from './health.controller';
 		OksaiPlatformModule.init({
 			isGlobal: true,
 			enableCqrs: true,
-			enableEda: true,
-		}),
+			enableEda: true
+		})
 	],
-	controllers: [HealthController],
+	controllers: [HealthController]
 })
 export class AppModule {}

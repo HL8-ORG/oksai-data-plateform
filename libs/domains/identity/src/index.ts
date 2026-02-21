@@ -13,27 +13,18 @@ export { RoleKey, PREDEFINED_ROLE_KEYS, type PredefinedRoleKey } from './domain/
 export { User } from './domain/model/user.aggregate';
 
 // 领域事件
-export {
-	UserRegisteredEvent,
-	type UserRegisteredEventPayload,
-} from './domain/events/user-registered.domain-event';
+export { UserRegisteredEvent, type UserRegisteredEventPayload } from './domain/events/user-registered.domain-event';
 
-export {
-	UserDisabledEvent,
-	type UserDisabledEventPayload,
-} from './domain/events/user-disabled.domain-event';
+export { UserDisabledEvent, type UserDisabledEventPayload } from './domain/events/user-disabled.domain-event';
 
-export {
-	UserEnabledEvent,
-	type UserEnabledEventPayload,
-} from './domain/events/user-enabled.domain-event';
+export { UserEnabledEvent, type UserEnabledEventPayload } from './domain/events/user-enabled.domain-event';
 
 export {
 	RoleGrantedToUserEvent,
-	type RoleGrantedToUserEventPayload,
+	type RoleGrantedToUserEventPayload
 } from './domain/events/role-granted-to-user.domain-event';
 
 export {
 	UserAddedToTenantEvent,
-	type UserAddedToTenantEventPayload,
+	type UserAddedToTenantEventPayload
 } from './domain/events/user-added-to-tenant.domain-event';

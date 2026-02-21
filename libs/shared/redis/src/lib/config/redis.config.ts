@@ -25,6 +25,6 @@ export function getRedisConfig(): OksaiRedisConfig {
 
 	return {
 		url,
-		keyPrefix: process.env.REDIS_KEY_PREFIX?.trim() || undefined,
+		keyPrefix: process.env.REDIS_KEY_PREFIX?.trim() || undefined
 	};
 }

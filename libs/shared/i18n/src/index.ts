@@ -9,8 +9,4 @@
 export { setupI18nModule, type SetupI18nModuleOptions } from './lib/setup-i18n-module';
 
 // 直接透传 nestjs-i18n 常用能力
-export {
-	I18nValidationExceptionFilter,
-	I18nValidationPipe,
-	i18nValidationMessage,
-} from 'nestjs-i18n';
+export { I18nValidationExceptionFilter, I18nValidationPipe, i18nValidationMessage } from 'nestjs-i18n';

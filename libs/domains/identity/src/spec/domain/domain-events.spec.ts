@@ -58,16 +58,19 @@ describe('Identity Domain - Domain Events', () => {
 	describe('RoleGrantedToUserEvent', () => {
 		it('应该创建角色授予事件', () => {
 			const aggregateId = new UniqueEntityID('user-001');
-			const event = new RoleGrantedToUserEvent({
-				tenantId: 'tenant-001',
-				role: 'TenantAdmin',
-			}, aggregateId);
+			const event = new RoleGrantedToUserEvent(
+				{
+					tenantId: 'tenant-001',
+					role: 'TenantAdmin'
+				},
+				aggregateId
+			);
 
 			expect(event.eventName).toBe('RoleGrantedToUser');
 			expect(event.aggregateId).toBe(aggregateId);
 			expect(event.payload).toEqual({
 				tenantId: 'tenant-001',
-				role: 'TenantAdmin',
+				role: 'TenantAdmin'
 			});
 		});
 	});

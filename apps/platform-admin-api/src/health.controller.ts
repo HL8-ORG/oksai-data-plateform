@@ -15,7 +15,7 @@ export class HealthController {
 		return {
 			status: 'ok',
 			timestamp: new Date().toISOString(),
-			service: '@oksai/platform-admin-api',
+			service: '@oksai/platform-admin-api'
 		};
 	}
 
@@ -25,7 +25,7 @@ export class HealthController {
 	@Get('ready')
 	ready(): { ready: boolean } {
 		return {
-			ready: true,
+			ready: true
 		};
 	}
 }

@@ -16,14 +16,11 @@ export type UserEnabledEventPayload = Record<string, never>;
  * ```
  */
 export class UserEnabledEvent extends DomainEvent<UserEnabledEventPayload> {
-	constructor(
-		payload: UserEnabledEventPayload,
-		aggregateId: UniqueEntityID,
-	) {
+	constructor(payload: UserEnabledEventPayload, aggregateId: UniqueEntityID) {
 		super({
 			eventName: 'UserEnabled',
 			aggregateId,
-			payload,
+			payload
 		});
 	}
 }

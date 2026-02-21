@@ -6,7 +6,7 @@ import {
 	hasLifecycleMethod,
 	getEntitiesFromPlugins,
 	getSubscribersFromPlugins,
-	getIntegrationEventSubscribersFromPlugins,
+	getIntegrationEventSubscribersFromPlugins
 } from '../lib/plugin.helper';
 
 describe('plugin.helper', () => {
@@ -29,7 +29,7 @@ describe('plugin.helper', () => {
 
 			const dynamicModule: DynamicModule = {
 				module: MyModule,
-				providers: [],
+				providers: []
 			};
 
 			const result = getPluginModules([dynamicModule]);
@@ -85,7 +85,7 @@ describe('plugin.helper', () => {
 	describe('hasLifecycleMethod', () => {
 		it('当实例有 onPluginBootstrap 方法时应该返回 true', () => {
 			const instance = {
-				onPluginBootstrap: jest.fn(),
+				onPluginBootstrap: jest.fn()
 			};
 
 			expect(hasLifecycleMethod(instance, 'onPluginBootstrap')).toBe(true);
@@ -93,7 +93,7 @@ describe('plugin.helper', () => {
 
 		it('当实例有 onPluginDestroy 方法时应该返回 true', () => {
 			const instance = {
-				onPluginDestroy: jest.fn(),
+				onPluginDestroy: jest.fn()
 			};
 
 			expect(hasLifecycleMethod(instance, 'onPluginDestroy')).toBe(true);
@@ -101,7 +101,7 @@ describe('plugin.helper', () => {
 
 		it('当实例没有指定方法时应该返回 false', () => {
 			const instance = {
-				someOtherMethod: jest.fn(),
+				someOtherMethod: jest.fn()
 			};
 
 			expect(hasLifecycleMethod(instance, 'onPluginBootstrap')).toBe(false);
@@ -109,7 +109,7 @@ describe('plugin.helper', () => {
 
 		it('当方法不是函数时应该返回 false', () => {
 			const instance = {
-				onPluginBootstrap: 'not a function',
+				onPluginBootstrap: 'not a function'
 			};
 
 			expect(hasLifecycleMethod(instance, 'onPluginBootstrap')).toBe(false);
@@ -126,7 +126,7 @@ describe('plugin.helper', () => {
 		it('应该作为类型守卫工作', () => {
 			const instance: unknown = {
 				onPluginBootstrap: jest.fn(),
-				onPluginDestroy: jest.fn(),
+				onPluginDestroy: jest.fn()
 			};
 
 			if (hasLifecycleMethod(instance, 'onPluginBootstrap')) {
@@ -201,7 +201,7 @@ describe('plugin.helper', () => {
 
 			const dynamicModule: DynamicModule = {
 				module: MyModule,
-				providers: [],
+				providers: []
 			};
 
 			const result = getEntitiesFromPlugins([dynamicModule]);

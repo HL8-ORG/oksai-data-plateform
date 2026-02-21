@@ -26,5 +26,5 @@ export {
 	type ETLMetadata,
 	AIEnabledAggregateRoot,
 	SyncableAggregateRoot,
-	type ExternalIdMap,
+	type ExternalIdMap
 } from './lib/extensions';

@@ -41,7 +41,7 @@ describe('PLUGIN_METADATA', () => {
 			expect(Symbol.keyFor(PLUGIN_METADATA.ENTITIES)).toBe('oksai:plugin:entities');
 			expect(Symbol.keyFor(PLUGIN_METADATA.SUBSCRIBERS)).toBe('oksai:plugin:subscribers');
 			expect(Symbol.keyFor(PLUGIN_METADATA.INTEGRATION_EVENT_SUBSCRIBERS)).toBe(
-				'oksai:plugin:integrationEventSubscribers',
+				'oksai:plugin:integrationEventSubscribers'
 			);
 			expect(Symbol.keyFor(PLUGIN_METADATA.EXTENSIONS)).toBe('oksai:plugin:extensions');
 			expect(Symbol.keyFor(PLUGIN_METADATA.CONFIGURATION)).toBe('oksai:plugin:configuration');

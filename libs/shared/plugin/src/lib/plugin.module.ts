@@ -1,12 +1,4 @@
-import {
-	DynamicModule,
-	Inject,
-	Logger,
-	Module,
-	OnModuleDestroy,
-	OnModuleInit,
-	type Type,
-} from '@nestjs/common';
+import { DynamicModule, Inject, Logger, Module, OnModuleDestroy, OnModuleInit, type Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { getPluginModules, hasLifecycleMethod } from './plugin.helper';
 import type { PluginInput, PluginLifecycleMethods } from './plugin.interface';
@@ -25,7 +17,7 @@ export const OKSAI_PLUGINS_TOKEN = Symbol('OKSAI_PLUGINS_TOKEN');
  */
 @Module({
 	imports: [],
-	providers: [],
+	providers: []
 })
 export class PluginModule implements OnModuleInit, OnModuleDestroy {
 	private readonly logger = new Logger(PluginModule.name);
@@ -56,15 +48,15 @@ export class PluginModule implements OnModuleInit, OnModuleDestroy {
 			providers: [
 				{
 					provide: OKSAI_PLUGINS_TOKEN,
-					useValue: plugins,
-				},
-			],
+					useValue: plugins
+				}
+			]
 		};
 	}
 
 	constructor(
 		private readonly moduleRef: ModuleRef,
-		@Inject(OKSAI_PLUGINS_TOKEN) private readonly plugins: PluginInput[],
+		@Inject(OKSAI_PLUGINS_TOKEN) private readonly plugins: PluginInput[]
 	) {}
 
 	async onModuleInit() {
@@ -83,7 +75,7 @@ export class PluginModule implements OnModuleInit, OnModuleDestroy {
 
 	private async bootstrapPluginLifecycleMethods(
 		lifecycleMethod: keyof PluginLifecycleMethods,
-		closure?: (instance: unknown) => void,
+		closure?: (instance: unknown) => void
 	): Promise<void> {
 		const pluginModules = getPluginModules(this.plugins ?? []);
 
@@ -91,15 +83,11 @@ export class PluginModule implements OnModuleInit, OnModuleDestroy {
 			let pluginInstance: unknown;
 			try {
 				pluginInstance = this.moduleRef.get(pluginModule as Type<unknown>, {
-					strict: false,
+					strict: false
 				});
 			} catch (e) {
-				const pluginName =
-					(pluginModule as { name?: string } | undefined)?.name ?? '(anonymous plugin module)';
-				this.logger.error(
-					`初始化插件 ${pluginName} 失败`,
-					e instanceof Error ? e.stack : undefined,
-				);
+				const pluginName = (pluginModule as { name?: string } | undefined)?.name ?? '(anonymous plugin module)';
+				this.logger.error(`初始化插件 ${pluginName} 失败`, e instanceof Error ? e.stack : undefined);
 				continue;
 			}
 

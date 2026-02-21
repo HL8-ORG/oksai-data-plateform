@@ -67,20 +67,19 @@ export function setupRedisModule(options: SetupRedisModuleOptions = {}): Dynamic
 			if (!url) {
 				throw new Error('缺少 Redis 配置：redis.url / REDIS_URL');
 			}
-			const keyPrefix =
-				options.keyPrefix ?? (config.get<string>('redis.keyPrefix') || undefined);
+			const keyPrefix = options.keyPrefix ?? (config.get<string>('redis.keyPrefix') || undefined);
 
 			return new Redis(url, {
 				keyPrefix,
-				lazyConnect: options.lazyConnect ?? false,
+				lazyConnect: options.lazyConnect ?? false
 			});
 		},
-		inject: [ConfigService],
+		inject: [ConfigService]
 	};
 
 	return {
 		module: OksaiRedisRuntimeModule,
 		providers: [redisProvider, OksaiRedisHealthService],
-		exports: [OKSAI_REDIS, OksaiRedisHealthService],
+		exports: [OKSAI_REDIS, OksaiRedisHealthService]
 	};
 }

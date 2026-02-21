@@ -36,7 +36,7 @@ export interface AIEnabledAggregateRootProps {
  * - 智能推荐（需要特征提取）
  */
 export abstract class AIEnabledAggregateRoot<
-	TProps extends AIEnabledAggregateRootProps = AIEnabledAggregateRootProps,
+	TProps extends AIEnabledAggregateRootProps = AIEnabledAggregateRootProps
 > extends AggregateRoot<TProps> {
 	/**
 	 * 向量嵌入状态
@@ -79,7 +79,7 @@ export abstract class AIEnabledAggregateRoot<
 		this._aiMetadata = {
 			...this._aiMetadata,
 			errorMessage,
-			processedAt: new Date(),
+			processedAt: new Date()
 		};
 	}
 
@@ -100,7 +100,7 @@ export abstract class AIEnabledAggregateRoot<
 			...this._aiMetadata,
 			...metadata,
 			processedAt: new Date(),
-			errorMessage: undefined,
+			errorMessage: undefined
 		};
 	}
 
@@ -125,7 +125,7 @@ export abstract class AIEnabledAggregateRoot<
 	setAIMetadata(metadata: Partial<AIProcessingMetadata>): void {
 		this._aiMetadata = {
 			...this._aiMetadata,
-			...metadata,
+			...metadata
 		};
 	}
 
@@ -146,7 +146,7 @@ export abstract class AIEnabledAggregateRoot<
 			embeddingVersion: this._embeddingVersion,
 			embeddingId: this._embeddingId,
 			aiMetadata: this._aiMetadata,
-			needsReembedding: this.needsReembedding(),
+			needsReembedding: this.needsReembedding()
 		};
 	}
 

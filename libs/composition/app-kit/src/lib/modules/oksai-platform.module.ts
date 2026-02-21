@@ -1,9 +1,5 @@
-import { DynamicModule, Module, Provider, Injectable, OnModuleInit } from '@nestjs/common';
-import {
-	TenantContext,
-	TenantContextService,
-	AsyncLocalStorageProvider,
-} from '@oksai/context';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
+import { TenantContextService, AsyncLocalStorageProvider } from '@oksai/context';
 import { ConfigService, ConfigModule } from '@oksai/config';
 import { CommandBus, QueryBus } from '@oksai/cqrs';
 import { EventBus } from '@oksai/eda';
@@ -69,16 +65,9 @@ export class OksaiPlatformModule {
 	 */
 	static init(options: OksaiPlatformModuleOptions = {}): DynamicModule {
 		const isGlobal = options.isGlobal ?? true;
-		const providers: Provider[] = [
-			AsyncLocalStorageProvider,
-			TenantContextService,
-			ConfigService,
-		];
+		const providers: Provider[] = [AsyncLocalStorageProvider, TenantContextService, ConfigService];
 
-		const exports: Provider[] = [
-			TenantContextService,
-			ConfigService,
-		];
+		const exports: Provider[] = [TenantContextService, ConfigService];
 
 		// CQRS 能力
 		if (options.enableCqrs) {
@@ -97,7 +86,7 @@ export class OksaiPlatformModule {
 			global: isGlobal,
 			imports: [ConfigModule.forRoot({ isGlobal })],
 			providers,
-			exports,
+			exports
 		};
 	}
 }

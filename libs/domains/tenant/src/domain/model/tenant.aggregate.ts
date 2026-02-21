@@ -24,7 +24,6 @@
  * ```
  */
 import { AggregateRoot, Result, UniqueEntityID } from '@oksai/kernel';
-import { TenantId } from './tenant-id.vo';
 import { TenantName } from './tenant-name.vo';
 import { TenantPlan } from './tenant-plan.vo';
 import { TenantStatus } from './tenant-status.vo';
@@ -33,20 +32,12 @@ import { TenantActivatedEvent } from '../events/tenant-activated.domain-event';
 import { TenantSuspendedEvent } from '../events/tenant-suspended.domain-event';
 
 interface TenantProps {
-	id: TenantId;
 	name: TenantName;
 	plan: TenantPlan;
 	status: TenantStatus;
 }
 
 export class Tenant extends AggregateRoot<TenantProps> {
-	/**
-	 * 获取租户 ID
-	 */
-	get id(): TenantId {
-		return this.props.id;
-	}
-
 	/**
 	 * 获取租户名称
 	 */
@@ -68,8 +59,8 @@ export class Tenant extends AggregateRoot<TenantProps> {
 		return this.props.status;
 	}
 
-	private constructor(props: TenantProps) {
-		super(props);
+	private constructor(props: TenantProps, id?: UniqueEntityID) {
+		super(props, id);
 	}
 
 	/**
@@ -78,29 +69,22 @@ export class Tenant extends AggregateRoot<TenantProps> {
 	 * @param props - 创建参数
 	 * @returns Result 包含 Tenant 或错误
 	 */
-	public static create(props: {
-		id: TenantId;
-		name: TenantName;
-		plan: TenantPlan;
-	}): Result<Tenant, Error> {
+	public static create(props: { name: TenantName; plan: TenantPlan }, id?: UniqueEntityID): Result<Tenant, Error> {
+		const tenantId = id ?? new UniqueEntityID();
 		const tenant = new Tenant({
-			id: props.id,
 			name: props.name,
 			plan: props.plan,
 			status: TenantStatus.pending()
-		});
+		}, tenantId);
 
 		// 添加领域事件
 		tenant.addDomainEvent(
-			new TenantCreatedEvent(
-				new UniqueEntityID(props.id.value),
-				{
-					tenantId: props.id.value,
-					name: props.name.value,
-					plan: props.plan.value,
-					status: 'pending'
-				}
-			)
+			new TenantCreatedEvent(tenantId, {
+				tenantId: String(tenantId.value),
+				name: props.name.value,
+				plan: props.plan.value,
+				status: 'pending'
+			})
 		);
 
 		return Result.ok(tenant);
@@ -113,12 +97,11 @@ export class Tenant extends AggregateRoot<TenantProps> {
 	 * @returns Tenant 实例
 	 */
 	public static reconstitute(props: {
-		id: TenantId;
 		name: TenantName;
 		plan: TenantPlan;
 		status: TenantStatus;
-	}): Tenant {
-		return new Tenant(props);
+	}, id: UniqueEntityID): Tenant {
+		return new Tenant(props, id);
 	}
 
 	/**
@@ -130,13 +113,10 @@ export class Tenant extends AggregateRoot<TenantProps> {
 		this.props.status = this.props.status.activate();
 
 		this.addDomainEvent(
-			new TenantActivatedEvent(
-				new UniqueEntityID(this.props.id.value),
-				{
-					tenantId: this.props.id.value,
-					activatedAt: new Date().toISOString()
-				}
-			)
+			new TenantActivatedEvent(this.id, {
+				tenantId: String(this.id.value),
+				activatedAt: new Date().toISOString()
+			})
 		);
 	}
 
@@ -150,14 +130,11 @@ export class Tenant extends AggregateRoot<TenantProps> {
 		this.props.status = this.props.status.suspend();
 
 		this.addDomainEvent(
-			new TenantSuspendedEvent(
-				new UniqueEntityID(this.props.id.value),
-				{
-					tenantId: this.props.id.value,
-					reason,
-					suspendedAt: new Date().toISOString()
-				}
-			)
+			new TenantSuspendedEvent(this.id, {
+				tenantId: String(this.id.value),
+				reason,
+				suspendedAt: new Date().toISOString()
+			})
 		);
 	}
 

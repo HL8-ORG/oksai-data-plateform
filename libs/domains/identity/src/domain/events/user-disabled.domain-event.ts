@@ -18,14 +18,11 @@ export interface UserDisabledEventPayload {
  * ```
  */
 export class UserDisabledEvent extends DomainEvent<UserDisabledEventPayload> {
-	constructor(
-		payload: UserDisabledEventPayload,
-		aggregateId: UniqueEntityID,
-	) {
+	constructor(payload: UserDisabledEventPayload, aggregateId: UniqueEntityID) {
 		super({
 			eventName: 'UserDisabled',
 			aggregateId,
-			payload,
+			payload
 		});
 	}
 }

@@ -1,8 +1,5 @@
 import type { IFullAggregateMetadata } from '@oksai/aggregate-metadata';
-import type {
-	IAnalyticsDimensionCalculator,
-	Dimensions
-} from '../interfaces/analytics-dimensions.interface';
+import type { IAnalyticsDimensionCalculator, Dimensions } from '../interfaces/analytics-dimensions.interface';
 import { CommonDimensions, AmountRanges } from '../interfaces/analytics-dimensions.interface';
 
 /**

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Injectable, Module } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PluginModule, OKSAI_PLUGINS_TOKEN } from '../lib/plugin.module';
 import { OksaiCorePlugin } from '../lib/plugin';
 import type { IOnPluginBootstrap, IOnPluginDestroy } from '../lib/plugin.interface';
@@ -17,7 +17,7 @@ class TestService {
 
 @OksaiCorePlugin({
 	providers: [TestService],
-	exports: [TestService],
+	exports: [TestService]
 })
 class TestPluginModule implements IOnPluginBootstrap, IOnPluginDestroy {
 	onPluginBootstrap() {
@@ -29,7 +29,7 @@ class TestPluginModule implements IOnPluginBootstrap, IOnPluginDestroy {
 }
 
 @OksaiCorePlugin({
-	entities: () => [class TestEntity {}],
+	entities: () => [class TestEntity {}]
 })
 class TestPluginWithEntities {}
 
@@ -52,7 +52,7 @@ describe('PluginModule', () => {
 			const dynamicModule = PluginModule.init({ plugins: [TestPluginModule] });
 
 			const pluginProvider = dynamicModule.providers?.find(
-				(p) => 'provide' in p && p.provide === OKSAI_PLUGINS_TOKEN,
+				(p) => 'provide' in p && p.provide === OKSAI_PLUGINS_TOKEN
 			);
 			expect(pluginProvider).toBeDefined();
 			expect((pluginProvider as any).useValue).toEqual([TestPluginModule]);
@@ -80,7 +80,7 @@ describe('PluginModule', () => {
 			mockOnPluginDestroy.mockClear();
 
 			module = await Test.createTestingModule({
-				imports: [PluginModule.init({ plugins: [TestPluginModule] })],
+				imports: [PluginModule.init({ plugins: [TestPluginModule] })]
 			}).compile();
 		});
 
@@ -115,7 +115,7 @@ describe('PluginModule', () => {
 			class UnresolvablePlugin {}
 
 			const module = await Test.createTestingModule({
-				imports: [PluginModule.init({ plugins: [UnresolvablePlugin] })],
+				imports: [PluginModule.init({ plugins: [UnresolvablePlugin] })]
 			}).compile();
 
 			const pluginModule = module.get(PluginModule);
@@ -129,7 +129,7 @@ describe('PluginModule', () => {
 	describe('没有生命周期方法的插件', () => {
 		it('应该跳过没有生命周期方法的插件', async () => {
 			const module = await Test.createTestingModule({
-				imports: [PluginModule.init({ plugins: [TestPluginWithEntities] })],
+				imports: [PluginModule.init({ plugins: [TestPluginWithEntities] })]
 			}).compile();
 
 			const pluginModule = module.get(PluginModule);

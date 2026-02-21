@@ -1,5 +1,4 @@
 import { AggregateMetadataQueryService } from '../../lib/services/aggregate-metadata-query.service';
-import type { IFullAggregateMetadata } from '../../lib/interfaces/aggregate-metadata.interface';
 
 describe('AggregateMetadataQueryService', () => {
 	let service: AggregateMetadataQueryService;
@@ -15,82 +14,80 @@ describe('AggregateMetadataQueryService', () => {
 
 	beforeEach(() => {
 		mockConnection = {
-			execute: jest.fn(),
+			execute: jest.fn()
 		};
 		mockEm = {
-			getConnection: jest.fn().mockReturnValue(mockConnection),
+			getConnection: jest.fn().mockReturnValue(mockConnection)
 		};
 		mockOrm = {
-			em: mockEm,
+			em: mockEm
 		};
 		service = new AggregateMetadataQueryService(mockOrm as any);
 	});
 
 	describe('query', () => {
 		it('应该查询并返回元数据列表', async () => {
-			mockConnection.execute
-				.mockResolvedValueOnce([{ count: '2' }])
-				.mockResolvedValueOnce([
-					{
-						aggregate_type: 'Job',
-						aggregate_id: 'job-001',
-						tenant_id: 'tenant-001',
-						created_at: new Date('2026-01-01'),
-						updated_at: new Date('2026-01-02'),
-						created_by: 'user-001',
-						updated_by: 'user-002',
-						deleted_at: null,
-						deleted_by: null,
-						is_deleted: false,
-						tags: ['important'],
-						category: 'billing',
-						analytics_dimensions: null,
-						quality_score: 90,
-						include_in_analytics: true,
-						embedding_status: null,
-						embedding_version: null,
-						embedding_id: null,
-						ai_metadata: null,
-						external_ids: null,
-						data_source: null,
-						sync_status: null,
-						last_synced_at: null,
-						sync_version: null,
-						etl_metadata: null,
-					},
-					{
-						aggregate_type: 'User',
-						aggregate_id: 'user-001',
-						tenant_id: 'tenant-001',
-						created_at: new Date('2026-01-01'),
-						updated_at: new Date('2026-01-02'),
-						created_by: null,
-						updated_by: null,
-						deleted_at: null,
-						deleted_by: null,
-						is_deleted: false,
-						tags: null,
-						category: null,
-						analytics_dimensions: null,
-						quality_score: null,
-						include_in_analytics: null,
-						embedding_status: null,
-						embedding_version: null,
-						embedding_id: null,
-						ai_metadata: null,
-						external_ids: null,
-						data_source: null,
-						sync_status: null,
-						last_synced_at: null,
-						sync_version: null,
-						etl_metadata: null,
-					},
-				]);
+			mockConnection.execute.mockResolvedValueOnce([{ count: '2' }]).mockResolvedValueOnce([
+				{
+					aggregate_type: 'Job',
+					aggregate_id: 'job-001',
+					tenant_id: 'tenant-001',
+					created_at: new Date('2026-01-01'),
+					updated_at: new Date('2026-01-02'),
+					created_by: 'user-001',
+					updated_by: 'user-002',
+					deleted_at: null,
+					deleted_by: null,
+					is_deleted: false,
+					tags: ['important'],
+					category: 'billing',
+					analytics_dimensions: null,
+					quality_score: 90,
+					include_in_analytics: true,
+					embedding_status: null,
+					embedding_version: null,
+					embedding_id: null,
+					ai_metadata: null,
+					external_ids: null,
+					data_source: null,
+					sync_status: null,
+					last_synced_at: null,
+					sync_version: null,
+					etl_metadata: null
+				},
+				{
+					aggregate_type: 'User',
+					aggregate_id: 'user-001',
+					tenant_id: 'tenant-001',
+					created_at: new Date('2026-01-01'),
+					updated_at: new Date('2026-01-02'),
+					created_by: null,
+					updated_by: null,
+					deleted_at: null,
+					deleted_by: null,
+					is_deleted: false,
+					tags: null,
+					category: null,
+					analytics_dimensions: null,
+					quality_score: null,
+					include_in_analytics: null,
+					embedding_status: null,
+					embedding_version: null,
+					embedding_id: null,
+					ai_metadata: null,
+					external_ids: null,
+					data_source: null,
+					sync_status: null,
+					last_synced_at: null,
+					sync_version: null,
+					etl_metadata: null
+				}
+			]);
 
 			const result = await service.query({
 				tenantId: 'tenant-001',
 				limit: 10,
-				offset: 0,
+				offset: 0
 			});
 
 			expect(result.total).toBe(2);
@@ -101,41 +98,35 @@ describe('AggregateMetadataQueryService', () => {
 		});
 
 		it('应该在没有更多数据时返回 hasMore 为 false', async () => {
-			mockConnection.execute
-				.mockResolvedValueOnce([{ count: '5' }])
-				.mockResolvedValueOnce([]);
+			mockConnection.execute.mockResolvedValueOnce([{ count: '5' }]).mockResolvedValueOnce([]);
 
 			const result = await service.query({
 				tenantId: 'tenant-001',
 				limit: 10,
-				offset: 10,
+				offset: 10
 			});
 
 			expect(result.hasMore).toBe(false);
 		});
 
 		it('应该在有更多数据时返回 hasMore 为 true', async () => {
-			mockConnection.execute
-				.mockResolvedValueOnce([{ count: '25' }])
-				.mockResolvedValueOnce([]);
+			mockConnection.execute.mockResolvedValueOnce([{ count: '25' }]).mockResolvedValueOnce([]);
 
 			const result = await service.query({
 				tenantId: 'tenant-001',
 				limit: 10,
-				offset: 0,
+				offset: 0
 			});
 
 			expect(result.hasMore).toBe(true);
 		});
 
 		it('应该根据 aggregateType 过滤', async () => {
-			mockConnection.execute
-				.mockResolvedValueOnce([{ count: '1' }])
-				.mockResolvedValueOnce([]);
+			mockConnection.execute.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([]);
 
 			await service.query({
 				tenantId: 'tenant-001',
-				aggregateType: 'Job',
+				aggregateType: 'Job'
 			});
 
 			const call = mockConnection.execute.mock.calls[0];
@@ -143,13 +134,11 @@ describe('AggregateMetadataQueryService', () => {
 		});
 
 		it('应该根据 aggregateId 过滤', async () => {
-			mockConnection.execute
-				.mockResolvedValueOnce([{ count: '1' }])
-				.mockResolvedValueOnce([]);
+			mockConnection.execute.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([]);
 
 			await service.query({
 				tenantId: 'tenant-001',
-				aggregateId: 'job-001',
+				aggregateId: 'job-001'
 			});
 
 			const call = mockConnection.execute.mock.calls[0];
@@ -157,13 +146,11 @@ describe('AggregateMetadataQueryService', () => {
 		});
 
 		it('应该根据 category 过滤', async () => {
-			mockConnection.execute
-				.mockResolvedValueOnce([{ count: '1' }])
-				.mockResolvedValueOnce([]);
+			mockConnection.execute.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([]);
 
 			await service.query({
 				tenantId: 'tenant-001',
-				category: 'billing',
+				category: 'billing'
 			});
 
 			const call = mockConnection.execute.mock.calls[0];
@@ -171,9 +158,7 @@ describe('AggregateMetadataQueryService', () => {
 		});
 
 		it('应该根据 createdAt 范围过滤', async () => {
-			mockConnection.execute
-				.mockResolvedValueOnce([{ count: '1' }])
-				.mockResolvedValueOnce([]);
+			mockConnection.execute.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([]);
 
 			const fromDate = new Date('2026-01-01');
 			const toDate = new Date('2026-01-31');
@@ -181,7 +166,7 @@ describe('AggregateMetadataQueryService', () => {
 			await service.query({
 				tenantId: 'tenant-001',
 				createdAtFrom: fromDate,
-				createdAtTo: toDate,
+				createdAtTo: toDate
 			});
 
 			const call = mockConnection.execute.mock.calls[0];
@@ -190,13 +175,11 @@ describe('AggregateMetadataQueryService', () => {
 		});
 
 		it('应该根据 tags 过滤', async () => {
-			mockConnection.execute
-				.mockResolvedValueOnce([{ count: '1' }])
-				.mockResolvedValueOnce([]);
+			mockConnection.execute.mockResolvedValueOnce([{ count: '1' }]).mockResolvedValueOnce([]);
 
 			await service.query({
 				tenantId: 'tenant-001',
-				tags: ['important', 'urgent'],
+				tags: ['important', 'urgent']
 			});
 
 			const call = mockConnection.execute.mock.calls[0];
@@ -206,13 +189,11 @@ describe('AggregateMetadataQueryService', () => {
 		});
 
 		it('当 excludeDeleted 为 true 时应该排除已删除记录', async () => {
-			mockConnection.execute
-				.mockResolvedValueOnce([{ count: '0' }])
-				.mockResolvedValueOnce([]);
+			mockConnection.execute.mockResolvedValueOnce([{ count: '0' }]).mockResolvedValueOnce([]);
 
 			await service.query({
 				tenantId: 'tenant-001',
-				excludeDeleted: true,
+				excludeDeleted: true
 			});
 
 			const call = mockConnection.execute.mock.calls[0];
@@ -220,13 +201,11 @@ describe('AggregateMetadataQueryService', () => {
 		});
 
 		it('当 excludeDeleted 为 false 时应该包含已删除记录', async () => {
-			mockConnection.execute
-				.mockResolvedValueOnce([{ count: '0' }])
-				.mockResolvedValueOnce([]);
+			mockConnection.execute.mockResolvedValueOnce([{ count: '0' }]).mockResolvedValueOnce([]);
 
 			await service.query({
 				tenantId: 'tenant-001',
-				excludeDeleted: false,
+				excludeDeleted: false
 			});
 
 			const call = mockConnection.execute.mock.calls[0];
@@ -236,18 +215,16 @@ describe('AggregateMetadataQueryService', () => {
 		it('缺少 tenantId 时应该抛出错误', async () => {
 			await expect(
 				service.query({
-					tenantId: '',
-				}),
+					tenantId: ''
+				})
 			).rejects.toThrow('tenantId 是必填参数');
 		});
 
 		it('应该使用默认的分页参数', async () => {
-			mockConnection.execute
-				.mockResolvedValueOnce([{ count: '0' }])
-				.mockResolvedValueOnce([]);
+			mockConnection.execute.mockResolvedValueOnce([{ count: '0' }]).mockResolvedValueOnce([]);
 
 			await service.query({
-				tenantId: 'tenant-001',
+				tenantId: 'tenant-001'
 			});
 
 			const dataCall = mockConnection.execute.mock.calls[1];
@@ -284,8 +261,8 @@ describe('AggregateMetadataQueryService', () => {
 					sync_status: null,
 					last_synced_at: null,
 					sync_version: null,
-					etl_metadata: null,
-				},
+					etl_metadata: null
+				}
 			]);
 
 			const result = await service.getById('tenant-001', 'Job', 'job-001');
@@ -310,7 +287,7 @@ describe('AggregateMetadataQueryService', () => {
 			mockConnection.execute.mockResolvedValueOnce([
 				{ aggregate_type: 'Job' },
 				{ aggregate_type: 'User' },
-				{ aggregate_type: 'Tenant' },
+				{ aggregate_type: 'Tenant' }
 			]);
 
 			const result = await service.getAggregateTypes('tenant-001');
@@ -329,10 +306,7 @@ describe('AggregateMetadataQueryService', () => {
 
 	describe('getCategories', () => {
 		it('应该返回所有分类', async () => {
-			mockConnection.execute.mockResolvedValueOnce([
-				{ category: 'analytics' },
-				{ category: 'billing' },
-			]);
+			mockConnection.execute.mockResolvedValueOnce([{ category: 'analytics' }, { category: 'billing' }]);
 
 			const result = await service.getCategories('tenant-001');
 
@@ -361,11 +335,7 @@ describe('AggregateMetadataQueryService', () => {
 
 	describe('getTags', () => {
 		it('应该返回所有标签', async () => {
-			mockConnection.execute.mockResolvedValueOnce([
-				{ tag: 'important' },
-				{ tag: 'review' },
-				{ tag: 'urgent' },
-			]);
+			mockConnection.execute.mockResolvedValueOnce([{ tag: 'important' }, { tag: 'review' }, { tag: 'urgent' }]);
 
 			const result = await service.getTags('tenant-001');
 
@@ -375,7 +345,7 @@ describe('AggregateMetadataQueryService', () => {
 		it('应该根据聚合类型过滤', async () => {
 			mockConnection.execute.mockResolvedValueOnce([{ tag: 'production' }]);
 
-			const result = await service.getTags('tenant-001', 'Job');
+			await service.getTags('tenant-001', 'Job');
 
 			const call = mockConnection.execute.mock.calls[0];
 			expect(call[0]).toContain('aggregate_type = ?');
@@ -383,11 +353,7 @@ describe('AggregateMetadataQueryService', () => {
 		});
 
 		it('应该过滤空标签', async () => {
-			mockConnection.execute.mockResolvedValueOnce([
-				{ tag: 'valid' },
-				{ tag: null },
-				{ tag: '' },
-			]);
+			mockConnection.execute.mockResolvedValueOnce([{ tag: 'valid' }, { tag: null }, { tag: '' }]);
 
 			const result = await service.getTags('tenant-001');
 
@@ -431,8 +397,8 @@ describe('AggregateMetadataQueryService', () => {
 					sync_status: null,
 					last_synced_at: null,
 					sync_version: null,
-					etl_metadata: null,
-				},
+					etl_metadata: null
+				}
 			]);
 
 			const result = await service.getById('tenant-001', 'Job', 'job-001');
@@ -472,8 +438,8 @@ describe('AggregateMetadataQueryService', () => {
 					sync_status: null,
 					last_synced_at: null,
 					sync_version: null,
-					etl_metadata: null,
-				},
+					etl_metadata: null
+				}
 			]);
 
 			const result = await service.getById('tenant-001', 'Document', 'doc-001');
@@ -515,8 +481,8 @@ describe('AggregateMetadataQueryService', () => {
 						sync_status: null,
 						last_synced_at: null,
 						sync_version: null,
-						etl_metadata: null,
-					},
+						etl_metadata: null
+					}
 				]);
 
 				const result = await service.getById('tenant-001', 'Doc', 'doc-001');
@@ -551,8 +517,8 @@ describe('AggregateMetadataQueryService', () => {
 					sync_status: 'SYNCED',
 					last_synced_at: new Date('2026-01-15'),
 					sync_version: 5,
-					etl_metadata: { jobId: 'etl-001' },
-				},
+					etl_metadata: { jobId: 'etl-001' }
+				}
 			]);
 
 			const result = await service.getById('tenant-001', 'Order', 'order-001');
@@ -595,8 +561,8 @@ describe('AggregateMetadataQueryService', () => {
 						sync_status: status,
 						last_synced_at: null,
 						sync_version: 1,
-						etl_metadata: null,
-					},
+						etl_metadata: null
+					}
 				]);
 
 				const result = await service.getById('tenant-001', 'Order', 'order-001');

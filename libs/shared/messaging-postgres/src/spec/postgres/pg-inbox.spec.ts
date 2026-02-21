@@ -18,19 +18,19 @@ describe('PgInbox', () => {
 
 	beforeEach(() => {
 		mockConnection = {
-			execute: jest.fn(),
+			execute: jest.fn()
 		};
 
 		mockEm = {
-			getConnection: jest.fn().mockReturnValue(mockConnection),
+			getConnection: jest.fn().mockReturnValue(mockConnection)
 		};
 
 		mockOrm = {
-			em: mockEm as unknown,
+			em: mockEm as unknown
 		};
 
 		mockTxHost = {
-			getCurrentEntityManager: jest.fn().mockReturnValue(mockEm),
+			getCurrentEntityManager: jest.fn().mockReturnValue(mockEm)
 		};
 
 		pgInbox = new PgInbox(mockOrm as MikroORM, mockTxHost as any);
@@ -45,7 +45,7 @@ describe('PgInbox', () => {
 			expect(result).toBe(true);
 			expect(mockConnection.execute).toHaveBeenCalledWith(
 				'select exists(select 1 from messaging_inbox where message_id = ?) as exists',
-				['msg-1'],
+				['msg-1']
 			);
 		});
 
@@ -93,7 +93,7 @@ describe('PgInbox', () => {
 
 			expect(mockConnection.execute).toHaveBeenCalledWith(
 				expect.stringContaining('insert into messaging_inbox'),
-				expect.arrayContaining(['msg-1']),
+				expect.arrayContaining(['msg-1'])
 			);
 		});
 

@@ -77,11 +77,7 @@ export interface SetupLoggerModuleOptions {
  */
 export function setupLoggerModule(options: SetupLoggerModuleOptions = {}): DynamicModule {
 	const level = options.level ?? process.env.LOG_LEVEL ?? 'info';
-	const redact = options.redact ?? [
-		'req.headers.authorization',
-		'req.headers.cookie',
-		'req.headers.set-cookie',
-	];
+	const redact = options.redact ?? ['req.headers.authorization', 'req.headers.cookie', 'req.headers.set-cookie'];
 	const pretty = options.pretty === true;
 
 	const prettyOptions = options.prettyOptions ?? {};
@@ -94,8 +90,8 @@ export function setupLoggerModule(options: SetupLoggerModuleOptions = {}): Dynam
 					translateTime: prettyOptions.timeFormat ?? 'SYS:standard',
 					singleLine: prettyOptions.singleLine ?? false,
 					errorLikeObjectKeys: prettyOptions.errorLikeObjectKeys ?? ['err', 'error'],
-					ignore: prettyOptions.ignore ?? 'pid,hostname',
-				},
+					ignore: prettyOptions.ignore ?? 'pid,hostname'
+				}
 			}
 		: undefined;
 
@@ -111,24 +107,22 @@ export function setupLoggerModule(options: SetupLoggerModuleOptions = {}): Dynam
 					const r = req as { method?: unknown; url?: unknown } | null | undefined;
 					return {
 						method: r?.method,
-						url: r?.url,
+						url: r?.url
 					};
-				},
+				}
 			},
 			customProps: (req: unknown, res: unknown) => ({
 				requestId: getRequestIdFromReq(req),
-				...(options.customProps?.(req, res) ?? {}),
+				...(options.customProps?.(req, res) ?? {})
 			}),
 			customLogLevel: (_req: unknown, res: unknown, err?: unknown) => {
-				const statusCode = Number(
-					(res as { statusCode?: unknown } | null | undefined)?.statusCode ?? 200,
-				);
+				const statusCode = Number((res as { statusCode?: unknown } | null | undefined)?.statusCode ?? 200);
 				if (statusCode >= 500 || err) return 'error';
 				if (statusCode >= 400) return 'warn';
 				if (statusCode >= 300) return 'info';
 				return 'info';
-			},
-		},
+			}
+		}
 	});
 }
 
@@ -143,7 +137,7 @@ function getRequestIdFromReq(req: unknown): string {
 			(headers?.['x-correlation-id'] as unknown) ??
 			(anyReq as { id?: unknown } | null | undefined)?.id ??
 			(anyReq as { requestId?: unknown } | null | undefined)?.requestId ??
-			'unknown',
+			'unknown'
 	);
 }
 

@@ -1,14 +1,4 @@
-import {
-	Controller,
-	Post,
-	Body,
-	HttpCode,
-	HttpStatus,
-	Logger,
-	Get,
-	Query,
-	BadRequestException
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Logger, Get, Query, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { DataQualityScorerService } from '../../services/data-quality-scorer.service';
 import { AnalyticsDimensionCalculatorService } from '../../services/analytics-dimension-calculator.service';

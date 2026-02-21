@@ -35,14 +35,12 @@ import type { PluginMetadata } from './plugin.interface';
  */
 export function OksaiCorePlugin(pluginMetadata: PluginMetadata): ClassDecorator {
 	return (targetClass) => {
-		const metadataMap: Array<
-			[keyof PluginMetadata, (typeof PLUGIN_METADATA)[keyof typeof PLUGIN_METADATA]]
-		> = [
+		const metadataMap: Array<[keyof PluginMetadata, (typeof PLUGIN_METADATA)[keyof typeof PLUGIN_METADATA]]> = [
 			['entities', PLUGIN_METADATA.ENTITIES],
 			['subscribers', PLUGIN_METADATA.SUBSCRIBERS],
 			['integrationEventSubscribers', PLUGIN_METADATA.INTEGRATION_EVENT_SUBSCRIBERS],
 			['extensions', PLUGIN_METADATA.EXTENSIONS],
-			['configuration', PLUGIN_METADATA.CONFIGURATION],
+			['configuration', PLUGIN_METADATA.CONFIGURATION]
 		];
 
 		for (const [key, metadataKey] of metadataMap) {

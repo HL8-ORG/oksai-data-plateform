@@ -1,6 +1,5 @@
-import { setupI18nModule, type SetupI18nModuleOptions } from '../lib/setup-i18n-module';
+import { setupI18nModule } from '../lib/setup-i18n-module';
 import { HeaderResolver } from 'nestjs-i18n';
-import * as path from 'node:path';
 
 describe('setupI18nModule', () => {
 	const testBaseDir = '/test/app';
@@ -21,7 +20,7 @@ describe('setupI18nModule', () => {
 
 		it('应该支持自定义 fallback 语言', () => {
 			const module = setupI18nModule(testBaseDir, {
-				fallbackLanguage: 'en',
+				fallbackLanguage: 'en'
 			});
 
 			expect(module).toBeDefined();
@@ -31,7 +30,7 @@ describe('setupI18nModule', () => {
 	describe('配置选项', () => {
 		it('应该支持自定义 paths', () => {
 			const module = setupI18nModule(testBaseDir, {
-				paths: ['locales', 'i18n'],
+				paths: ['locales', 'i18n']
 			});
 
 			expect(module).toBeDefined();
@@ -41,8 +40,8 @@ describe('setupI18nModule', () => {
 			const module = setupI18nModule(testBaseDir, {
 				fallbacks: {
 					'zh-CN': 'zh',
-					'en-US': 'en',
-				},
+					'en-US': 'en'
+				}
 			});
 
 			expect(module).toBeDefined();
@@ -50,7 +49,7 @@ describe('setupI18nModule', () => {
 
 		it('应该支持自定义 resolvers', () => {
 			const module = setupI18nModule(testBaseDir, {
-				resolvers: [{ use: HeaderResolver, options: ['x-custom-lang'] }],
+				resolvers: [{ use: HeaderResolver, options: ['x-custom-lang'] }]
 			});
 
 			expect(module).toBeDefined();

@@ -123,15 +123,15 @@ describe('OutboxRecordEntity', () => {
 				orderId: 'o-1',
 				items: [
 					{ productId: 'p-1', quantity: 2 },
-					{ productId: 'p-2', quantity: 1 },
+					{ productId: 'p-2', quantity: 1 }
 				],
-				metadata: { source: 'web' },
+				metadata: { source: 'web' }
 			};
 
 			expect(entity.payload).toEqual({
 				orderId: 'o-1',
 				items: expect.arrayContaining([expect.objectContaining({ productId: 'p-1' })]),
-				metadata: { source: 'web' },
+				metadata: { source: 'web' }
 			});
 		});
 

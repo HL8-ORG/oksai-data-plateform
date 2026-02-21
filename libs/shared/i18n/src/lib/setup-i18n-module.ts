@@ -48,10 +48,7 @@ export interface SetupI18nModuleOptions {
  * export class AppModule {}
  * ```
  */
-export function setupI18nModule(
-	baseDir: string,
-	options: SetupI18nModuleOptions = {},
-): DynamicModule {
+export function setupI18nModule(baseDir: string, options: SetupI18nModuleOptions = {}): DynamicModule {
 	const relPaths = options.paths?.length ? options.paths : ['i18n'];
 	const absPaths = relPaths.map((p) => path.join(baseDir, p));
 
@@ -61,7 +58,7 @@ export function setupI18nModule(
 			? options.resolvers
 			: ([
 					{ use: HeaderResolver, options: ['x-lang'] },
-					new AcceptLanguageResolver({ matchType: 'strict-loose' }),
+					new AcceptLanguageResolver({ matchType: 'strict-loose' })
 				] satisfies I18nOptionResolver[]);
 
 	return I18nModule.forRoot({
@@ -70,7 +67,7 @@ export function setupI18nModule(
 		resolvers,
 		loaderOptions: {
 			path: absPaths[0] ?? baseDir,
-			watch: false,
-		},
+			watch: false
+		}
 	});
 }

@@ -6,7 +6,7 @@ import type {
 	OutboxRecord,
 	OutboxRecordStatus,
 	IntegrationEventEnvelope,
-	IDatabaseTransactionHost,
+	IDatabaseTransactionHost
 } from '../types';
 
 /**
@@ -16,7 +16,7 @@ import type {
 export class PgOutbox implements IOutbox {
 	constructor(
 		private readonly orm: MikroORM,
-		private readonly txHost: IDatabaseTransactionHost,
+		private readonly txHost: IDatabaseTransactionHost
 	) {}
 
 	async append<TPayload extends object>(envelope: IntegrationEventEnvelope<TPayload>): Promise<void> {
@@ -42,8 +42,8 @@ export class PgOutbox implements IOutbox {
 					0,
 					new Date(),
 					new Date(),
-					new Date(),
-				],
+					new Date()
+				]
 			);
 		} catch (err: unknown) {
 			const msg = err instanceof Error ? err.message : '未知错误';
@@ -64,7 +64,7 @@ export class PgOutbox implements IOutbox {
        where status = 'pending' and next_attempt_at <= ?
        order by occurred_at asc, message_id asc
        limit ?`,
-			[now, limit],
+			[now, limit]
 		);
 
 		return rows.map((r) => ({
@@ -81,7 +81,7 @@ export class PgOutbox implements IOutbox {
 			nextAttemptAt: new Date(r.next_attempt_at),
 			lastError: r.last_error ? String(r.last_error) : undefined,
 			createdAt: new Date(r.created_at),
-			updatedAt: new Date(r.updated_at),
+			updatedAt: new Date(r.updated_at)
 		}));
 	}
 
@@ -90,7 +90,7 @@ export class PgOutbox implements IOutbox {
 		const conn = em.getConnection();
 		await conn.execute(`update messaging_outbox set status = 'published', updated_at = ? where message_id = ?`, [
 			new Date(),
-			messageId,
+			messageId
 		]);
 	}
 
@@ -106,7 +106,7 @@ export class PgOutbox implements IOutbox {
 			`update messaging_outbox
        set attempts = ?, next_attempt_at = ?, last_error = ?, updated_at = ?
        where message_id = ?`,
-			[params.attempts, params.nextAttemptAt, params.lastError ?? null, new Date(), params.messageId],
+			[params.attempts, params.nextAttemptAt, params.lastError ?? null, new Date(), params.messageId]
 		);
 	}
 }

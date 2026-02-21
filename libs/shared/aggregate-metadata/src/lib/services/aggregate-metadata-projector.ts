@@ -82,7 +82,7 @@ export class AggregateMetadataProjector {
 			metadata.aggregateType,
 			metadata.aggregateId,
 			// 创建时间（用于插入）
-			metadata.createdAt,
+			metadata.createdAt
 		];
 
 		await conn.execute(
@@ -114,11 +114,11 @@ export class AggregateMetadataProjector {
 				last_synced_at = EXCLUDED.last_synced_at,
 				sync_version = EXCLUDED.sync_version,
 				etl_metadata = EXCLUDED.etl_metadata`,
-			params,
+			params
 		);
 
 		this.logger.debug(
-			`已更新元数据: ${metadata.aggregateType}/${metadata.aggregateId} (tenant=${metadata.tenantId})`,
+			`已更新元数据: ${metadata.aggregateType}/${metadata.aggregateId} (tenant=${metadata.tenantId})`
 		);
 	}
 
@@ -130,18 +130,13 @@ export class AggregateMetadataProjector {
 	 * @param aggregateId - 聚合 ID
 	 * @param deletedBy - 删除者
 	 */
-	async softDelete(
-		tenantId: string,
-		aggregateType: string,
-		aggregateId: string,
-		deletedBy?: string,
-	): Promise<void> {
+	async softDelete(tenantId: string, aggregateType: string, aggregateId: string, deletedBy?: string): Promise<void> {
 		const conn = this.orm.em.getConnection();
 		await conn.execute(
 			`UPDATE aggregate_metadata 
 			SET is_deleted = true, deleted_at = NOW(), deleted_by = $4, updated_at = NOW()
 			WHERE tenant_id = $1 AND aggregate_type = $2 AND aggregate_id = $3`,
-			[tenantId, aggregateType, aggregateId, deletedBy ?? null],
+			[tenantId, aggregateType, aggregateId, deletedBy ?? null]
 		);
 	}
 
@@ -158,7 +153,7 @@ export class AggregateMetadataProjector {
 			`UPDATE aggregate_metadata 
 			SET is_deleted = false, deleted_at = null, deleted_by = null, updated_at = NOW()
 			WHERE tenant_id = $1 AND aggregate_type = $2 AND aggregate_id = $3`,
-			[tenantId, aggregateType, aggregateId],
+			[tenantId, aggregateType, aggregateId]
 		);
 	}
 }

@@ -22,7 +22,7 @@ export enum EmbeddingStatus {
 	/**
 	 * 失败：嵌入生成失败
 	 */
-	FAILED = 'FAILED',
+	FAILED = 'FAILED'
 }
 
 /**
@@ -44,7 +44,7 @@ export enum SyncStatus {
 	/**
 	 * 同步失败：上次同步尝试失败
 	 */
-	FAILED = 'FAILED',
+	FAILED = 'FAILED'
 }
 
 /**

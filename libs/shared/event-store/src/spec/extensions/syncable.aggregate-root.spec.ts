@@ -1,4 +1,4 @@
-import { SyncableAggregateRoot, type SyncableAggregateRootProps, type ExternalIdMap } from '../../lib/extensions/syncable.aggregate-root';
+import { SyncableAggregateRoot, type SyncableAggregateRootProps } from '../../lib/extensions/syncable.aggregate-root';
 import { SyncStatus } from '../../lib/extensions/enums-and-interfaces';
 
 interface TestSyncableProps extends SyncableAggregateRootProps {

@@ -1,4 +1,4 @@
-import { OksaiPlatformModule, type OksaiPlatformModuleOptions } from '../lib/modules/oksai-platform.module';
+import { OksaiPlatformModule } from '../lib/modules/oksai-platform.module';
 
 describe('OksaiPlatformModule', () => {
 	describe('init', () => {
@@ -59,7 +59,7 @@ describe('OksaiPlatformModule', () => {
 		it('启用所有选项时应该包含所有 providers', () => {
 			const module = OksaiPlatformModule.init({
 				enableCqrs: true,
-				enableEda: true,
+				enableEda: true
 			});
 
 			expect(module.providers?.length).toBeGreaterThanOrEqual(5);

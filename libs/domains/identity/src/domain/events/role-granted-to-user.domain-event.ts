@@ -19,14 +19,11 @@ export interface RoleGrantedToUserEventPayload {
  * ```
  */
 export class RoleGrantedToUserEvent extends DomainEvent<RoleGrantedToUserEventPayload> {
-	constructor(
-		payload: RoleGrantedToUserEventPayload,
-		aggregateId: UniqueEntityID,
-	) {
+	constructor(payload: RoleGrantedToUserEventPayload, aggregateId: UniqueEntityID) {
 		super({
 			eventName: 'RoleGrantedToUser',
 			aggregateId,
-			payload,
+			payload
 		});
 	}
 }

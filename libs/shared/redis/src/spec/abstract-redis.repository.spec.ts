@@ -30,7 +30,7 @@ describe('AbstractRedisRepository', () => {
 		mockRedis = {
 			get: jest.fn(),
 			set: jest.fn(),
-			del: jest.fn(),
+			del: jest.fn()
 		} as any;
 		repository = new TestRedisRepository(mockRedis);
 	});

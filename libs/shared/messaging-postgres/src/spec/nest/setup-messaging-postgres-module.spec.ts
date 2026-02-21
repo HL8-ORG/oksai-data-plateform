@@ -1,4 +1,7 @@
-import { setupMessagingPostgresModule, SetupMessagingPostgresModuleOptions } from '../../lib/nest/setup-messaging-postgres-module';
+import {
+	setupMessagingPostgresModule,
+	SetupMessagingPostgresModuleOptions
+} from '../../lib/nest/setup-messaging-postgres-module';
 
 describe('setupMessagingPostgresModule', () => {
 	describe('模块配置', () => {

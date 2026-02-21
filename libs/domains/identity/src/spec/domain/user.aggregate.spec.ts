@@ -140,8 +140,7 @@ describe('User Aggregate', () => {
 			const user = createTestUser();
 			user.grantRole(RoleKey.create('TenantMember'), 'tenant-001');
 
-			expect(() => user.grantRole(RoleKey.create('TenantMember'), 'tenant-001'))
-				.toThrow('用户已拥有该角色');
+			expect(() => user.grantRole(RoleKey.create('TenantMember'), 'tenant-001')).toThrow('用户已拥有该角色');
 		});
 
 		it('禁用用户不能接受角色授予', () => {
@@ -149,8 +148,7 @@ describe('User Aggregate', () => {
 			user.grantRole(RoleKey.create('TenantMember'), 'tenant-001');
 			user.disable('测试');
 
-			expect(() => user.grantRole(RoleKey.create('TenantAdmin'), 'tenant-001'))
-				.toThrow('用户已禁用');
+			expect(() => user.grantRole(RoleKey.create('TenantAdmin'), 'tenant-001')).toThrow('用户已禁用');
 		});
 	});
 
@@ -170,8 +168,7 @@ describe('User Aggregate', () => {
 			const user = createTestUser();
 			user.grantRole(RoleKey.create('TenantMember'), 'tenant-001');
 
-			expect(() => user.revokeRole(RoleKey.create('TenantMember')))
-				.toThrow('不能移除最后一个角色');
+			expect(() => user.revokeRole(RoleKey.create('TenantMember'))).toThrow('不能移除最后一个角色');
 		});
 
 		it('禁用用户不能被撤销角色', () => {
@@ -180,8 +177,7 @@ describe('User Aggregate', () => {
 			user.grantRole(RoleKey.create('TenantAdmin'), 'tenant-001');
 			user.disable('测试');
 
-			expect(() => user.revokeRole(RoleKey.create('TenantAdmin')))
-				.toThrow('用户已禁用');
+			expect(() => user.revokeRole(RoleKey.create('TenantAdmin'))).toThrow('用户已禁用');
 		});
 	});
 

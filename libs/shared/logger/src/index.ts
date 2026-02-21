@@ -9,7 +9,7 @@
 export { setupLoggerModule, type SetupLoggerModuleOptions } from './lib/setup-logger-module';
 export {
 	setupRequestIdResponseHeader,
-	type SetupRequestIdResponseHeaderOptions,
+	type SetupRequestIdResponseHeaderOptions
 } from './lib/request-id/setup-request-id-response-header';
 
 // 重新导出 nestjs-pino 的 Logger

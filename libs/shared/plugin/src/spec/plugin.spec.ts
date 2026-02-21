@@ -24,7 +24,7 @@ describe('OksaiCorePlugin', () => {
 			class UserEntity {}
 
 			@OksaiCorePlugin({
-				entities: () => [UserEntity],
+				entities: () => [UserEntity]
 			})
 			class TestPlugin {}
 
@@ -38,7 +38,7 @@ describe('OksaiCorePlugin', () => {
 			class UserEntity {}
 
 			@OksaiCorePlugin({
-				entities: [UserEntity],
+				entities: [UserEntity]
 			})
 			class TestPlugin {}
 
@@ -52,7 +52,7 @@ describe('OksaiCorePlugin', () => {
 			class UserSubscriber {}
 
 			@OksaiCorePlugin({
-				subscribers: () => [UserSubscriber],
+				subscribers: () => [UserSubscriber]
 			})
 			class TestPlugin {}
 
@@ -66,14 +66,11 @@ describe('OksaiCorePlugin', () => {
 			class EventHandler {}
 
 			@OksaiCorePlugin({
-				integrationEventSubscribers: [EventHandler],
+				integrationEventSubscribers: [EventHandler]
 			})
 			class TestPlugin {}
 
-			const handlers = Reflect.getMetadata(
-				PLUGIN_METADATA.INTEGRATION_EVENT_SUBSCRIBERS,
-				TestPlugin,
-			);
+			const handlers = Reflect.getMetadata(PLUGIN_METADATA.INTEGRATION_EVENT_SUBSCRIBERS, TestPlugin);
 			expect(handlers).toContain(EventHandler);
 		});
 	});
@@ -83,7 +80,7 @@ describe('OksaiCorePlugin', () => {
 			const extensionConfig = { customField: 'value' };
 
 			@OksaiCorePlugin({
-				extensions: extensionConfig,
+				extensions: extensionConfig
 			})
 			class TestPlugin {}
 
@@ -97,7 +94,7 @@ describe('OksaiCorePlugin', () => {
 			const config = { apiKey: 'test-key' };
 
 			@OksaiCorePlugin({
-				configuration: config,
+				configuration: config
 			})
 			class TestPlugin {}
 
@@ -109,7 +106,7 @@ describe('OksaiCorePlugin', () => {
 	describe('undefined 值处理', () => {
 		it('不应该挂载 undefined 的元数据', () => {
 			@OksaiCorePlugin({
-				entities: undefined,
+				entities: undefined
 			})
 			class TestPlugin {}
 
@@ -130,7 +127,7 @@ describe('OksaiCorePlugin', () => {
 			class ImportedModule {}
 
 			@OksaiCorePlugin({
-				imports: [ImportedModule],
+				imports: [ImportedModule]
 			})
 			class TestPlugin {}
 
@@ -141,7 +138,7 @@ describe('OksaiCorePlugin', () => {
 			class MyService {}
 
 			@OksaiCorePlugin({
-				providers: [MyService],
+				providers: [MyService]
 			})
 			class TestPlugin {}
 
@@ -152,7 +149,7 @@ describe('OksaiCorePlugin', () => {
 			class MyController {}
 
 			@OksaiCorePlugin({
-				controllers: [MyController],
+				controllers: [MyController]
 			})
 			class TestPlugin {}
 
@@ -163,7 +160,7 @@ describe('OksaiCorePlugin', () => {
 			class MyService {}
 
 			@OksaiCorePlugin({
-				exports: [MyService],
+				exports: [MyService]
 			})
 			class TestPlugin {}
 
@@ -184,7 +181,7 @@ describe('OksaiCorePlugin', () => {
 				providers: [UserService],
 				exports: [UserService],
 				entities: () => [UserEntity],
-				subscribers: [UserSubscriber],
+				subscribers: [UserSubscriber]
 			})
 			class UserPlugin {}
 

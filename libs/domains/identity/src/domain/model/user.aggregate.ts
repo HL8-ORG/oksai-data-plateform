@@ -56,14 +56,12 @@ export class User extends AggregateRoot<UserProps> {
 				disabled: false,
 				disabledReason: undefined,
 				roles: [],
-				tenantMemberships: [],
+				tenantMemberships: []
 			},
-			new UniqueEntityID(userId.value),
+			new UniqueEntityID(userId.value)
 		);
 
-		user.addDomainEvent(
-			new UserRegisteredEvent({ email: email.value }, user.id),
-		);
+		user.addDomainEvent(new UserRegisteredEvent({ email: email.value }, user.id));
 
 		return user;
 	}
@@ -88,9 +86,7 @@ export class User extends AggregateRoot<UserProps> {
 		this.props.disabled = true;
 		this.props.disabledReason = reason;
 
-		this.addDomainEvent(
-			new UserDisabledEvent({ reason }, this.id),
-		);
+		this.addDomainEvent(new UserDisabledEvent({ reason }, this.id));
 	}
 
 	/**
@@ -130,9 +126,7 @@ export class User extends AggregateRoot<UserProps> {
 
 		this.props.roles.push(roleKey);
 
-		this.addDomainEvent(
-			new RoleGrantedToUserEvent({ tenantId, role: roleKey.value }, this.id),
-		);
+		this.addDomainEvent(new RoleGrantedToUserEvent({ tenantId, role: roleKey.value }, this.id));
 	}
 
 	/**
@@ -170,9 +164,7 @@ export class User extends AggregateRoot<UserProps> {
 
 		this.props.tenantMemberships.push(tenantId);
 
-		this.addDomainEvent(
-			new UserAddedToTenantEvent({ tenantId: String(tenantId.value) }, this.id),
-		);
+		this.addDomainEvent(new UserAddedToTenantEvent({ tenantId: String(tenantId.value) }, this.id));
 	}
 
 	/**

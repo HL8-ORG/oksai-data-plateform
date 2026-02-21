@@ -56,12 +56,7 @@ export interface IOutbox {
 	append<TPayload extends object>(envelope: IntegrationEventEnvelope<TPayload>): Promise<void>;
 	listPending(params?: { now?: Date; limit?: number }): Promise<OutboxRecord[]>;
 	markPublished(messageId: string): Promise<void>;
-	markFailed(params: {
-		messageId: string;
-		attempts: number;
-		nextAttemptAt: Date;
-		lastError?: string;
-	}): Promise<void>;
+	markFailed(params: { messageId: string; attempts: number; nextAttemptAt: Date; lastError?: string }): Promise<void>;
 }
 
 /**

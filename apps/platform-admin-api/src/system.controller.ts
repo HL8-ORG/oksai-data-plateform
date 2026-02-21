@@ -23,7 +23,7 @@ export class SystemController {
 			version: '0.1.0',
 			nodeVersion: process.version,
 			platform: process.platform,
-			uptime: process.uptime(),
+			uptime: process.uptime()
 		};
 	}
 
@@ -34,7 +34,7 @@ export class SystemController {
 	getEnv(): { nodeEnv: string; tz: string } {
 		return {
 			nodeEnv: process.env.NODE_ENV ?? 'development',
-			tz: process.env.TZ ?? 'UTC',
+			tz: process.env.TZ ?? 'UTC'
 		};
 	}
 }

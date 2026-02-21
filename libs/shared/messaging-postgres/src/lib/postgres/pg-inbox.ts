@@ -10,7 +10,7 @@ import type { IInbox, IDatabaseTransactionHost } from '../types';
 export class PgInbox implements IInbox {
 	constructor(
 		private readonly orm: MikroORM,
-		private readonly txHost: IDatabaseTransactionHost,
+		private readonly txHost: IDatabaseTransactionHost
 	) {}
 
 	async isProcessed(messageId: string): Promise<boolean> {
@@ -18,7 +18,7 @@ export class PgInbox implements IInbox {
 		const conn = em.getConnection();
 		const rows = await conn.execute<{ exists: boolean }[]>(
 			`select exists(select 1 from messaging_inbox where message_id = ?) as exists`,
-			[messageId],
+			[messageId]
 		);
 		return Boolean(rows[0]?.exists);
 	}
@@ -30,7 +30,7 @@ export class PgInbox implements IInbox {
 			`insert into messaging_inbox (id, message_id, processed_at)
        values (?, ?, ?)
        on conflict (message_id) do nothing`,
-			[randomUUID(), messageId, new Date()],
+			[randomUUID(), messageId, new Date()]
 		);
 	}
 }

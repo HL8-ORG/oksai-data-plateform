@@ -3,47 +3,10 @@
  *
  * 测试租户聚合根和值对象
  */
-import {
-	Tenant,
-	TenantId,
-	TenantName,
-	TenantPlan,
-	TenantStatus
-} from '../../index';
+import { Tenant, TenantName, TenantPlan, TenantStatus } from '../../index';
+import { UniqueEntityID } from '@oksai/kernel';
 
 describe('Tenant Domain', () => {
-	describe('TenantId', () => {
-		describe('create', () => {
-			it('应该创建租户 ID', () => {
-				// Arrange & Act
-				const tenantId = TenantId.create('tenant-123');
-
-				// Assert
-				expect(tenantId.value).toBe('tenant-123');
-			});
-
-			it('应该生成随机 ID', () => {
-				// Act
-				const id1 = TenantId.generate();
-				const id2 = TenantId.generate();
-
-				// Assert
-				expect(id1.value).not.toBe(id2.value);
-			});
-
-			it('相等比较应该正确工作', () => {
-				// Arrange
-				const id1 = TenantId.create('same-id');
-				const id2 = TenantId.create('same-id');
-				const id3 = TenantId.create('different-id');
-
-				// Act & Assert
-				expect(id1.equals(id2)).toBe(true);
-				expect(id1.equals(id3)).toBe(false);
-			});
-		});
-	});
-
 	describe('TenantName', () => {
 		describe('create', () => {
 			it('应该创建租户名称', () => {
@@ -162,7 +125,6 @@ describe('Tenant Domain', () => {
 		describe('create', () => {
 			it('应该创建租户', () => {
 				// Arrange
-				const tenantId = TenantId.generate();
 				const nameResult = TenantName.create('测试公司');
 				const planResult = TenantPlan.create('basic');
 
@@ -173,7 +135,6 @@ describe('Tenant Domain', () => {
 
 				// Act
 				const result = Tenant.create({
-					id: tenantId,
 					name: nameResult.value,
 					plan: planResult.value
 				});
@@ -182,7 +143,7 @@ describe('Tenant Domain', () => {
 				expect(result.isOk()).toBe(true);
 				if (result.isOk()) {
 					const tenant = result.value;
-					expect(tenant.id.equals(tenantId)).toBe(true);
+					expect(tenant.id).toBeDefined();
 					expect(tenant.name.value).toBe('测试公司');
 					expect(tenant.plan.value).toBe('basic');
 					expect(tenant.status.value).toBe('pending');
@@ -191,7 +152,6 @@ describe('Tenant Domain', () => {
 
 			it('创建租户应该触发 TenantCreatedEvent', () => {
 				// Arrange
-				const tenantId = TenantId.generate();
 				const nameResult = TenantName.create('测试公司');
 				const planResult = TenantPlan.create('basic');
 
@@ -202,7 +162,6 @@ describe('Tenant Domain', () => {
 
 				// Act
 				const result = Tenant.create({
-					id: tenantId,
 					name: nameResult.value,
 					plan: planResult.value
 				});
@@ -214,6 +173,30 @@ describe('Tenant Domain', () => {
 					expect(event.eventName).toBe('TenantCreated');
 				} else {
 					fail('Failed to create tenant');
+				}
+			});
+
+			it('应该使用指定的 ID 创建租户', () => {
+				// Arrange
+				const specifiedId = new UniqueEntityID('tenant-123');
+				const nameResult = TenantName.create('测试公司');
+				const planResult = TenantPlan.create('basic');
+
+				if (!nameResult.isOk() || !planResult.isOk()) {
+					fail('Failed to create name or plan');
+					return;
+				}
+
+				// Act
+				const result = Tenant.create({
+					name: nameResult.value,
+					plan: planResult.value
+				}, specifiedId);
+
+				// Assert
+				expect(result.isOk()).toBe(true);
+				if (result.isOk()) {
+					expect(result.value.id.equals(specifiedId)).toBe(true);
 				}
 			});
 		});
@@ -336,7 +319,6 @@ function createTestTenant(): Tenant {
 	}
 
 	const result = Tenant.create({
-		id: TenantId.generate(),
 		name: nameResult.value,
 		plan: planResult.value
 	});
@@ -357,7 +339,6 @@ function createTestTenantWithPlan(planValue: string): Tenant {
 	}
 
 	const result = Tenant.create({
-		id: TenantId.generate(),
 		name: nameResult.value,
 		plan: planResult.value
 	});

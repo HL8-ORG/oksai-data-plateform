@@ -18,14 +18,11 @@ export interface UserAddedToTenantEventPayload {
  * ```
  */
 export class UserAddedToTenantEvent extends DomainEvent<UserAddedToTenantEventPayload> {
-	constructor(
-		payload: UserAddedToTenantEventPayload,
-		aggregateId: UniqueEntityID,
-	) {
+	constructor(payload: UserAddedToTenantEventPayload, aggregateId: UniqueEntityID) {
 		super({
 			eventName: 'UserAddedToTenant',
 			aggregateId,
-			payload,
+			payload
 		});
 	}
 }

@@ -15,14 +15,14 @@ export {
 	type IOnPluginBootstrap,
 	type IOnPluginDestroy,
 	type PluginLifecycleMethods,
-	type PluginInput,
+	type PluginInput
 } from './lib/plugin.interface';
 export {
 	getPluginModules,
 	hasLifecycleMethod,
 	getEntitiesFromPlugins,
 	getSubscribersFromPlugins,
-	getIntegrationEventSubscribersFromPlugins,
+	getIntegrationEventSubscribersFromPlugins
 } from './lib/plugin.helper';
 export { PLUGIN_METADATA } from './lib/plugin-metadata';
 export { PluginModule, OKSAI_PLUGINS_TOKEN } from './lib/plugin.module';

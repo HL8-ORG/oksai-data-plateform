@@ -3,9 +3,7 @@ import {
 	clearPluginRegistry,
 	getRegisteredPluginNames,
 	resolvePluginsFromEnv,
-	type PluginInput,
-	type RegisterPluginsOptions,
-	type ResolvePluginsFromEnvOptions,
+	type PluginInput
 } from '../lib/plugins/plugin-registry';
 
 describe('PluginRegistry', () => {
@@ -43,9 +41,7 @@ describe('PluginRegistry', () => {
 			const plugin2: PluginInput = { name: 'test-plugin', module: class TestPlugin2 {} };
 			registerPlugins({ 'test-plugin': plugin1 });
 
-			expect(() =>
-				registerPlugins({ 'test-plugin': plugin2 }, { allowOverride: true })
-			).not.toThrow();
+			expect(() => registerPlugins({ 'test-plugin': plugin2 }, { allowOverride: true })).not.toThrow();
 		});
 
 		it('空名称应该被忽略', () => {

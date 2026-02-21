@@ -9,7 +9,7 @@ export const PREDEFINED_ROLE_KEYS = {
 	PLATFORM_ADMIN: 'PlatformAdmin',
 	TENANT_OWNER: 'TenantOwner',
 	TENANT_ADMIN: 'TenantAdmin',
-	TENANT_MEMBER: 'TenantMember',
+	TENANT_MEMBER: 'TenantMember'
 } as const;
 
 export type PredefinedRoleKey = (typeof PREDEFINED_ROLE_KEYS)[keyof typeof PREDEFINED_ROLE_KEYS];

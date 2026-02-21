@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEnum, IsArray, IsDateString, IsNumber, Min, Max } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsArray, IsDateString } from 'class-validator';
 
 /**
  * @description 数据质量评分请求 DTO

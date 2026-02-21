@@ -69,10 +69,7 @@ const registry = new Map<string, PluginInput>();
  * });
  * ```
  */
-export function registerPlugins(
-	plugins: Record<string, PluginInput>,
-	options: RegisterPluginsOptions = {},
-): void {
+export function registerPlugins(plugins: Record<string, PluginInput>, options: RegisterPluginsOptions = {}): void {
 	const allowOverride = options.allowOverride ?? false;
 
 	for (const [name, plugin] of Object.entries(plugins)) {
@@ -118,9 +115,7 @@ export function clearPluginRegistry(): void {
  * const plugins = resolvePluginsFromEnv();
  * ```
  */
-export function resolvePluginsFromEnv(
-	options: ResolvePluginsFromEnvOptions = {},
-): PluginInput[] {
+export function resolvePluginsFromEnv(options: ResolvePluginsFromEnvOptions = {}): PluginInput[] {
 	const envName = options.envName ?? 'PLUGINS_ENABLED';
 	const separator = options.separator ?? ',';
 	const strict = options.strict ?? true;
@@ -151,8 +146,8 @@ export function resolvePluginsFromEnv(
 			[
 				`存在未知插件：${unknown.join(', ')}。`,
 				`请先在应用启动时 registerPlugins({ name: PluginModule }) 注册，或移除该配置。`,
-				`已注册插件：${available.length > 0 ? available.join(', ') : '(none)'}。`,
-			].join('\n'),
+				`已注册插件：${available.length > 0 ? available.join(', ') : '(none)'}。`
+			].join('\n')
 		);
 	}
 

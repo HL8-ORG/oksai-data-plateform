@@ -1,4 +1,4 @@
-import type { AuditInfo, EmbeddingStatus, SyncStatus, AIProcessingMetadata, ETLMetadata } from '@oksai/event-store';
+import type { EmbeddingStatus, SyncStatus, AIProcessingMetadata, ETLMetadata } from '@oksai/event-store';
 
 /**
  * 聚合根元数据基础接口

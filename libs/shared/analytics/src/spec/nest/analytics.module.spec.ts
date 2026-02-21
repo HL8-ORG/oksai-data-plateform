@@ -9,7 +9,7 @@ describe('AnalyticsModule', () => {
 		let module: TestingModule;
 
 		beforeEach(async () => {
-			const mockOrm = {
+			const _mockOrm = {
 				em: {
 					getConnection: jest.fn().mockReturnValue({
 						execute: jest.fn().mockResolvedValue([])
@@ -76,7 +76,9 @@ describe('AnalyticsModule', () => {
 		it('控制器应该能够访问所有服务', () => {
 			const controller = module.get<AnalyticsController>(AnalyticsController);
 			const qualityScorer = module.get<DataQualityScorerService>(DataQualityScorerService);
-			const dimensionCalculator = module.get<AnalyticsDimensionCalculatorService>(AnalyticsDimensionCalculatorService);
+			const dimensionCalculator = module.get<AnalyticsDimensionCalculatorService>(
+				AnalyticsDimensionCalculatorService
+			);
 			const reportService = module.get<AnalyticsReportService>(AnalyticsReportService);
 
 			expect((controller as any).qualityScorer).toBe(qualityScorer);

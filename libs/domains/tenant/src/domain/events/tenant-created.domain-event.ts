@@ -13,10 +13,7 @@ export interface TenantCreatedPayload {
 }
 
 export class TenantCreatedEvent extends DomainEvent<TenantCreatedPayload> {
-	constructor(
-		aggregateId: UniqueEntityID,
-		payload: TenantCreatedPayload
-	) {
+	constructor(aggregateId: UniqueEntityID, payload: TenantCreatedPayload) {
 		super({
 			eventName: 'TenantCreated',
 			aggregateId,

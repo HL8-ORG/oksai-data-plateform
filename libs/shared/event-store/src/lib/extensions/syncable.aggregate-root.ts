@@ -39,7 +39,7 @@ export interface SyncableAggregateRootProps {
  * - 第三方平台集成
  */
 export abstract class SyncableAggregateRoot<
-	TProps extends SyncableAggregateRootProps = SyncableAggregateRootProps,
+	TProps extends SyncableAggregateRootProps = SyncableAggregateRootProps
 > extends AggregateRoot<TProps> {
 	/**
 	 * 外部系统标识映射（系统名 -> 外部 ID）
@@ -118,7 +118,7 @@ export abstract class SyncableAggregateRoot<
 	setExternalIds(externalIds: ExternalIdMap): void {
 		this._externalIds = {
 			...this._externalIds,
-			...externalIds,
+			...externalIds
 		};
 	}
 
@@ -163,7 +163,7 @@ export abstract class SyncableAggregateRoot<
 		this._etlMetadata = {
 			...this._etlMetadata,
 			errorMessage,
-			processedAt: new Date(),
+			processedAt: new Date()
 		};
 	}
 
@@ -184,7 +184,7 @@ export abstract class SyncableAggregateRoot<
 	setETLMetadata(metadata: Partial<ETLMetadata>): void {
 		this._etlMetadata = {
 			...this._etlMetadata,
-			...metadata,
+			...metadata
 		};
 	}
 
@@ -209,7 +209,7 @@ export abstract class SyncableAggregateRoot<
 			lastSyncedAt: this._lastSyncedAt,
 			syncVersion: this._syncVersion,
 			etlMetadata: this._etlMetadata,
-			needsSync: this.needsSync(),
+			needsSync: this.needsSync()
 		};
 	}
 
