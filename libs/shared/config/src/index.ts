@@ -6,4 +6,10 @@
  * @packageDocumentation
  */
 
-export { ConfigService, ConfigModule } from './lib/config.service';
+export {
+	ConfigService,
+	ConfigModule,
+	type ConfigOptions,
+	type ConfigModuleOptions,
+	type ConfigValidator
+} from './lib/config.service';
