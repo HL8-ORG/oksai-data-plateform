@@ -1,12 +1,20 @@
 import { Result } from '@oksai/kernel';
+import {
+	env,
+	ConfigEnvError,
+	EnvStringOptions,
+	EnvIntOptions,
+	EnvFloatOptions,
+	EnvBoolOptions,
+	EnvEnumOptions,
+	EnvUrlOptions,
+	EnvJsonOptions,
+	EnvListOptions,
+	EnvDurationMsOptions
+} from './config-env';
 
 /**
- * 配置验证函数类型
- */
-export type ConfigValidator<T = unknown> = (value: unknown) => Result<T, string>;
-
-/**
- * 配置选项
+ * @description 配置服务选项
  */
 export interface ConfigOptions {
 	/**
@@ -17,30 +25,32 @@ export interface ConfigOptions {
 }
 
 /**
- * 配置服务
+ * @description 配置服务
  *
  * 提供环境变量和配置的访问接口，支持：
  * - 类型安全的配置读取
  * - 配置缓存
- * - 必需配置验证
- * - JSON 配置解析
+ * - 边界校验（min/max）
+ * - Result 类型返回（可选场景）
  *
  * @example
  * ```typescript
  * const config = new ConfigService();
  *
- * // 获取配置
+ * // 基本读取
  * const dbUrl = config.getRequired('DATABASE_URL');
- * const port = config.getNumber('PORT', 3000);
- * const debug = config.getBoolean('DEBUG', false);
+ * const port = config.getInt('PORT', { defaultValue: 3000, min: 1, max: 65535 });
+ * const debug = config.getBool('DEBUG', { defaultValue: false });
  *
- * // 检查环境
- * if (config.isProduction()) {
- *   // 生产环境逻辑
+ * // 高级类型
+ * const origins = config.getList('ALLOWED_ORIGINS');
+ * const timeout = config.getDurationMs('TIMEOUT', { defaultValue: 5000, min: 1000 });
+ *
+ * // 安全读取
+ * const result = config.getSafeInt('PORT');
+ * if (result.isOk()) {
+ *   console.log(result.value);
  * }
- *
- * // 解析 JSON 配置
- * const features = config.getJson<string[]>('FEATURES', []);
  * ```
  */
 export class ConfigService {
@@ -61,308 +71,240 @@ export class ConfigService {
 	}
 
 	/**
-	 * 获取配置值
-	 *
-	 * @param key - 配置键名
-	 * @param defaultValue - 默认值
-	 * @returns 配置值或默认值
+	 * @description 获取缓存 key
+	 * @private
 	 */
-	public get(key: string, defaultValue?: string): string | undefined {
-		if (this.enableCache && this.cache.has(key)) {
-			return this.cache.get(key) as string | undefined;
-		}
-
-		const value = process.env[key] ?? defaultValue;
-		if (this.enableCache) {
-			this.cache.set(key, value);
-		}
-		return value;
+	private getCacheKey(type: string, key: string): string {
+		return `${type}:${key}`;
 	}
 
 	/**
-	 * 获取必需的配置值
-	 *
-	 * @param key - 配置键名
-	 * @returns 配置值
-	 * @throws Error 如果配置不存在
+	 * @description 从缓存获取或计算值
+	 * @private
 	 */
-	public getRequired(key: string): string {
-		const value = this.get(key);
-		if (value === undefined) {
-			throw new Error(`配置项 ${key} 是必需的，但未设置`);
-		}
-		return value;
-	}
-
-	/**
-	 * 获取数字类型的配置值
-	 *
-	 * @param key - 配置键名
-	 * @param defaultValue - 默认值
-	 * @returns 数字类型的配置值
-	 */
-	public getNumber(key: string, defaultValue?: number): number {
-		const cacheKey = `number:${key}`;
-		if (this.enableCache && this.cache.has(cacheKey)) {
-			return this.cache.get(cacheKey) as number;
-		}
-
-		const value = process.env[key];
-		let result: number;
-
-		if (value === undefined) {
-			if (defaultValue !== undefined) {
-				result = defaultValue;
-			} else {
-				result = NaN;
-			}
-		} else {
-			const parsed = Number(value);
-			result = Number.isNaN(parsed) ? NaN : parsed;
-		}
-
-		if (this.enableCache) {
-			this.cache.set(cacheKey, result);
-		}
-		return result;
-	}
-
-	/**
-	 * 安全获取数字类型的配置值
-	 *
-	 * 返回 Result 类型，避免 NaN 导致的运行时错误
-	 *
-	 * @param key - 配置键名
-	 * @param defaultValue - 默认值
-	 * @returns Result<number, string>
-	 *
-	 * @example
-	 * ```typescript
-	 * const result = config.getSafeNumber('PORT', 3000);
-	 * if (result.isOk()) {
-	 *   console.log(result.value); // number
-	 * } else {
-	 *   console.error(result.error); // string
-	 * }
-	 * ```
-	 */
-	public getSafeNumber(key: string, defaultValue?: number): Result<number, string> {
-		const value = process.env[key];
-
-		if (value === undefined) {
-			if (defaultValue !== undefined) {
-				return Result.ok(defaultValue);
-			}
-			return Result.fail(`配置项 ${key} 未设置且无默认值`);
-		}
-
-		const parsed = Number(value);
-		if (Number.isNaN(parsed)) {
-			return Result.fail(`配置项 ${key} 不是有效的数字: ${value}`);
-		}
-
-		return Result.ok(parsed);
-	}
-
-	/**
-	 * 获取整数类型的配置值
-	 *
-	 * @param key - 配置键名
-	 * @param defaultValue - 默认值
-	 * @returns 整数类型的配置值
-	 */
-	public getInt(key: string, defaultValue?: number): number {
-		const num = this.getNumber(key, defaultValue);
-		return Number.isNaN(num) ? NaN : Math.trunc(num);
-	}
-
-	/**
-	 * 获取浮点数类型的配置值
-	 *
-	 * @param key - 配置键名
-	 * @param defaultValue - 默认值
-	 * @returns 浮点数类型的配置值
-	 */
-	public getFloat(key: string, defaultValue?: number): number {
-		return this.getNumber(key, defaultValue);
-	}
-
-	/**
-	 * 获取布尔类型的配置值
-	 *
-	 * 识别 'true' (不区分大小写) 为 true，其他值为 false
-	 *
-	 * @param key - 配置键名
-	 * @param defaultValue - 默认值
-	 * @returns 布尔类型的配置值
-	 */
-	public getBoolean(key: string, defaultValue?: boolean): boolean {
-		const cacheKey = `boolean:${key}`;
-		if (this.enableCache && this.cache.has(cacheKey)) {
-			return this.cache.get(cacheKey) as boolean;
-		}
-
-		const value = process.env[key];
-		let result: boolean;
-
-		if (value === undefined) {
-			result = defaultValue ?? false;
-		} else {
-			result = value.toLowerCase() === 'true';
-		}
-
-		if (this.enableCache) {
-			this.cache.set(cacheKey, result);
-		}
-		return result;
-	}
-
-	/**
-	 * 获取 JSON 类型的配置值
-	 *
-	 * @param key - 配置键名
-	 * @param defaultValue - 默认值
-	 * @returns 解析后的 JSON 对象或默认值
-	 *
-	 * @example
-	 * ```typescript
-	 * // 环境变量: ALLOWED_ORIGINS='["http://localhost:3000","https://example.com"]'
-	 * const origins = config.getJson<string[]>('ALLOWED_ORIGINS', []);
-	 * ```
-	 */
-	public getJson<T>(key: string, defaultValue: T): T {
-		const cacheKey = `json:${key}`;
+	private getOrCompute<T>(cacheKey: string, compute: () => T): T {
 		if (this.enableCache && this.cache.has(cacheKey)) {
 			return this.cache.get(cacheKey) as T;
 		}
+		const value = compute();
+		if (this.enableCache) {
+			this.cache.set(cacheKey, value);
+		}
+		return value;
+	}
 
-		const value = process.env[key];
-		let result: T;
+	// ============ 字符串方法 ============
 
-		if (value === undefined) {
-			result = defaultValue;
-		} else {
+	/**
+	 * @description 获取字符串配置
+	 */
+	get(name: string, options: EnvStringOptions = {}): string | undefined {
+		const cacheKey = this.getCacheKey('string', name);
+		return this.getOrCompute(cacheKey, () => {
 			try {
-				result = JSON.parse(value) as T;
+				return env.string(name, options);
 			} catch {
-				result = defaultValue;
+				return options.defaultValue;
 			}
-		}
-
-		if (this.enableCache) {
-			this.cache.set(cacheKey, result);
-		}
-		return result;
+		});
 	}
 
 	/**
-	 * 安全获取 JSON 类型的配置值
-	 *
-	 * @param key - 配置键名
-	 * @returns Result<T, string>
+	 * @description 获取必需的字符串配置
 	 */
-	public getSafeJson<T>(key: string): Result<T, string> {
-		const value = process.env[key];
+	getRequired(name: string): string {
+		return env.string(name);
+	}
 
-		if (value === undefined) {
-			return Result.fail(`配置项 ${key} 未设置`);
-		}
+	// ============ 数字方法 ============
 
-		try {
-			const parsed = JSON.parse(value) as T;
-			return Result.ok(parsed);
-		} catch (error) {
-			return Result.fail(`配置项 ${key} 不是有效的 JSON: ${(error as Error).message}`);
-		}
+	/**
+	 * @description 获取整数配置
+	 */
+	getInt(name: string, options: EnvIntOptions = {}): number {
+		const cacheKey = this.getCacheKey('int', name);
+		return this.getOrCompute(cacheKey, () => env.int(name, options));
 	}
 
 	/**
-	 * 获取枚举类型的配置值
-	 *
-	 * @param key - 配置键名
-	 * @param enumValues - 允许的枚举值数组
-	 * @param defaultValue - 默认值
-	 * @returns 枚举值或默认值
-	 *
-	 * @example
-	 * ```typescript
-	 * const logLevel = config.getEnum('LOG_LEVEL', ['debug', 'info', 'warn', 'error'], 'info');
-	 * ```
+	 * @description 获取浮点数配置
 	 */
-	public getEnum<T extends string>(key: string, enumValues: T[], defaultValue: T): T {
-		const cacheKey = `enum:${key}`;
-		if (this.enableCache && this.cache.has(cacheKey)) {
-			return this.cache.get(cacheKey) as T;
-		}
-
-		const value = process.env[key] as T;
-		const result = enumValues.includes(value) ? value : defaultValue;
-
-		if (this.enableCache) {
-			this.cache.set(cacheKey, result);
-		}
-		return result;
+	getFloat(name: string, options: EnvFloatOptions = {}): number {
+		const cacheKey = this.getCacheKey('float', name);
+		return this.getOrCompute(cacheKey, () => env.float(name, options));
 	}
 
 	/**
-	 * 获取 Node 环境标识
-	 *
-	 * @returns Node 环境标识（development/test/production）
+	 * @description 获取数字配置（兼容旧 API）
 	 */
-	public getNodeEnv(): string {
-		return this.get('NODE_ENV', 'development')!;
+	getNumber(name: string, defaultValue?: number): number {
+		return this.getInt(name, { defaultValue });
 	}
 
 	/**
-	 * 检查是否为生产环境
-	 *
-	 * @returns 如果是生产环境返回 true
+	 * @deprecated 使用 getInt 代替
 	 */
-	public isProduction(): boolean {
+	getSafeNumber(name: string, defaultValue?: number): Result<number, string> {
+		return env.getSafeInt(name, { defaultValue });
+	}
+
+	// ============ 布尔方法 ============
+
+	/**
+	 * @description 获取布尔配置
+	 */
+	getBool(name: string, options: EnvBoolOptions = {}): boolean {
+		const cacheKey = this.getCacheKey('bool', name);
+		return this.getOrCompute(cacheKey, () => env.bool(name, options));
+	}
+
+	/**
+	 * @description 获取布尔配置（兼容旧 API）
+	 */
+	getBoolean(name: string, defaultValue?: boolean): boolean {
+		return this.getBool(name, { defaultValue });
+	}
+
+	// ============ 枚举方法 ============
+
+	/**
+	 * @description 获取枚举配置
+	 */
+	getEnum<T extends string>(name: string, allowed: T[], options: EnvEnumOptions<T> = {}): T {
+		const cacheKey = this.getCacheKey('enum', name);
+		return this.getOrCompute(cacheKey, () => {
+			try {
+				return env.enum(name, allowed as readonly T[], options);
+			} catch {
+				if (options.defaultValue !== undefined) {
+					return options.defaultValue;
+				}
+				throw new ConfigEnvError(`缺少必需的环境变量：${name}`);
+			}
+		});
+	}
+
+	// ============ URL 方法 ============
+
+	/**
+	 * @description 获取 URL 配置
+	 */
+	getUrl(name: string, options: EnvUrlOptions = {}): string {
+		const cacheKey = this.getCacheKey('url', name);
+		return this.getOrCompute(cacheKey, () => {
+			try {
+				return env.url(name, options);
+			} catch (e) {
+				if (e instanceof ConfigEnvError && e.message.includes('缺少必需的环境变量')) {
+					if (options.defaultValue !== undefined) {
+						return options.defaultValue;
+					}
+				}
+				throw e;
+			}
+		});
+	}
+
+	// ============ JSON 方法 ============
+
+	/**
+	 * @description 获取 JSON 配置
+	 */
+	getJson<T>(name: string, options: EnvJsonOptions<T> = {}): T {
+		const cacheKey = this.getCacheKey('json', name);
+		return this.getOrCompute(cacheKey, () => {
+			try {
+				return env.json(name, options);
+			} catch {
+				if (options.defaultValue !== undefined) {
+					return options.defaultValue;
+				}
+				throw new ConfigEnvError(`缺少必需的环境变量：${name}`);
+			}
+		});
+	}
+
+	/**
+	 * @description 安全获取 JSON 配置
+	 */
+	getSafeJson<T>(name: string, options: EnvJsonOptions<T> = {}): Result<T, string> {
+		return env.getSafeJson(name, options);
+	}
+
+	// ============ 列表方法 ============
+
+	/**
+	 * @description 获取列表配置
+	 */
+	getList(name: string, options: EnvListOptions = {}): string[] {
+		const cacheKey = this.getCacheKey('list', name);
+		return this.getOrCompute(cacheKey, () => env.list(name, options));
+	}
+
+	// ============ 时长方法 ============
+
+	/**
+	 * @description 获取时长配置（毫秒）
+	 */
+	getDurationMs(name: string, options: EnvDurationMsOptions = {}): number {
+		const cacheKey = this.getCacheKey('durationMs', name);
+		return this.getOrCompute(cacheKey, () => env.durationMs(name, options));
+	}
+
+	// ============ 环境检测 ============
+
+	/**
+	 * @description 获取 Node 环境标识
+	 */
+	getNodeEnv(): string {
+		return this.get('NODE_ENV') ?? 'development';
+	}
+
+	/**
+	 * @description 检查是否为生产环境
+	 */
+	isProduction(): boolean {
 		return this.getNodeEnv() === 'production';
 	}
 
 	/**
-	 * 检查是否为开发环境
-	 *
-	 * @returns 如果是开发环境返回 true
+	 * @description 检查是否为开发环境
 	 */
-	public isDevelopment(): boolean {
+	isDevelopment(): boolean {
 		return this.getNodeEnv() === 'development';
 	}
 
 	/**
-	 * 检查是否为测试环境
-	 *
-	 * @returns 如果是测试环境返回 true
+	 * @description 检查是否为测试环境
 	 */
-	public isTest(): boolean {
+	isTest(): boolean {
 		return this.getNodeEnv() === 'test';
 	}
 
+	// ============ 缓存控制 ============
+
 	/**
-	 * 清除缓存
+	 * @description 清除所有缓存
 	 */
-	public clearCache(): void {
+	clearCache(): void {
 		this.cache.clear();
 	}
 
 	/**
-	 * 清除指定 key 的缓存
-	 *
-	 * @param key - 配置键名
+	 * @description 清除指定 key 的缓存
 	 */
-	public clearCacheFor(key: string): void {
-		this.cache.delete(key);
-		this.cache.delete(`number:${key}`);
-		this.cache.delete(`boolean:${key}`);
-		this.cache.delete(`json:${key}`);
-		this.cache.delete(`enum:${key}`);
+	clearCacheFor(name: string): void {
+		const types = ['string', 'int', 'float', 'bool', 'enum', 'url', 'json', 'list', 'durationMs'];
+		for (const type of types) {
+			this.cache.delete(this.getCacheKey(type, name));
+		}
 	}
 }
 
+// ============ NestJS 模块 ============
+
 /**
- * 配置模块选项
+ * @description 配置模块选项
  */
 export interface ConfigModuleOptions {
 	/**
@@ -378,7 +320,7 @@ export interface ConfigModuleOptions {
 }
 
 /**
- * 配置模块
+ * @description 配置模块
  *
  * NestJS 模块，提供配置服务的依赖注入。
  *
@@ -392,10 +334,7 @@ export interface ConfigModuleOptions {
  */
 export class ConfigModule {
 	/**
-	 * 创建配置模块
-	 *
-	 * @param options - 模块选项
-	 * @returns 模块配置
+	 * @description 创建配置模块
 	 */
 	public static forRoot(options: ConfigModuleOptions = {}) {
 		const configService = new ConfigService(options.configOptions);
@@ -414,10 +353,7 @@ export class ConfigModule {
 	}
 
 	/**
-	 * 创建异步配置模块
-	 *
-	 * @param options - 异步模块选项
-	 * @returns 模块配置
+	 * @description 创建异步配置模块
 	 */
 	public static forRootAsync(options: {
 		useFactory: (...args: unknown[]) => Promise<ConfigOptions> | ConfigOptions;
@@ -441,3 +377,17 @@ export class ConfigModule {
 		};
 	}
 }
+
+// 重导出
+export { env, ConfigEnvError };
+export type {
+	EnvStringOptions,
+	EnvIntOptions,
+	EnvFloatOptions,
+	EnvBoolOptions,
+	EnvEnumOptions,
+	EnvUrlOptions,
+	EnvJsonOptions,
+	EnvListOptions,
+	EnvDurationMsOptions
+};

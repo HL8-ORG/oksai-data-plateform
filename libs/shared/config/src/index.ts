@@ -6,10 +6,25 @@
  * @packageDocumentation
  */
 
+// 服务和模块
 export {
 	ConfigService,
 	ConfigModule,
 	type ConfigOptions,
 	type ConfigModuleOptions,
-	type ConfigValidator
+	ConfigEnvError,
+	env
 } from './lib/config.service';
+
+// 选项类型
+export type {
+	EnvStringOptions,
+	EnvIntOptions,
+	EnvFloatOptions,
+	EnvBoolOptions,
+	EnvEnumOptions,
+	EnvUrlOptions,
+	EnvJsonOptions,
+	EnvListOptions,
+	EnvDurationMsOptions
+} from './lib/config-env';
