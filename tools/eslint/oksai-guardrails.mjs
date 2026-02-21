@@ -305,3 +305,135 @@ export function createTestFileConfig(options = {}) {
 		}
 	};
 }
+
+// ============ 配置防护规则 ============
+
+/**
+ * 创建配置防护护栏
+ *
+ * 禁止直接使用 process.env，强制通过 @oksai/config 模块读取配置
+ *
+ * @param {object} options - 配置选项
+ * @param {string} [options.packageName] - 包名称，用于错误消息
+ * @param {string[]} [options.files] - 文件匹配模式
+ * @param {string[]} [options.ignorePatterns] - 忽略的文件模式（如配置模块本身）
+ * @param {boolean} [options.allowDotenv] - 是否允许 dotenv 导入
+ * @returns {object} ESLint 配置对象
+ *
+ * @example
+ * ```javascript
+ * // 在 libs/domains/identity/eslint.config.mjs 中
+ * import { createConfigGuardrail } from '../../../tools/eslint/oksai-guardrails.mjs';
+ *
+ * export default [
+ *   ...rootConfig,
+ *   createConfigGuardrail({ packageName: '@oksai/identity' })
+ * ];
+ * ```
+ */
+export function createConfigGuardrail(options = {}) {
+	const {
+		packageName = '应用',
+		files = ['src/**/*.ts'],
+		ignorePatterns = [],
+		allowDotenv = false
+	} = options;
+
+	const rules = {
+		'no-restricted-properties': [
+			'error',
+			{
+				object: 'process',
+				property: 'env',
+				message: `[${packageName}] 禁止直接使用 process.env；请使用 @oksai/config 模块的 env 或 ConfigService 读取配置
+
+示例：
+  ❌ 错误：const port = process.env.PORT;
+  ✅ 正确：import { env } from '@oksai/config';
+         const port = env.int('PORT', { defaultValue: 3000 });`
+			}
+		]
+	};
+
+	if (!allowDotenv) {
+		rules['no-restricted-imports'] = [
+			'error',
+			{
+				patterns: [
+					{
+						group: ['dotenv', 'dotenv/config'],
+						message: `[${packageName}] 禁止直接使用 dotenv；请通过 @oksai/config 模块管理配置`
+					}
+				]
+			}
+		];
+	}
+
+	const config = {
+		files,
+		ignores: ignorePatterns,
+		rules
+	};
+
+	return config;
+}
+
+/**
+ * 创建应用层配置防护护栏
+ *
+ * 适用于 apps/ 目录下的应用，允许在入口文件使用 process.env
+ *
+ * @param {object} options - 配置选项
+ * @param {string} [options.packageName] - 包名称
+ * @param {string[]} [options.entryFiles] - 入口文件模式（这些文件允许使用 process.env）
+ * @returns {object} ESLint 配置对象
+ *
+ * @example
+ * ```javascript
+ * // 在 apps/platform-api/eslint.config.mjs 中
+ * import { createAppConfigGuardrail } from '../../../tools/eslint/oksai-guardrails.mjs';
+ *
+ * export default [
+ *   ...rootConfig,
+ *   createAppConfigGuardrail({
+ *     packageName: '@oksai/platform-api',
+ *     entryFiles: ['src/main.ts', 'src/env.ts']
+ *   })
+ * ];
+ * ```
+ */
+export function createAppConfigGuardrail(options = {}) {
+	const {
+		packageName = '应用',
+		entryFiles = []
+	} = options;
+
+	return {
+		files: ['src/**/*.ts'],
+		ignores: entryFiles,
+		rules: {
+			'no-restricted-properties': [
+				'error',
+				{
+					object: 'process',
+					property: 'env',
+					message: `[${packageName}] 业务代码禁止直接使用 process.env；请在入口文件读取并通过 @oksai/config 管理
+
+入口文件可以读取环境变量，其他文件应使用：
+  import { env, ConfigService } from '@oksai/config';`
+				}
+			],
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							group: ['dotenv', 'dotenv/config'],
+							message: `[${packageName}] 禁止直接使用 dotenv；请通过 @oksai/config 模块管理配置`
+						}
+					]
+				}
+			]
+		}
+	};
+}
