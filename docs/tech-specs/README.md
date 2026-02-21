@@ -64,3 +64,4 @@ docs/tech-specs/
 | messaging | ✅ 已完成 |
 | cqrs | ✅ 已完成 |
 | eda | ✅ 已完成 |
+| exceptions | ✅ 已完成 |
