@@ -63,3 +63,4 @@ docs/tech-specs/
 | event-store | ✅ 已完成 |
 | messaging | ✅ 已完成 |
 | cqrs | ✅ 已完成 |
+| eda | ✅ 已完成 |
