@@ -1,0 +1,43 @@
+{
+	"name": "@oksai/aggregate-metadata",
+	"version": "0.1.0",
+	"description": "聚合元数据模块 - 提供跨域聚合根元数据查询能力",
+	"license": "AGPL-3.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"build:watch": "tsc -p tsconfig.build.json --watch",
+		"typecheck": "tsc --noEmit",
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"test:coverage": "jest --coverage",
+		"lint": "eslint src/ --ext .ts",
+		"lint:fix": "eslint src/ --ext .ts --fix",
+		"clean": "rimraf dist coverage"
+	},
+	"dependencies": {
+		"@mikro-orm/core": "^6.0.0",
+		"@nestjs/common": "^11.0.0",
+		"@oksai/event-store": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/jest": "^30.0.0",
+		"@types/node": "^22.10.7",
+		"jest": "^30.0.0",
+		"rimraf": "^6.0.1",
+		"ts-jest": "^29.2.5",
+		"typescript": "^5.7.3"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}
