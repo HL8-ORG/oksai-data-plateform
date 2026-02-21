@@ -56,9 +56,9 @@ docs/tech-specs/
 | redis | ✅ 已完成 |
 | database | ✅ 已完成 |
 | auth | ✅ 已完成 |
+| kernel | ✅ 已完成 |
+| context | ✅ 已完成 |
 | analytics | 📝 待编写 |
 | event-store | 📝 待编写 |
 | messaging | 📝 待编写 |
-| context | 📝 待编写 |
 | cqrs | 📝 待编写 |
-| kernel | 📝 待编写 |
