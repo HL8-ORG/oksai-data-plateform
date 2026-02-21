@@ -1,0 +1,41 @@
+{
+	"name": "@oksai/ai-embeddings",
+	"version": "0.1.0",
+	"description": "AI 向量嵌入模块 - 提供文本向量化和相似度搜索能力",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"test:coverage": "jest --coverage"
+	},
+	"dependencies": {
+		"@mikro-orm/core": "catalog:",
+		"@nestjs/common": "catalog:",
+		"@oksai/event-store": "workspace:*",
+		"@oksai/aggregate-metadata": "workspace:*"
+	},
+	"peerDependencies": {
+		"openai": "^4.0.0"
+	},
+	"peerDependenciesMeta": {
+		"openai": {
+			"optional": true
+		}
+	},
+	"devDependencies": {
+		"@nestjs/testing": "catalog:",
+		"@types/jest": "catalog:",
+		"jest": "catalog:",
+		"ts-jest": "catalog:"
+	}
+}
