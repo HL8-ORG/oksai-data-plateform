@@ -28,6 +28,7 @@
 	"dependencies": {
 		"@mikro-orm/core": "catalog:",
 		"@nestjs/common": "catalog:",
+		"@oksai/constants": "workspace:*",
 		"@oksai/event-store": "workspace:*"
 	},
 	"engines": {

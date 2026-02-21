@@ -236,7 +236,8 @@ export const SHARED_PURE_MODULES = [
 	'i18n',
 	'aggregate-metadata',
 	'analytics',
-	'ai-embeddings'
+	'ai-embeddings',
+	'constants'
 ];
 
 /**
@@ -332,12 +333,7 @@ export function createTestFileConfig(options = {}) {
  * ```
  */
 export function createConfigGuardrail(options = {}) {
-	const {
-		packageName = '应用',
-		files = ['src/**/*.ts'],
-		ignorePatterns = [],
-		allowDotenv = false
-	} = options;
+	const { packageName = '应用', files = ['src/**/*.ts'], ignorePatterns = [], allowDotenv = false } = options;
 
 	const rules = {
 		'no-restricted-properties': [
@@ -403,10 +399,7 @@ export function createConfigGuardrail(options = {}) {
  * ```
  */
 export function createAppConfigGuardrail(options = {}) {
-	const {
-		packageName = '应用',
-		entryFiles = []
-	} = options;
+	const { packageName = '应用', entryFiles = [] } = options;
 
 	return {
 		files: ['src/**/*.ts'],

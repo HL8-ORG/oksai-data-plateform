@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
+import { DEFAULT_PAGE_SIZE } from '@oksai/constants';
 import type {
 	IFullAggregateMetadata,
 	AggregateMetadataFilter,
@@ -24,7 +25,7 @@ export class AggregateMetadataQueryService {
 	 * @returns 查询结果
 	 */
 	async query(filter: AggregateMetadataFilter): Promise<AggregateMetadataQueryResult> {
-		const { tenantId, offset = 0, limit = 20, excludeDeleted = true } = filter;
+		const { tenantId, offset = 0, limit = DEFAULT_PAGE_SIZE, excludeDeleted = true } = filter;
 
 		if (!tenantId) {
 			throw new Error('tenantId 是必填参数');

@@ -32,6 +32,7 @@
 		"@oksai/auth": "workspace:*",
 		"@oksai/authorization": "workspace:*",
 		"@oksai/config": "workspace:*",
+		"@oksai/constants": "workspace:*",
 		"@oksai/context": "workspace:*",
 		"@oksai/cqrs": "workspace:*",
 		"@oksai/database": "workspace:*",
@@ -44,7 +45,8 @@
 		"@oksai/messaging": "workspace:*",
 		"@oksai/tenant": "workspace:*",
 		"reflect-metadata": "catalog:",
-		"rxjs": "catalog:"
+		"rxjs": "catalog:",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@nestjs/cli": "catalog:",

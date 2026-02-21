@@ -1,8 +1,4 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
-	"display": "Oksai SaaS Workspace",
-	"files": [],
-	"references": [
-
-	]
+	"display": "Oksai SaaS Workspace"
 }

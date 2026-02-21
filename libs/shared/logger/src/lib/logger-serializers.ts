@@ -6,6 +6,8 @@
  * @module logger/serializers
  */
 
+import { REQUEST_ID_HEADER } from '@oksai/constants';
+
 /**
  * 序列化后的请求信息
  */
@@ -75,7 +77,7 @@ export function serializeRequest(req: unknown): SerializedRequest {
 			'content-type': String(headers['content-type'] ?? ''),
 			'user-agent': String(headers['user-agent'] ?? ''),
 			'x-forwarded-for': String(headers['x-forwarded-for'] ?? ''),
-			'x-request-id': String(headers['x-request-id'] ?? headers['x-correlation-id'] ?? '')
+			[REQUEST_ID_HEADER]: String(headers[REQUEST_ID_HEADER] ?? headers['x-correlation-id'] ?? '')
 		};
 	}
 
@@ -229,7 +231,7 @@ export function getRequestIdFromReq(req: unknown): string {
 
 	// 优先从 headers 获取
 	if (headers) {
-		const requestId = headers['x-request-id'];
+		const requestId = headers[REQUEST_ID_HEADER];
 		if (requestId) return String(requestId);
 
 		const correlationId = headers['x-correlation-id'];

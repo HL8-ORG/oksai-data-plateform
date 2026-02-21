@@ -1,6 +1,6 @@
 # Config 模块技术规范
 
-> 版本：4.1.0  
+> 版本：4.2.0  
 > 更新日期：2026-02-22
 
 ---
@@ -13,6 +13,7 @@
 
 - **环境变量访问**：类型安全的配置读取
 - **丰富的类型支持**：`string/int/float/bool/enum/url/json/list/durationMs`
+- **纯函数解析层**：内部 `env-parsers` 模块，零依赖、易测试
 - **zod schema 验证**：配置结构验证与类型推导
 - **命名空间配置**：按功能分组管理配置
 - **边界校验**：支持 `min/max` 范围验证
@@ -25,6 +26,7 @@
 ### 1.2 设计原则
 
 - **增强而非替换**：基于 `@nestjs/config` 扩展功能
+- **纯函数优先**：解析逻辑使用纯函数，易于测试和复用
 - **类型安全**：提供不同类型的配置读取方法
 - **验证优先**：通过 zod schema 确保配置正确性
 - **错误友好**：安全方法返回 Result 类型，中文错误消息
@@ -39,20 +41,36 @@
 ```
 @oksai/config/
 ├── lib/
-│   ├── config-env.ts        # 环境变量解析器（静态方法）
-│   ├── config-schema.ts     # zod schema 辅助工具
-│   └── config.service.ts    # 配置服务（带缓存 + NestJS 集成）
+│   ├── internal/
+│   │   ├── env-parsers.ts       # 纯解析函数（零依赖）
+│   │   └── env-parsers.spec.ts  # 纯函数测试
+│   ├── config-env.ts            # 环境变量解析器（使用 env-parsers）
+│   ├── config-schema.ts         # zod schema 辅助工具
+│   └── config.service.ts        # 配置服务（带缓存 + NestJS 集成）
 ├── spec/
 │   └── config.spec.ts
 └── index.ts
 ```
 
-### 2.2 三层 API 设计
+### 2.2 四层 API 设计
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Application                               │
 │                                                              │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ env-parsers（内部纯函数，零依赖）                     │    │
+│  │  parseOptionalBoolean(raw)  → boolean | undefined    │    │
+│  │  parseOptionalInt(raw)      → number | undefined     │    │
+│  │  parseOptionalFloat(raw)    → number | undefined     │    │
+│  │  parseOptionalUrl(raw)      → URL | undefined        │    │
+│  │  parseOptionalJson<T>(raw)  → T | undefined          │    │
+│  │  parseOptionalDurationMs()  → number | undefined     │    │
+│  │  parseOptionalEnum<T>()     → T | undefined          │    │
+│  │  parseCsv(raw, opts)        → string[]               │    │
+│  │  readXxxFromEnv(name, env)  → T                      │    │
+│  └─────────────────────────────────────────────────────┘    │
+│                          ↑ 使用                              │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │ env（静态方法，无缓存）                              │    │
 │  │  .string(name, options)    → string                 │    │
@@ -98,7 +116,115 @@
 
 ## 三、使用方式
 
-### 3.1 NestJS 集成（推荐）
+### 3.1 应用配置模式（推荐）
+
+应用启动时使用 zod schema 验证配置，创建类型安全的配置对象：
+
+```typescript
+// app.config.ts
+import { z } from 'zod';
+
+export const appConfigSchema = z.object({
+  PORT: z.coerce.number().int().min(1).max(65535).default(3000),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  API_PREFIX: z.string().default('api'),
+  ENABLE_SWAGGER: z.string().transform(v => v === 'true' || v === '1').default('true'),
+  LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
+  PRETTY_LOG: z.string().transform(v => v === 'true' || v === '1').optional(),
+});
+
+export type AppConfig = z.infer<typeof appConfigSchema>;
+
+export interface AppConfiguration {
+  readonly port: number;
+  readonly nodeEnv: string;
+  readonly isProduction: boolean;
+  readonly isDevelopment: boolean;
+  readonly isTest: boolean;
+  readonly apiPrefix: string;
+  readonly enableSwagger: boolean;
+  readonly logLevel: string;
+  readonly prettyLog: boolean;
+}
+
+export function createAppConfiguration(config: AppConfig): AppConfiguration {
+  const isProduction = config.NODE_ENV === 'production';
+  const isDevelopment = config.NODE_ENV === 'development';
+  
+  return {
+    port: config.PORT,
+    nodeEnv: config.NODE_ENV,
+    isProduction,
+    isDevelopment,
+    isTest: config.NODE_ENV === 'test',
+    apiPrefix: config.API_PREFIX,
+    enableSwagger: config.ENABLE_SWAGGER && !isProduction,
+    logLevel: config.LOG_LEVEL,
+    prettyLog: config.PRETTY_LOG ?? isDevelopment,
+  };
+}
+```
+
+```typescript
+// app.module.ts
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@oksai/config';
+import { OksaiPlatformModule } from '@oksai/app-kit';
+import { appConfigSchema, createAppConfiguration } from './app.config';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      schema: appConfigSchema,
+    }),
+    OksaiPlatformModule.initAsync({
+      useFactory: (config: ConfigService) => {
+        const appConfig = createAppConfiguration(config.validate(appConfigSchema));
+        return {
+          isGlobal: true,
+          logLevel: appConfig.logLevel,
+          prettyLog: appConfig.prettyLog,
+        };
+      },
+      inject: [ConfigService],
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+```typescript
+// main.ts
+import { NestFactory } from '@nestjs/core';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { AppModule } from './app.module';
+import { ConfigService } from '@oksai/config';
+import { appConfigSchema, createAppConfiguration } from './app.config';
+
+async function bootstrap() {
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(),
+    { bufferLogs: true }
+  );
+
+  const configService = app.get(ConfigService);
+  const appConfig = createAppConfiguration(configService.validate(appConfigSchema));
+
+  app.enableCors();
+  app.setGlobalPrefix(appConfig.apiPrefix);
+
+  await app.listen(appConfig.port, '0.0.0.0');
+  
+  console.log(`应用已启动: http://localhost:${appConfig.port}`);
+  console.log(`运行环境: ${appConfig.nodeEnv}`);
+}
+
+bootstrap();
+```
+
+### 3.2 NestJS 集成（基础）
 
 #### 基本使用
 
@@ -218,7 +344,7 @@ static init(): DynamicModule {
 }
 ```
 
-### 3.2 env 辅助对象（静态方法）
+### 3.3 env 辅助对象（静态方法）
 
 适用于一次性读取配置，无缓存开销：
 
@@ -254,7 +380,7 @@ const origins = env.list('ALLOWED_ORIGINS', { separator: ',' });
 const timeout = env.durationMs('TIMEOUT', { defaultValue: 5000, min: 1000 });
 ```
 
-### 3.3 安全解析（Result 类型）
+### 3.4 安全解析（Result 类型）
 
 适用于可选配置场景，不抛出异常：
 
@@ -270,7 +396,7 @@ if (portResult.isOk()) {
 }
 ```
 
-### 3.4 ConfigService（带缓存）
+### 3.5 ConfigService（带缓存）
 
 适用于需要多次读取同一配置的场景：
 
@@ -303,7 +429,7 @@ const validatedConfig = config.validate(appSchema);
 const dbConfig = config.getNamespace<DatabaseConfig>('database');
 ```
 
-### 3.5 envSchema 辅助
+### 3.6 envSchema 辅助
 
 用于快速创建 zod schema：
 
@@ -320,7 +446,7 @@ const configSchema = z.object({
 });
 ```
 
-### 3.6 缓存控制
+### 3.7 缓存控制
 
 ```typescript
 // 禁用缓存
@@ -336,7 +462,7 @@ config.clearCacheFor('PORT');
 config.clearNamespaceCache('database');
 ```
 
-### 3.7 forFeature 模块
+### 3.8 forFeature 模块
 
 用于子模块中注册特定配置：
 
@@ -359,9 +485,106 @@ export class RedisModule {}
 
 ---
 
-## 四、API 参考
+## 四、内部纯函数层（env-parsers）
 
-### 4.1 env 辅助对象
+### 4.1 设计目标
+
+- **零依赖**：无任何外部依赖
+- **纯函数**：无副作用，易于测试
+- **可复用**：可被其他模块直接使用
+- **依赖注入**：通过 `EnvRecord` 参数注入环境变量
+
+### 4.2 解析函数 API
+
+```typescript
+import {
+  parseOptionalBoolean,
+  parseOptionalInt,
+  parseOptionalPositiveInt,
+  parseOptionalFloat,
+  parseOptionalNonEmptyString,
+  parseOptionalUrl,
+  parseOptionalJson,
+  parseOptionalDurationMs,
+  parseOptionalEnum,
+  parseCsv,
+} from '@oksai/config/lib/internal/env-parsers';
+
+// 解析函数（返回 undefined 表示失败）
+parseOptionalNonEmptyString(raw: string | undefined): string | undefined
+parseOptionalBoolean(raw: string | undefined): boolean | undefined
+parseOptionalInt(raw: string | undefined): number | undefined
+parseOptionalPositiveInt(raw: string | undefined): number | undefined
+parseOptionalFloat(raw: string | undefined): number | undefined
+parseOptionalUrl(raw: string | undefined, options?): URL | undefined
+parseOptionalJson<T>(raw: string | undefined): T | undefined
+parseOptionalDurationMs(raw: string | undefined, options?): number | undefined
+parseOptionalEnum<T>(raw: string | undefined, options: { allowed: readonly T[] }): T | undefined
+parseCsv(raw: string | undefined, options?): string[]
+```
+
+### 4.3 环境读取函数
+
+```typescript
+import {
+  readBooleanFromEnv,
+  readOptionalBooleanFromEnv,
+  readOptionalIntFromEnv,
+  readOptionalPositiveIntFromEnv,
+  readOptionalFloatFromEnv,
+  readOptionalNonEmptyStringFromEnv,
+  readCsvFromEnv,
+  readOptionalUrlFromEnv,
+  readOptionalJsonFromEnv,
+  readOptionalDurationMsFromEnv,
+  readOptionalEnumFromEnv,
+  type EnvRecord,
+} from '@oksai/config/lib/internal/env-parsers';
+
+// 注入环境变量对象
+const env: EnvRecord = { PORT: '3000', DEBUG: 'true' };
+
+// 读取函数
+readBooleanFromEnv('DEBUG', false, env)           // true
+readOptionalIntFromEnv('PORT', env)               // 3000
+readCsvFromEnv('ORIGINS', env, { separator: ',' }) // ['a', 'b']
+```
+
+### 4.4 使用示例
+
+```typescript
+import { parseOptionalBoolean, parseOptionalInt, type EnvRecord } from '@oksai/config/lib/internal/env-parsers';
+
+// 纯函数测试
+describe('配置解析', () => {
+  it('应该解析布尔值', () => {
+    expect(parseOptionalBoolean('true')).toBe(true);
+    expect(parseOptionalBoolean('1')).toBe(true);
+    expect(parseOptionalBoolean('false')).toBe(false);
+    expect(parseOptionalBoolean('invalid')).toBeUndefined();
+  });
+
+  it('应该解析整数', () => {
+    expect(parseOptionalInt('123')).toBe(123);
+    expect(parseOptionalInt('abc')).toBeUndefined();
+    expect(parseOptionalInt('12.5')).toBeUndefined();  // 纯整数
+  });
+});
+
+// 依赖注入示例
+function loadConfig(env: EnvRecord) {
+  return {
+    debug: parseOptionalBoolean(env.DEBUG) ?? false,
+    port: parseOptionalInt(env.PORT) ?? 3000,
+  };
+}
+```
+
+---
+
+## 五、API 参考
+
+### 5.1 env 辅助对象
 
 ```typescript
 // 选项接口
@@ -395,7 +618,7 @@ const env = {
 };
 ```
 
-### 4.2 ConfigService
+### 5.2 ConfigService
 
 ```typescript
 class ConfigService implements OnModuleDestroy {
@@ -455,7 +678,7 @@ class ConfigService implements OnModuleDestroy {
 }
 ```
 
-### 4.3 ConfigModule
+### 5.3 ConfigModule
 
 ```typescript
 interface ConfigModuleOptions {
@@ -486,7 +709,7 @@ class ConfigModule {
 }
 ```
 
-### 4.4 envSchema 辅助
+### 5.4 envSchema 辅助
 
 ```typescript
 const envSchema = {
@@ -502,7 +725,7 @@ const envSchema = {
 };
 ```
 
-### 4.5 错误类型
+### 5.5 错误类型
 
 ```typescript
 // 环境变量解析错误
@@ -519,7 +742,7 @@ class ConfigSchemaError extends Error {
 
 ---
 
-## 五、时长格式支持
+## 六、时长格式支持
 
 `durationMs` 方法支持的格式：
 
@@ -534,7 +757,7 @@ class ConfigSchemaError extends Error {
 
 ---
 
-## 六、布尔值解析规则
+## 七、布尔值解析规则
 
 | 环境变量值 | 解析结果 |
 |-----------|---------|
@@ -544,18 +767,20 @@ class ConfigSchemaError extends Error {
 
 ---
 
-## 七、测试覆盖
+## 八、测试覆盖
 
 | 指标 | 覆盖率 |
 |------|--------|
-| Test Suites | 1 passed |
-| Tests | 79 passed |
+| Test Suites | 2 passed |
+| Tests | 124 passed |
+| - config.spec.ts | 79 tests |
+| - env-parsers.spec.ts | 45 tests |
 
 ---
 
-## 八、环境变量约定
+## 九、环境变量约定
 
-### 8.1 标准变量
+### 9.1 标准变量
 
 | 变量名 | 说明 | 示例 |
 |--------|------|------|
@@ -563,7 +788,7 @@ class ConfigSchemaError extends Error {
 | `PORT` | 服务端口 | `3000` |
 | `LOG_LEVEL` | 日志级别 | `debug`, `info`, `warn`, `error` |
 
-### 8.2 命名规范
+### 9.2 命名规范
 
 - 使用大写字母和下划线
 - 按模块分组：`REDIS_URL`, `REDIS_KEY_PREFIX`
@@ -572,7 +797,7 @@ class ConfigSchemaError extends Error {
 
 ---
 
-## 九、注意事项
+## 十、注意事项
 
 1. **敏感信息**：不要在代码中硬编码敏感配置
 2. **默认值**：为可选配置提供合理的默认值
@@ -587,12 +812,13 @@ class ConfigSchemaError extends Error {
    - 在 `DynamicModule` 的 `imports` 中使用 `ConfigModule.forRootSync()`
    - `forRoot()` 返回 `Promise<DynamicModule>`，不能直接用于 `imports` 数组
 10. **Provider 注册**：`ConfigService` 由 `ConfigModule` 自动提供，不要在模块的 `providers` 中重复注册
+11. **禁止直接访问 process.env**：使用 `env.xxx()` 或 `ConfigService` 方法
 
 ---
 
-## 十、与其他模块集成
+## 十一、与其他模块集成
 
-### 10.1 与 @oksai/redis 集成
+### 11.1 与 @oksai/redis 集成
 
 ```typescript
 import { ConfigModule } from '@oksai/config';
@@ -611,7 +837,7 @@ import { ConfigModule } from '@oksai/config';
 export class RedisModule {}
 ```
 
-### 10.2 与 @oksai/database 集成
+### 11.2 与 @oksai/database 集成
 
 ```typescript
 import { ConfigModule, z } from '@oksai/config';
@@ -650,9 +876,9 @@ export class DatabaseModule {}
 
 ---
 
-## 十一、迁移指南（v3 → v4）
+## 十二、迁移指南（v3 → v4）
 
-### 11.1 forRoot 变为异步
+### 12.1 forRoot 变为异步
 
 ```typescript
 // v3（旧）
@@ -666,7 +892,7 @@ export class DatabaseModule {}
 })
 ```
 
-### 11.2 新增 forRootSync
+### 12.2 新增 forRootSync
 
 如果不需要 .env 文件加载，可以使用同步版本：
 
@@ -676,7 +902,7 @@ export class DatabaseModule {}
 })
 ```
 
-### 11.3 新增 schema 验证
+### 12.3 新增 schema 验证
 
 ```typescript
 await ConfigModule.forRoot({
@@ -686,7 +912,7 @@ await ConfigModule.forRoot({
 })
 ```
 
-### 11.4 新增命名空间
+### 12.4 新增命名空间
 
 ```typescript
 await ConfigModule.forRoot({
@@ -697,4 +923,16 @@ await ConfigModule.forRoot({
     },
   ],
 })
+```
+
+### 12.5 v4.2 新增纯函数层
+
+内部新增 `env-parsers` 模块，提供零依赖的纯解析函数：
+
+```typescript
+import { parseOptionalBoolean, type EnvRecord } from '@oksai/config/lib/internal/env-parsers';
+
+// 可独立使用，无需 NestJS
+const env: EnvRecord = { DEBUG: 'true' };
+const debug = parseOptionalBoolean(env.DEBUG) ?? false;
 ```

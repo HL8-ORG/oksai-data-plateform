@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
 import { randomUUID } from 'node:crypto';
+import { MAX_PAGE_SIZE } from '@oksai/constants';
 import type {
 	IOutbox,
 	OutboxRecord,
@@ -55,7 +56,7 @@ export class PgOutbox implements IOutbox {
 		const em = this.txHost.getCurrentEntityManager() ?? this.orm.em;
 		const conn = em.getConnection();
 		const now = params.now ?? new Date();
-		const limit = params.limit ?? 100;
+		const limit = params.limit ?? MAX_PAGE_SIZE;
 
 		const rows = await conn.execute<any[]>(
 			`select message_id, event_type, occurred_at, schema_version, tenant_id, user_id, request_id, payload,

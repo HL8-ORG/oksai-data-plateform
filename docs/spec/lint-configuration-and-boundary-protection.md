@@ -13,6 +13,7 @@
 | **统一代码质量基线** | monorepo 内各 app/lib 有一致的规则与默认忽略项 |
 | **自动化边界检查** | 编译期强制执行依赖边界约束 |
 | **分层约束策略** | 不同层级应用不同强度的约束 |
+| **配置防护** | 禁止直接访问 `process.env`，强制通过 `@oksai/config` |
 | **格式化与校验分离** | Prettier 负责格式，ESLint 负责质量 |
 
 ### 1.2 适用范围
@@ -32,6 +33,7 @@
 │                          apps/                                  │
 │         platform-api, platform-admin-api                       │
 │         （应用入口，依赖所有层）                                  │
+│         ⚠️ L5: 业务代码禁止 process.env                         │
 └───────────────────────────┬─────────────────────────────────────┘
                             │
                             ▼
@@ -63,14 +65,15 @@
 
 ```
 apps → composition → domains → shared
-        ↓              ↓          ↓
-    adapters       adapters    adapters
+         ↓              ↓          ↓
+     adapters       adapters    adapters
 
 规则：
 1. 外层可以依赖内层
 2. 内层禁止依赖外层
 3. 领域层禁止依赖框架实现
 4. 共享层中的纯模块禁止依赖框架
+5. 应用层业务代码禁止直接访问 process.env
 ```
 
 ---
@@ -85,8 +88,16 @@ apps → composition → domains → shared
 | **L2** | `pure-domains` | 严格领域层约束 | 在 L1 基础上，禁止依赖任何框架 |
 | **L3** | `shared-pure` | 共享层纯模块 | 禁止依赖框架、运行时环境（process.env） |
 | **L4** | `shared-framework` | 共享层框架模块 | 允许依赖框架，禁止依赖领域层 |
+| **L5** | `apps` | 应用层 | 业务代码禁止直接访问 process.env |
 
 ### 3.2 模块分类
+
+#### 应用层（L5）
+
+| 模块 | 说明 | 约束 |
+|:---|:---|:---|
+| `@oksai/platform-api` | 平台业务 API | 业务代码禁止 `process.env`，仅入口文件允许 |
+| `@oksai/platform-admin-api` | 平台管理 API | 业务代码禁止 `process.env`，仅入口文件允许 |
 
 #### 共享层纯模块（L3）
 
@@ -95,6 +106,7 @@ apps → composition → domains → shared
 | 模块 | 说明 |
 |:---|:---|
 | `@oksai/kernel` | 核心领域原语 |
+| `@oksai/constants` | 基础常量（零依赖） |
 | `@oksai/event-store` | 事件存储抽象 |
 | `@oksai/cqrs` | CQRS 基础设施 |
 | `@oksai/eda` | 事件驱动架构 |
@@ -145,13 +157,13 @@ apps → composition → domains → shared
 ├── libs/
 │   ├── shared/
 │   │   └── kernel/
-│   │       └── eslint.config.mjs  # 包级配置
+│   │       └── eslint.config.mjs  # 包级配置（L3）
 │   └── domains/
 │       └── identity/
-│           └── eslint.config.mjs  # 包级配置
+│           └── eslint.config.mjs  # 包级配置（L2）
 └── apps/
     └── platform-api/
-        └── eslint.config.mjs      # 应用级配置
+        └── eslint.config.mjs      # 应用级配置（L5）
 ```
 
 ### 4.2 职责分工
@@ -161,6 +173,7 @@ apps → composition → domains → shared
 | `eslint.config.mjs`（根） | 全仓忽略项、JS/TS 推荐规则基线、Prettier 集成 |
 | `tools/eslint/oksai-guardrails.mjs` | 可复用的边界约束工厂函数 |
 | `libs/**/eslint.config.mjs` | 包级约束（继承根配置 + 边界护栏） |
+| `apps/**/eslint.config.mjs` | 应用级约束（配置防护护栏） |
 
 ---
 
@@ -235,11 +248,50 @@ export default tseslint.config(
 import rootConfig from '../../eslint.config.mjs';
 import { 
 	createSharedPureBoundaryGuardrail,
+	createAppConfigGuardrail,
 	createTestFileConfig 
 } from '../../tools/eslint/oksai-guardrails.mjs';
 ```
 
-### 6.2 共享层纯模块配置（L3）
+### 6.2 应用层配置（L5）
+
+```javascript
+// apps/platform-api/eslint.config.mjs
+import rootConfig from '../../eslint.config.mjs';
+import globals from 'globals';
+import { 
+	createAppConfigGuardrail, 
+	createTestFileConfig 
+} from '../../tools/eslint/oksai-guardrails.mjs';
+
+/**
+ * @oksai/platform-api ESLint 配置
+ *
+ * 应用层入口
+ * - 入口文件（main.ts）允许使用 process.env
+ * - 其他文件禁止直接使用 process.env
+ */
+export default [
+	...rootConfig,
+	createTestFileConfig(),
+	{
+		files: ['src/**/*.ts'],
+		languageOptions: {
+			globals: {
+				...globals.node,
+				...globals.jest
+			}
+		}
+	},
+	createAppConfigGuardrail({
+		packageName: '@oksai/platform-api',
+		// main.ts 允许使用 process.env（通过 ConfigService 间接访问）
+		entryFiles: ['src/main.ts']
+	})
+];
+```
+
+### 6.3 共享层纯模块配置（L3）
 
 ```javascript
 // libs/shared/kernel/eslint.config.mjs
@@ -258,7 +310,7 @@ export default [
 ];
 ```
 
-### 6.3 共享层框架模块配置（L4）
+### 6.4 共享层框架模块配置（L4）
 
 ```javascript
 // libs/shared/logger/eslint.config.mjs
@@ -277,7 +329,7 @@ export default [
 ];
 ```
 
-### 6.4 领域层配置（L2）
+### 6.5 领域层配置（L2）
 
 ```javascript
 // libs/domains/identity/eslint.config.mjs
@@ -298,9 +350,102 @@ export default [
 
 ---
 
-## 七、Prettier 集成
+## 七、配置防护护栏
 
-### 7.1 配置
+### 7.1 createAppConfigGuardrail
+
+适用于应用层，禁止业务代码直接访问 `process.env`：
+
+```javascript
+createAppConfigGuardrail({
+	packageName: '@oksai/platform-api',
+	entryFiles: ['src/main.ts']  // 仅入口文件豁免
+})
+```
+
+**规则说明：**
+
+| 规则 | 说明 |
+|:---|:---|
+| `no-restricted-properties` | 禁止 `process.env` |
+| `no-restricted-imports` | 禁止 `dotenv` |
+
+**错误消息示例：**
+
+```
+apps/platform-api/src/health.controller.ts
+  10:15  error  'process.env' is restricted from being used.
+         [@oksai/platform-api] 业务代码禁止直接使用 process.env；
+         请在入口文件读取并通过 @oksai/config 管理
+
+         入口文件可以读取环境变量，其他文件应使用：
+           import { env, ConfigService } from '@oksai/config';
+```
+
+### 7.2 createConfigGuardrail
+
+适用于共享层模块，完全禁止 `process.env`：
+
+```javascript
+createConfigGuardrail({
+	packageName: '@oksai/identity',
+	allowDotenv: false
+})
+```
+
+### 7.3 正确的配置访问方式
+
+```typescript
+// ❌ 错误：直接访问 process.env
+const port = process.env.PORT;
+const nodeEnv = process.env.NODE_ENV ?? 'development';
+
+// ✅ 正确：使用 @oksai/config
+import { env, ConfigService } from '@oksai/config';
+
+// 方式 1：静态 env 辅助对象
+const port = env.int('PORT', { defaultValue: 3000, min: 1, max: 65535 });
+
+// 方式 2：ConfigService（推荐用于 NestJS 应用）
+@Injectable()
+export class MyService {
+	constructor(private readonly config: ConfigService) {}
+	
+	getConfig() {
+		return {
+			port: this.config.getInt('PORT', { defaultValue: 3000 }),
+			nodeEnv: this.config.getNodeEnv(),
+		};
+	}
+}
+
+// 方式 3：应用配置对象（推荐用于应用启动）
+// app.config.ts
+export const appConfigSchema = z.object({
+	PORT: z.coerce.number().int().min(1).max(65535).default(3000),
+	NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+});
+
+export function createAppConfiguration(config: AppConfig): AppConfiguration {
+	return {
+		port: config.PORT,
+		nodeEnv: config.NODE_ENV,
+		isProduction: config.NODE_ENV === 'production',
+		// ...
+	};
+}
+
+// main.ts
+const configService = app.get(ConfigService);
+const appConfig = createAppConfiguration(configService.validate(appConfigSchema));
+await app.listen(appConfig.port, '0.0.0.0');
+```
+
+---
+
+## 八、Prettier 集成
+
+### 8.1 配置
 
 ```json
 // package.json
@@ -319,7 +464,7 @@ export default [
 }
 ```
 
-### 7.2 与 ESLint 的边界
+### 8.2 与 ESLint 的边界
 
 | 工具 | 职责 |
 |:---|:---|
@@ -330,9 +475,9 @@ export default [
 
 ---
 
-## 八、命令与 CI 集成
+## 九、命令与 CI 集成
 
-### 8.1 包级 lint 命令
+### 9.1 包级 lint 命令
 
 ```json
 // libs/shared/kernel/package.json
@@ -344,7 +489,7 @@ export default [
 }
 ```
 
-### 8.2 仓库级 lint
+### 9.2 仓库级 lint
 
 ```bash
 # 运行全仓 lint
@@ -354,7 +499,7 @@ pnpm turbo run lint
 pnpm turbo run lint --affected
 ```
 
-### 8.3 CI 配置
+### 9.3 CI 配置
 
 ```yaml
 # .github/workflows/ci.yml
@@ -364,17 +509,21 @@ pnpm turbo run lint --affected
 
 ---
 
-## 九、新增包接入清单
+## 十、新增包接入清单
 
 - [ ] 在包目录新增 `eslint.config.mjs`
 - [ ] 显式 `import` 根配置
-- [ ] 根据模块类型选择合适的护栏函数
+- [ ] 根据模块类型选择合适的护栏函数：
+  - 应用层：`createAppConfigGuardrail`
+  - 领域层：`createPureDomainsBoundaryGuardrail`
+  - 共享层纯模块：`createSharedPureBoundaryGuardrail`
+  - 共享层框架模块：`createSharedFrameworkBoundaryGuardrail`
 - [ ] 在 `package.json` 增加 `scripts.lint`
 - [ ] 确保包在 `pnpm-workspace.yaml` 的扫描范围内
 
 ---
 
-## 十、常见问题
+## 十一、常见问题
 
 ### Q1: 为什么子目录运行 eslint 没有应用根规则？
 
@@ -389,17 +538,35 @@ libs/domains/identity/src/domain/model/user.aggregate.ts
   说明：[@oksai/identity] 纯领域层禁止依赖 NestJS 框架；请使用领域服务或 Port 接口
 ```
 
-### Q3: `no-floating-promises` 报警怎么处理？
+### Q3: 配置防护错误示例
+
+```
+apps/platform-api/src/health.controller.ts
+  15:20  error  'process.env' is restricted from being used  no-restricted-properties
+
+  说明：[@oksai/platform-api] 业务代码禁止直接使用 process.env；
+        请在入口文件读取并通过 @oksai/config 管理
+```
+
+### Q4: `no-floating-promises` 报警怎么处理？
 
 三种处理方式：
 - `await`：确实要等待结果
 - `.catch(...)`：显式处理拒绝分支
 - `void someAsync()`：明确"刻意不等待"
 
+### Q5: 入口文件为什么可以豁免配置防护？
+
+入口文件（如 `main.ts`）负责应用启动和配置初始化，需要访问 `ConfigService`。但推荐的做法是：
+1. 入口文件通过 `ConfigService` 读取配置
+2. 创建类型安全的 `AppConfiguration` 对象
+3. 业务代码通过依赖注入获取配置
+
 ---
 
-## 十一、修订历史
+## 十二、修订历史
 
 | 版本 | 日期 | 变更说明 |
 |:---|:---|:---|
+| v1.1 | 2026-02-22 | 新增应用层配置防护（L5），更新护栏使用示例 |
 | v1.0 | 2026-02-21 | 整合 XS-Lint配置策略 与 XS-ESLint依赖边界防护技术方案 |

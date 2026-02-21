@@ -32,6 +32,7 @@
 		"@oksai/auth": "workspace:*",
 		"@oksai/authorization": "workspace:*",
 		"@oksai/config": "workspace:*",
+		"@oksai/constants": "workspace:*",
 		"@oksai/context": "workspace:*",
 		"@oksai/cqrs": "workspace:*",
 		"@oksai/database": "workspace:*",

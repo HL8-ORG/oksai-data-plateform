@@ -3,6 +3,7 @@ import type { Logger } from 'pino';
 import { PARAMS_PROVIDER_TOKEN, type Params } from 'nestjs-pino';
 import { pino } from 'pino';
 import { TenantContextService, AsyncLocalStorageProvider } from '@oksai/context';
+import { DEFAULT_LOG_LEVEL } from '@oksai/constants';
 import { serializeError } from './logger-serializers';
 
 /**
@@ -17,7 +18,7 @@ type PinoHttpConfig =
 export interface OksaiLoggerOptions {
 	/**
 	 * 日志级别
-	 * @default 'info'
+	 * @default DEFAULT_LOG_LEVEL
 	 */
 	level?: string;
 
@@ -130,14 +131,14 @@ export class OksaiLoggerService implements LoggerService {
 			// 使用已配置的 Pino 实例（带 stream）
 			this.logger = pino(
 				{
-					level: (pinoHttp as { level?: string }).level ?? 'info'
+					level: (pinoHttp as { level?: string }).level ?? DEFAULT_LOG_LEVEL
 				},
 				pinoHttp.stream as unknown as NodeJS.WritableStream
 			);
 		} else if (pinoHttp && 'transport' in pinoHttp && pinoHttp.transport) {
 			// 使用 transport 配置（pino-pretty 等）
 			this.logger = pino({
-				level: (pinoHttp as { level?: string }).level ?? 'info',
+				level: (pinoHttp as { level?: string }).level ?? DEFAULT_LOG_LEVEL,
 				name: this.serviceName,
 				transport: pinoHttp.transport as {
 					target: string;
@@ -147,7 +148,7 @@ export class OksaiLoggerService implements LoggerService {
 		} else {
 			// 创建独立的 Pino 实例
 			this.logger = pino({
-				level: (pinoHttp as { level?: string } | undefined)?.level ?? 'info',
+				level: (pinoHttp as { level?: string } | undefined)?.level ?? DEFAULT_LOG_LEVEL,
 				name: this.serviceName
 			});
 		}

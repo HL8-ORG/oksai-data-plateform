@@ -1,6 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
+import { DEFAULT_SWAGGER_PATH, DEFAULT_SCALAR_PATH } from '@oksai/constants';
 
 /**
  * OAuth2 配置选项
@@ -190,8 +191,6 @@ export interface SwaggerSetupResult {
  *     title: 'Platform API',
  *     description: '多租户 SaaS 数据分析平台 API',
  *     version: '1.0.0',
- *     swaggerPath: '/swagger',
- *     scalarPath: '/docs',
  *   });
  *
  *   await app.listen(3000);
@@ -207,10 +206,10 @@ export function setupSwagger(
 	const isProduction = process.env.NODE_ENV === 'production';
 	const disableInProduction = options.disableInProduction !== false;
 
-	// 默认路径
+	// 默认路径（使用常量）
 	const jsonPath = options.jsonPath ?? '/api-json';
-	const swaggerPath = options.swaggerPath ?? '/swagger';
-	const scalarPath = options.scalarPath ?? '/docs';
+	const swaggerPath = options.swaggerPath ?? DEFAULT_SWAGGER_PATH;
+	const scalarPath = options.scalarPath ?? DEFAULT_SCALAR_PATH;
 
 	// 检查是否启用
 	const enabled = options.enabled ?? !(isProduction && disableInProduction);

@@ -1,6 +1,7 @@
 import { DynamicModule, Module, Provider, type OnModuleDestroy } from '@nestjs/common';
 import { LoggerModule as NestPinoLoggerModule, type Params } from 'nestjs-pino';
 import { TenantContextService, AsyncLocalStorageProvider } from '@oksai/context';
+import { DEFAULT_LOG_LEVEL } from '@oksai/constants';
 import { OksaiLoggerService } from './oksai-logger.service';
 import {
 	serializeRequest,
@@ -22,7 +23,7 @@ export interface LoggerModuleOptions {
 	isGlobal?: boolean;
 
 	/**
-	 * 日志级别（优先级：options.level > LOG_LEVEL > info）
+	 * 日志级别（优先级：options.level > LOG_LEVEL > DEFAULT_LOG_LEVEL）
 	 */
 	level?: string;
 
@@ -103,7 +104,7 @@ export interface LoggerModuleAsyncOptions {
  * @private
  */
 function buildPinoParams(options: LoggerModuleOptions, tenantContextService?: TenantContextService): Params {
-	const level = options.level ?? 'info';
+	const level = options.level ?? DEFAULT_LOG_LEVEL;
 	const redact = options.redact ?? [
 		'req.headers.authorization',
 		'req.headers.cookie',

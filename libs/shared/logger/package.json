@@ -29,6 +29,7 @@
 		"@nestjs/common": "catalog:",
 		"@nestjs/core": "catalog:",
 		"@oksai/config": "workspace:*",
+		"@oksai/constants": "workspace:*",
 		"@oksai/context": "workspace:*",
 		"nestjs-pino": "catalog:",
 		"pino": "catalog:"

@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ConfigService } from '@oksai/config';
 
 /**
  * 系统管理控制器
@@ -9,6 +10,8 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 @ApiTags('系统管理')
 @Controller('system')
 export class SystemController {
+	constructor(private readonly configService: ConfigService) {}
+
 	/**
 	 * 获取系统信息
 	 */
@@ -62,8 +65,8 @@ export class SystemController {
 	})
 	getEnv(): { nodeEnv: string; tz: string } {
 		return {
-			nodeEnv: process.env.NODE_ENV ?? 'development',
-			tz: process.env.TZ ?? 'UTC'
+			nodeEnv: this.configService.getNodeEnv(),
+			tz: this.configService.get('TZ', { defaultValue: 'UTC' }) ?? 'UTC'
 		};
 	}
 }

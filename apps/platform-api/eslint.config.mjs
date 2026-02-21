@@ -23,6 +23,8 @@ export default [
 	},
 	createAppConfigGuardrail({
 		packageName: '@oksai/platform-api',
-		entryFiles: ['src/main.ts', 'src/env.ts']
+		// main.ts 允许使用 process.env（通过 ConfigService 间接访问）
+		// 但由于重构后 main.ts 不再直接访问 process.env，可以逐步收紧
+		entryFiles: ['src/main.ts']
 	})
 ];
