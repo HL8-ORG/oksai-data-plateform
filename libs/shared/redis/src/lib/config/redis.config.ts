@@ -1,3 +1,5 @@
+import { env } from '@oksai/config';
+
 /**
  * Redis 配置接口
  */
@@ -18,13 +20,8 @@ export interface OksaiRedisConfig {
  * @returns 配置对象
  */
 export function getRedisConfig(): OksaiRedisConfig {
-	const url = process.env.REDIS_URL;
-	if (!url) {
-		throw new Error('缺少 Redis 配置：REDIS_URL');
-	}
+	const url = env.string('REDIS_URL');
+	const keyPrefix = env.string('REDIS_KEY_PREFIX', { defaultValue: '' }).trim() || undefined;
 
-	return {
-		url,
-		keyPrefix: process.env.REDIS_KEY_PREFIX?.trim() || undefined
-	};
+	return { url, keyPrefix };
 }

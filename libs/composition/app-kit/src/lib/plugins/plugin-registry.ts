@@ -1,3 +1,5 @@
+import { env } from '@oksai/config';
+
 /**
  * 插件输入定义
  *
@@ -120,13 +122,8 @@ export function resolvePluginsFromEnv(options: ResolvePluginsFromEnvOptions = {}
 	const separator = options.separator ?? ',';
 	const strict = options.strict ?? true;
 
-	const raw = (process.env[envName] ?? '').trim();
-	if (!raw) return [];
-
-	const names = raw
-		.split(separator)
-		.map((s) => s.trim())
-		.filter(Boolean);
+	const names = env.list(envName, { defaultValue: [], separator });
+	if (names.length === 0) return [];
 
 	const plugins: PluginInput[] = [];
 	const unknown: string[] = [];

@@ -46,11 +46,13 @@ export class OksaiRedisRuntimeModule implements OnModuleDestroy {
  *
  * @example
  * ```typescript
+ * import { env } from '@oksai/config';
+ *
  * @Module({
  *   imports: [
  *     setupRedisModule({
- *       url: process.env.REDIS_URL,
- *       keyPrefix: 'oksai:',
+ *       url: env.string('REDIS_URL'),
+ *       keyPrefix: env.string('REDIS_KEY_PREFIX', { defaultValue: 'oksai:' }),
  *     }),
  *   ],
  * })

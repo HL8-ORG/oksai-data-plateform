@@ -1,5 +1,6 @@
 import { DynamicModule } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
+import { env } from '@oksai/config';
 
 /**
  * 日志模块配置选项
@@ -63,11 +64,13 @@ export interface SetupLoggerModuleOptions {
  *
  * @example
  * ```typescript
+ * import { env } from '@oksai/config';
+ *
  * @Module({
  *   imports: [
  *     setupLoggerModule({
- *       level: process.env.LOG_LEVEL ?? 'info',
- *       pretty: process.env.NODE_ENV === 'development',
+ *       level: env.string('LOG_LEVEL', { defaultValue: 'info' }),
+ *       pretty: env.string('NODE_ENV') === 'development',
  *       prettyOptions: { colorize: true, timeFormat: 'HH:MM:ss.l' },
  *     }),
  *   ],
@@ -105,7 +108,7 @@ export function computeLogLevel(_req: unknown, res: unknown, err?: unknown): 'er
 }
 
 export function setupLoggerModule(options: SetupLoggerModuleOptions = {}): DynamicModule {
-	const level = options.level ?? process.env.LOG_LEVEL ?? 'info';
+	const level = options.level ?? env.string('LOG_LEVEL', { defaultValue: 'info' });
 	const redact = options.redact ?? ['req.headers.authorization', 'req.headers.cookie', 'req.headers.set-cookie'];
 	const pretty = options.pretty === true;
 

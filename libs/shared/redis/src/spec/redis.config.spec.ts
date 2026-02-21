@@ -15,7 +15,7 @@ describe('getRedisConfig', () => {
 		it('缺少 REDIS_URL 时应该抛出错误', () => {
 			delete process.env.REDIS_URL;
 
-			expect(() => getRedisConfig()).toThrow('缺少 Redis 配置：REDIS_URL');
+			expect(() => getRedisConfig()).toThrow('缺少必需的环境变量：REDIS_URL');
 		});
 
 		it('应该正确读取 REDIS_URL', () => {
