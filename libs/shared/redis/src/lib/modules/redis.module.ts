@@ -26,12 +26,10 @@ export interface SetupRedisModuleOptions {
 	lazyConnect?: boolean;
 }
 
-@Module({})
-class OksaiRedisRuntimeModule implements OnModuleDestroy {
+export class OksaiRedisRuntimeModule implements OnModuleDestroy {
 	constructor(@Inject(OKSAI_REDIS) private readonly redis: Redis) {}
 
 	async onModuleDestroy(): Promise<void> {
-		// 优雅关闭连接
 		try {
 			await this.redis.quit();
 		} catch {
