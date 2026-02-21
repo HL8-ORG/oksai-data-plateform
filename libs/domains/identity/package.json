@@ -21,7 +21,8 @@
 		"test:watch": "jest --watch",
 		"test:coverage": "jest --coverage",
 		"test:bdd": "cucumber-js",
-		"lint": "eslint src/ --ext .ts",
+		"lint": "eslint src/ --fix",
+		"lint:check": "eslint src/",
 		"lint:fix": "eslint src/ --ext .ts --fix",
 		"clean": "rimraf dist coverage"
 	},
