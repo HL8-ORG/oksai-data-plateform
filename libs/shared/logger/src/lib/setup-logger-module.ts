@@ -75,6 +75,35 @@ export interface SetupLoggerModuleOptions {
  * export class AppModule {}
  * ```
  */
+/**
+ * 序列化请求对象（导出用于测试）
+ *
+ * @param req - 请求对象
+ * @returns 序列化后的请求信息
+ */
+export function serializeRequest(req: unknown): { method: unknown; url: unknown } {
+	const r = req as { method?: unknown; url?: unknown } | null | undefined;
+	return {
+		method: r?.method,
+		url: r?.url
+	};
+}
+
+/**
+ * 计算日志级别（导出用于测试）
+ *
+ * @param _req - 请求对象（未使用）
+ * @param res - 响应对象
+ * @param err - 可选的错误对象
+ * @returns 日志级别字符串
+ */
+export function computeLogLevel(_req: unknown, res: unknown, err?: unknown): 'error' | 'warn' | 'info' {
+	const statusCode = Number((res as { statusCode?: unknown } | null | undefined)?.statusCode ?? 200);
+	if (statusCode >= 500 || err) return 'error';
+	if (statusCode >= 400) return 'warn';
+	return 'info';
+}
+
 export function setupLoggerModule(options: SetupLoggerModuleOptions = {}): DynamicModule {
 	const level = options.level ?? process.env.LOG_LEVEL ?? 'info';
 	const redact = options.redact ?? ['req.headers.authorization', 'req.headers.cookie', 'req.headers.set-cookie'];
@@ -103,33 +132,21 @@ export function setupLoggerModule(options: SetupLoggerModuleOptions = {}): Dynam
 			redact,
 			...(transport ? { transport } : {}),
 			serializers: {
-				req: (req: unknown) => {
-					const r = req as { method?: unknown; url?: unknown } | null | undefined;
-					return {
-						method: r?.method,
-						url: r?.url
-					};
-				}
+				req: serializeRequest
 			},
 			customProps: (req: unknown, res: unknown) => ({
 				requestId: getRequestIdFromReq(req),
 				...(options.customProps?.(req, res) ?? {})
 			}),
-			customLogLevel: (_req: unknown, res: unknown, err?: unknown) => {
-				const statusCode = Number((res as { statusCode?: unknown } | null | undefined)?.statusCode ?? 200);
-				if (statusCode >= 500 || err) return 'error';
-				if (statusCode >= 400) return 'warn';
-				if (statusCode >= 300) return 'info';
-				return 'info';
-			}
+			customLogLevel: computeLogLevel
 		}
 	});
 }
 
 /**
- * 从请求对象中提取 requestId
+ * 从请求对象中提取 requestId（导出用于测试）
  */
-function getRequestIdFromReq(req: unknown): string {
+export function getRequestIdFromReq(req: unknown): string {
 	const anyReq = req as Record<string, unknown> | null | undefined;
 	const headers = (anyReq as { headers?: Record<string, unknown> } | null | undefined)?.headers;
 	return String(
@@ -142,7 +159,7 @@ function getRequestIdFromReq(req: unknown): string {
 }
 
 /**
- * 解析可选依赖
+ * 解析可选依赖（导出用于测试）
  *
  * 在 pnpm workspace 的隔离 node_modules 结构下，依赖可能不在当前包的 node_modules 中。
  * 通过多路径尝试解析，确保在应用侧安装的可选依赖也能被找到。
@@ -150,7 +167,7 @@ function getRequestIdFromReq(req: unknown): string {
  * @param name - 依赖包名
  * @returns 解析到的绝对路径；解析失败返回 null
  */
-function resolveOptionalDependency(name: string): string | null {
+export function resolveOptionalDependency(name: string): string | null {
 	try {
 		return require.resolve(name);
 	} catch {

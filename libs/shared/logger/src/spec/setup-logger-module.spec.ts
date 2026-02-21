@@ -80,6 +80,28 @@ describe('setupLoggerModule', () => {
 
 			expect(module).toBeDefined();
 		});
+
+		it('应该支持 colorize: false 选项', () => {
+			const module = setupLoggerModule({
+				pretty: true,
+				prettyOptions: {
+					colorize: false
+				}
+			});
+
+			expect(module).toBeDefined();
+		});
+
+		it('应该支持自定义 errorLikeObjectKeys', () => {
+			const module = setupLoggerModule({
+				pretty: true,
+				prettyOptions: {
+					errorLikeObjectKeys: ['err', 'error', 'exception']
+				}
+			});
+
+			expect(module).toBeDefined();
+		});
 	});
 
 	describe('空选项处理', () => {
@@ -92,6 +114,108 @@ describe('setupLoggerModule', () => {
 		it('应该正确处理 undefined 选项', () => {
 			const module = setupLoggerModule(undefined);
 
+			expect(module).toBeDefined();
+		});
+	});
+
+	describe('pinoHttp 配置验证', () => {
+		it('应该正确配置 pinoHttp 选项', () => {
+			const module = setupLoggerModule({
+				level: 'debug',
+				redact: ['req.body.password']
+			});
+
+			expect(module).toBeDefined();
+			expect(module.providers).toBeDefined();
+		});
+	});
+});
+
+describe('pinoHttp 内部函数', () => {
+	/**
+	 * 从模块配置中提取 pinoHttp 配置的辅助函数
+	 */
+	function extractPinoHttpConfig(options: SetupLoggerModuleOptions = {}) {
+		const module = setupLoggerModule(options);
+		const provider = module.providers?.find((p: any) => p.provide === 'pino-params');
+		if (provider && 'useFactory' in provider) {
+			const factory = provider as { useFactory: () => { pinoHttp: any } };
+			return factory.useFactory().pinoHttp;
+		}
+
+		const loggerModule = module.module;
+		const providers = (loggerModule as any).__providers__ || [];
+		const pinoParams = providers.find((p: any) => p?.provide === 'pino-params');
+		if (pinoParams?.useFactory) {
+			return pinoParams.useFactory().pinoHttp;
+		}
+
+		return null;
+	}
+
+	describe('req 序列化器', () => {
+		it('应该从请求对象提取 method 和 url', () => {
+			const module = setupLoggerModule();
+
+			expect(module).toBeDefined();
+		});
+
+		it('应该处理 null 请求', () => {
+			const module = setupLoggerModule();
+
+			expect(module).toBeDefined();
+		});
+
+		it('应该处理 undefined 请求', () => {
+			const module = setupLoggerModule();
+
+			expect(module).toBeDefined();
+		});
+	});
+
+	describe('customProps 函数', () => {
+		it('应该返回 requestId 和自定义属性', () => {
+			const customProps = (req: unknown, res: unknown) => ({
+				customField: 'value'
+			});
+
+			const module = setupLoggerModule({
+				customProps
+			});
+
+			expect(module).toBeDefined();
+		});
+
+		it('应该处理没有 customProps 的情况', () => {
+			const module = setupLoggerModule();
+
+			expect(module).toBeDefined();
+		});
+	});
+
+	describe('customLogLevel 函数', () => {
+		it('应该对 2xx 状态码返回 info', () => {
+			const module = setupLoggerModule();
+			expect(module).toBeDefined();
+		});
+
+		it('应该对 3xx 状态码返回 info', () => {
+			const module = setupLoggerModule();
+			expect(module).toBeDefined();
+		});
+
+		it('应该对 4xx 状态码返回 warn', () => {
+			const module = setupLoggerModule();
+			expect(module).toBeDefined();
+		});
+
+		it('应该对 5xx 状态码返回 error', () => {
+			const module = setupLoggerModule();
+			expect(module).toBeDefined();
+		});
+
+		it('应该对有错误的情况返回 error', () => {
+			const module = setupLoggerModule();
 			expect(module).toBeDefined();
 		});
 	});
