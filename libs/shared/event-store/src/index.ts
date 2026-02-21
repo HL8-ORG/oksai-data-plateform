@@ -14,3 +14,17 @@ export { EventStream } from './lib/event-stream.vo';
 
 // 端口
 export { type EventStorePort } from './lib/event-store.port';
+
+// 审计信息
+export { type AuditInfo, type AggregateRootOptions } from './lib/audit-info.interface';
+
+// 扩展
+export {
+	EmbeddingStatus,
+	SyncStatus,
+	type AIProcessingMetadata,
+	type ETLMetadata,
+	AIEnabledAggregateRoot,
+	SyncableAggregateRoot,
+	type ExternalIdMap,
+} from './lib/extensions';
