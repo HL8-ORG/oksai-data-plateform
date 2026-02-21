@@ -16,7 +16,9 @@ import { SystemController } from './system.controller';
 		OksaiPlatformModule.init({
 			isGlobal: true,
 			enableCqrs: true,
-			enableEda: true
+			enableEda: true,
+			// 开发环境启用美化日志
+			prettyLog: process.env.NODE_ENV !== 'production'
 		})
 	],
 	controllers: [HealthController, SystemController]

@@ -44,6 +44,7 @@
 | [archi-09-clickhouse.md](./archi-09-clickhouse.md) | ClickHouse 表结构设计 |
 | [archi-10-deployment.md](./archi-10-deployment.md) | 部署架构 |
 | [archi-11-plugin-platform.md](./archi-11-plugin-platform.md) | 插件系统与平台装配架构 |
+| [archi-12-module-vs-plugin.md](./archi-12-module-vs-plugin.md) | NestJS 模块机制与项目插件机制对比 |
 
 ---
 
@@ -227,6 +228,7 @@ Projector (Infrastructure Layer)
 
 | 版本 | 日期 | 变更说明 |
 |:---|:---|:---|
+| v2.2 | 2026-02-22 | 新增 archi-12：NestJS 模块机制与项目插件机制对比 |
 | v2.1 | 2026-02-20 | 新增 archi-11：插件系统与平台装配架构 |
 | v2.0 | 2026-02-20 | 全面重构：统一 Monorepo 架构、规范六边形架构、统一命名规范 |
 | v1.0 | - | 初始版本 |

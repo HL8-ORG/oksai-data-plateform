@@ -23,7 +23,7 @@
 		"typecheck": "pnpm turbo run typecheck",
 		"test": "pnpm turbo run test",
 		"libs:fix": "pnpm dlx sherif@latest --fix",
-		"lsof-kill": "lsof -ti :3000 | xargs kill -9 2>/dev/null; sleep 1; echo '端口 3000 已清理'"
+		"lsof-kill": "for port in 3000 3001 3002 3003 3004; do lsof -ti :$port | xargs -r kill -9 2>/dev/null && echo \"端口 $port 已清理\" || true; done"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3.2.0",

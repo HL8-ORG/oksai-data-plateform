@@ -1,7 +1,7 @@
 {
 	"name": "@oksai/logger",
-	"version": "0.1.0",
-	"description": "日志模块 - 基于 Pino 的结构化日志",
+	"version": "0.2.0",
+	"description": "日志模块 - 基于 Pino 的结构化日志，集成多租户上下文",
 	"license": "AGPL-3.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -29,6 +29,7 @@
 		"@nestjs/common": "^11.0.0",
 		"@nestjs/core": "^11.0.0",
 		"@oksai/config": "workspace:*",
+		"@oksai/context": "workspace:*",
 		"nestjs-pino": "^4.0.0",
 		"pino": "^9.0.0"
 	},
@@ -43,7 +44,8 @@
 	},
 	"peerDependencies": {
 		"@nestjs/common": "^11.0.0",
-		"@nestjs/core": "^11.0.0"
+		"@nestjs/core": "^11.0.0",
+		"@oksai/context": "workspace:*"
 	},
 	"engines": {
 		"node": ">=20"

@@ -26,7 +26,11 @@
 		"clean": "rimraf dist coverage"
 	},
 	"dependencies": {
+		"@nestjs/common": "^11.0.0",
 		"@oksai/kernel": "workspace:*"
+	},
+	"peerDependencies": {
+		"@nestjs/common": "^11.0.0"
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",

@@ -551,47 +551,48 @@ describe('Config', () => {
 
 	// ============ ConfigModule 测试 ============
 	describe('ConfigModule', () => {
-		it('应该提供 ConfigService', () => {
-			const module = ConfigModule.forRoot();
+		it('forRoot 应该返回 Promise', async () => {
+			const module = await ConfigModule.forRoot();
 			expect(module).toBeDefined();
 			expect(module.exports).toContain(ConfigService);
 		});
 
-		it('应该支持 isGlobal 选项', () => {
-			const module = ConfigModule.forRoot({ isGlobal: false });
+		it('forRoot 应该支持 isGlobal 选项', async () => {
+			const module = await ConfigModule.forRoot({ isGlobal: false });
 			expect(module.global).toBe(false);
 		});
 
-		it('应该支持 configOptions 选项', () => {
-			const module = ConfigModule.forRoot({
+		it('forRoot 应该支持 configOptions 选项', async () => {
+			const module = await ConfigModule.forRoot({
 				configOptions: { enableCache: false }
 			});
 			expect(module).toBeDefined();
 		});
 
-		it('forRootAsync 应该支持异步工厂', () => {
-			const module = ConfigModule.forRootAsync({
-				useFactory: async () => ({ enableCache: true }),
-				isGlobal: true
-			});
+		it('forRootSync 应该同步返回模块', () => {
+			const module = ConfigModule.forRootSync();
 			expect(module).toBeDefined();
-			expect(module.global).toBe(true);
+			expect(module.exports).toContain(ConfigService);
 		});
 
-		it('forRootAsync 应该创建 ConfigService 实例', async () => {
-			const module = ConfigModule.forRootAsync({
-				useFactory: async () => ({ enableCache: false }),
-				isGlobal: false
+		it('forRootSync 应该支持 isGlobal 选项', () => {
+			const module = ConfigModule.forRootSync({ isGlobal: false });
+			expect(module.global).toBe(false);
+		});
+
+		it('forRootSync 应该创建 ConfigService 实例', () => {
+			const module = ConfigModule.forRootSync({
+				configOptions: { enableCache: false }
 			});
 
 			expect(module.providers).toBeDefined();
 			const provider = module.providers?.[0] as {
 				provide: typeof ConfigService;
-				useFactory: () => Promise<ConfigService>;
+				useFactory: () => ConfigService;
 			};
 			expect(provider.provide).toBe(ConfigService);
 
-			const service = await provider.useFactory();
+			const service = provider.useFactory();
 			expect(service).toBeInstanceOf(ConfigService);
 		});
 	});

@@ -21,8 +21,14 @@ describe('OksaiPlatformModule', () => {
 			expect(module.global).toBe(true);
 		});
 
-		it('应该包含 ConfigModule 导入', () => {
+		it('应该包含 ConfigModule 和 LoggerModule 导入', () => {
 			const module = OksaiPlatformModule.init();
+
+			expect(module.imports).toHaveLength(2);
+		});
+
+		it('禁用 Logger 时应该只包含 ConfigModule 导入', () => {
+			const module = OksaiPlatformModule.init({ enableLogger: false });
 
 			expect(module.imports).toHaveLength(1);
 		});
@@ -56,13 +62,52 @@ describe('OksaiPlatformModule', () => {
 			expect(providerNames).toContain('EventBus');
 		});
 
+		it('应该包含 OksaiLoggerService', () => {
+			const module = OksaiPlatformModule.init();
+
+			const providerNames = module.providers?.map((p: any) => p?.name).filter(Boolean);
+			expect(providerNames).toContain('OksaiLoggerService');
+		});
+
+		it('禁用 Logger 时不应该包含 OksaiLoggerService', () => {
+			const module = OksaiPlatformModule.init({ enableLogger: false });
+
+			const providerNames = module.providers?.map((p: any) => p?.name).filter(Boolean);
+			expect(providerNames).not.toContain('OksaiLoggerService');
+		});
+
 		it('启用所有选项时应该包含所有 providers', () => {
 			const module = OksaiPlatformModule.init({
 				enableCqrs: true,
-				enableEda: true
+				enableEda: true,
+				enableLogger: true
 			});
 
-			expect(module.providers?.length).toBeGreaterThanOrEqual(5);
+			expect(module.providers?.length).toBeGreaterThanOrEqual(6);
+		});
+	});
+
+	describe('initAsync', () => {
+		it('应该创建异步模块配置', async () => {
+			const module = OksaiPlatformModule.initAsync({
+				useFactory: async () => ({
+					isGlobal: true
+				})
+			});
+
+			expect(module.module).toBe(OksaiPlatformModule);
+			expect(module.global).toBe(true);
+		});
+
+		it('应该支持依赖注入', () => {
+			const module = OksaiPlatformModule.initAsync({
+				useFactory: async (config: any) => ({
+					logLevel: config.get('LOG_LEVEL')
+				}),
+				inject: ['ConfigService']
+			});
+
+			expect(module.module).toBe(OksaiPlatformModule);
 		});
 	});
 });

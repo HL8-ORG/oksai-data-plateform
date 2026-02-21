@@ -20,9 +20,11 @@
  * });
  * ```
  */
+import { Injectable } from '@nestjs/common';
 import { TenantContext } from './tenant-context.vo';
 import { AsyncLocalStorageProvider } from './async-local-storage.provider';
 
+@Injectable()
 export class TenantContextService {
 	/**
 	 * 构造函数

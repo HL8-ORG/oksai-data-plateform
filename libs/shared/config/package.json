@@ -1,7 +1,7 @@
 {
 	"name": "@oksai/config",
-	"version": "0.1.0",
-	"description": "配置管理模块 - 环境变量、配置验证、配置访问",
+	"version": "0.2.0",
+	"description": "配置管理模块 - 基于 @nestjs/config 增强，支持 zod schema 验证、类型安全访问",
 	"license": "AGPL-3.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -26,7 +26,10 @@
 		"clean": "rimraf dist coverage"
 	},
 	"dependencies": {
-		"@oksai/kernel": "workspace:*"
+		"@nestjs/common": "^11.0.0",
+		"@nestjs/config": "^4.0.0",
+		"@oksai/kernel": "workspace:*",
+		"zod": "^3.24.0"
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
@@ -35,6 +38,10 @@
 		"rimraf": "^6.0.1",
 		"ts-jest": "^29.2.5",
 		"typescript": "^5.7.3"
+	},
+	"peerDependencies": {
+		"@nestjs/common": "^10.0.0 || ^11.0.0",
+		"zod": "^3.0.0"
 	},
 	"engines": {
 		"node": ">=20"

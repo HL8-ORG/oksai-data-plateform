@@ -53,15 +53,35 @@
 
 定位：**只给构建用**（`nest build` 默认读取此文件，除非在 `nest-cli.json` 里显式指定）。
 
-当前 `apps/fastify-api` 的策略：
+当前 `apps/platform-api` / `apps/platform-admin-api` 的策略：
 
 - 覆盖：
     - `module: "node16"`
     - `moduleResolution: "node16"`
     - `outDir: "./dist"`
+    - `composite: false`（**重要**）
+    - `incremental: false`（**重要**）
 - 说明：
     - TS 约束：当 `moduleResolution` 是 `"node16"` 时，`module` 必须是 `"node16"`（否则会触发 TS5110）。
     - 运行时仍偏 CJS：只要该包未声明 `"type": "module"`，Node 对 `.js` 默认按 CJS 语义执行。
+
+#### ⚠️ 关于 `composite: false` 的说明
+
+**必须禁用 `composite` 和 `incremental`**：
+
+- 子项目的 `tsconfig.json` 开启 `composite: true` 以支持 project references（IDE/类型检查）。
+- 但在 `tsconfig.build.json` 中 **必须显式禁用**：
+  ```json
+  {
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "composite": false,
+      "incremental": false
+    }
+  }
+  ```
+- **原因**：`nest build` 使用 `tsconfig.build.json` 进行构建。如果 `composite: true`，TypeScript 会认为这是一个"引用项目"而非"主构建项目"，导致不生成 `dist/` 目录中的 JavaScript 产物。
+- **后果**：不禁用会导致 `Cannot find module 'dist/main'` 运行时错误。
 
 ## 如何决定 ESM vs CommonJS（决策流程）
 
@@ -99,10 +119,10 @@
 
 ### 1) 为什么根用 `nodenext`，构建用 `node16`？
 
-- 根的 `nodenext` 主要为了 **“解析贴近 Node + 兼容现代依赖 exports”**，让类型检查阶段更接近真实运行时。
+- 根的 `nodenext` 主要为了 **"解析贴近 Node + 兼容现代依赖 exports"**，让类型检查阶段更接近真实运行时。
 - 构建阶段用 `node16` 是为了让 `nest build` 的产物在 Node 环境下更一致、更可预测，同时满足 TS 对 `module`/`moduleResolution` 组合的约束。
 
-### 2) 这会不会导致我“其实在用 ESM”？
+### 2) 这会不会导致我"其实在用 ESM"？
 
 不会。是否按 ESM 运行，最终取决于 **Node**：
 
@@ -111,6 +131,51 @@
 - Node 的 ESM/CJS 规则
 
 当前仓库没有启用 `"type": "module"`，所以默认仍以 CJS 语义运行为主。
+
+### 3) 为什么 nest build 后 dist 目录是空的？
+
+检查 `tsconfig.build.json` 是否禁用了 `composite` 和 `incremental`：
+
+```json
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "incremental": false
+  }
+}
+```
+
+当 `composite: true` 时，TypeScript 会将其视为 project reference，只生成 `.tsbuildinfo` 而不生成 JS 产物。
+
+### 4) DynamicModule 中的 ConfigModule 初始化
+
+**问题**：`@nestjs/config` v4 的 `forRoot()` 返回 `Promise<DynamicModule>`，不能直接用于 `imports` 数组。
+
+**解决方案**：
+
+| 场景 | 方法 |
+|------|------|
+| 顶层 AppModule | `await ConfigModule.forRoot()` |
+| DynamicModule 内部 | `ConfigModule.forRootSync()` |
+
+```typescript
+// ❌ 错误：imports 不支持 Promise
+static init(): DynamicModule {
+  return {
+    module: MyModule,
+    imports: [ConfigModule.forRoot()],  // 编译错误
+  };
+}
+
+// ✅ 正确：使用 forRootSync
+static init(): DynamicModule {
+  return {
+    module: MyModule,
+    imports: [ConfigModule.forRootSync()],
+  };
+}
+```
 
 ## 操作指令（最常用）
 

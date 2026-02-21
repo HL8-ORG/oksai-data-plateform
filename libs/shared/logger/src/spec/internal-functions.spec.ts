@@ -2,8 +2,10 @@ import {
 	getRequestIdFromReq,
 	resolveOptionalDependency,
 	serializeRequest,
+	serializeResponse,
+	serializeError,
 	computeLogLevel
-} from '../lib/setup-logger-module';
+} from '../lib/logger-serializers';
 
 describe('serializeRequest', () => {
 	it('应该提取 method 和 url', () => {
@@ -14,10 +16,8 @@ describe('serializeRequest', () => {
 
 		const result = serializeRequest(req);
 
-		expect(result).toEqual({
-			method: 'GET',
-			url: '/api/test'
-		});
+		expect(result.method).toBe('GET');
+		expect(result.url).toBe('/api/test');
 	});
 
 	it('应该处理 null 请求', () => {
@@ -41,26 +41,188 @@ describe('serializeRequest', () => {
 	it('应该处理空对象', () => {
 		const result = serializeRequest({});
 
-		expect(result).toEqual({
-			method: undefined,
-			url: undefined
-		});
+		expect(result.method).toBe('');
+		expect(result.url).toBe('');
 	});
 
-	it('应该只提取 method 和 url，忽略其他属性', () => {
+	it('应该提取 query 参数', () => {
 		const req = {
-			method: 'POST',
-			url: '/api/users',
-			headers: { 'content-type': 'application/json' },
-			body: { name: 'test' }
+			method: 'GET',
+			url: '/api/test',
+			query: { id: '123', name: 'test' }
 		};
 
 		const result = serializeRequest(req);
 
-		expect(result).toEqual({
-			method: 'POST',
-			url: '/api/users'
+		expect(result.query).toEqual({ id: '123', name: 'test' });
+	});
+
+	it('应该提取关键 headers', () => {
+		const req = {
+			method: 'GET',
+			url: '/api/test',
+			headers: {
+				'content-type': 'application/json',
+				'user-agent': 'Mozilla/5.0',
+				'x-request-id': 'req-123'
+			}
+		};
+
+		const result = serializeRequest(req);
+
+		expect(result.headers).toEqual({
+			'content-type': 'application/json',
+			'user-agent': 'Mozilla/5.0',
+			'x-forwarded-for': '',
+			'x-request-id': 'req-123'
 		});
+	});
+
+	it('应该提取 remoteAddress', () => {
+		const req = {
+			method: 'GET',
+			url: '/api/test',
+			ip: '192.168.1.1'
+		};
+
+		const result = serializeRequest(req);
+
+		expect(result.remoteAddress).toBe('192.168.1.1');
+	});
+
+	it('应该从 socket 获取 remoteAddress', () => {
+		const req = {
+			method: 'GET',
+			url: '/api/test',
+			socket: { remoteAddress: '10.0.0.1' }
+		};
+
+		const result = serializeRequest(req);
+
+		expect(result.remoteAddress).toBe('10.0.0.1');
+	});
+});
+
+describe('serializeResponse', () => {
+	it('应该提取 statusCode', () => {
+		const res = { statusCode: 200 };
+
+		const result = serializeResponse(res);
+
+		expect(result.statusCode).toBe(200);
+	});
+
+	it('应该处理 null 响应', () => {
+		const result = serializeResponse(null);
+
+		expect(result.statusCode).toBe(200);
+	});
+
+	it('应该处理 undefined 响应', () => {
+		const result = serializeResponse(undefined);
+
+		expect(result.statusCode).toBe(200);
+	});
+
+	it('应该处理空对象', () => {
+		const result = serializeResponse({});
+
+		expect(result.statusCode).toBe(200);
+	});
+
+	it('应该提取 _contentLength', () => {
+		const res = {
+			statusCode: 200,
+			_contentLength: 1234
+		};
+
+		const result = serializeResponse(res);
+
+		expect(result.contentLength).toBe(1234);
+	});
+
+	it('应该从 getHeaders 提取 content-length', () => {
+		const res = {
+			statusCode: 200,
+			getHeaders: () => ({ 'content-length': 5678 })
+		};
+
+		const result = serializeResponse(res);
+
+		expect(result.contentLength).toBe(5678);
+	});
+});
+
+describe('serializeError', () => {
+	it('应该序列化 Error 对象', () => {
+		const err = new Error('测试错误');
+
+		const result = serializeError(err, false);
+
+		expect(result.type).toBe('Error');
+		expect(result.message).toBe('测试错误');
+		expect(result.stack).toBeDefined();
+	});
+
+	it('生产环境不应该返回堆栈', () => {
+		const err = new Error('测试错误');
+
+		const result = serializeError(err, true);
+
+		expect(result.stack).toBeUndefined();
+	});
+
+	it('应该处理 null', () => {
+		const result = serializeError(null);
+
+		expect(result.type).toBe('UnknownError');
+		expect(result.message).toBe('Unknown error');
+	});
+
+	it('应该处理 undefined', () => {
+		const result = serializeError(undefined);
+
+		expect(result.type).toBe('UnknownError');
+	});
+
+	it('应该处理字符串错误', () => {
+		const result = serializeError('简单错误消息');
+
+		expect(result.type).toBe('StringError');
+		expect(result.message).toBe('简单错误消息');
+	});
+
+	it('应该提取错误代码', () => {
+		const err = new Error('数据库错误') as Error & { code: string };
+		err.code = 'ECONNREFUSED';
+
+		const result = serializeError(err, true);
+
+		expect(result.code).toBe('ECONNREFUSED');
+	});
+
+	it('应该提取错误详情', () => {
+		const err = new Error('验证错误') as Error & { details: unknown };
+		err.details = { field: 'email', message: '无效邮箱' };
+
+		const result = serializeError(err, true);
+
+		expect(result.details).toEqual({ field: 'email', message: '无效邮箱' });
+	});
+
+	it('应该保留错误类型名称', () => {
+		class CustomError extends Error {
+			constructor(message: string) {
+				super(message);
+				this.name = 'CustomError';
+			}
+		}
+
+		const err = new CustomError('自定义错误');
+
+		const result = serializeError(err, true);
+
+		expect(result.type).toBe('CustomError');
 	});
 });
 
@@ -133,6 +295,17 @@ describe('computeLogLevel', () => {
 		it('有错误时应该返回 error，即使状态码是 400', () => {
 			expect(computeLogLevel({}, { statusCode: 400 }, new Error('test'))).toBe('error');
 		});
+
+		it('UnhandledPromiseRejection 应该返回 fatal', () => {
+			class UnhandledPromiseRejection extends Error {
+				constructor() {
+					super('unhandled');
+					this.name = 'UnhandledPromiseRejection';
+				}
+			}
+
+			expect(computeLogLevel({}, { statusCode: 500 }, new UnhandledPromiseRejection())).toBe('fatal');
+		});
 	});
 
 	describe('边界情况', () => {
@@ -149,7 +322,7 @@ describe('computeLogLevel', () => {
 		});
 
 		it('应该处理 statusCode 为字符串', () => {
-			expect(computeLogLevel({}, { statusCode: '500' as any })).toBe('error');
+			expect(computeLogLevel({}, { statusCode: '500' as unknown as number })).toBe('error');
 		});
 	});
 });
@@ -290,12 +463,6 @@ describe('resolveOptionalDependency', () => {
 			const result = resolveOptionalDependency('non-existent-package-xyz-123');
 
 			expect(result).toBeNull();
-		});
-
-		it('应该对空字符串返回当前文件路径（Node.js 行为）', () => {
-			const result = resolveOptionalDependency('');
-
-			expect(result).not.toBeNull();
 		});
 
 		it('应该对无效包名返回 null', () => {

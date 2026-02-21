@@ -9,7 +9,9 @@
 		"outDir": "./dist",
 		"rootDir": "./src",
 		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true
+		"experimentalDecorators": true,
+		"composite": false,
+		"incremental": false
 	},
 	"exclude": ["node_modules", "dist", "src/**/*.spec.ts"]
 }

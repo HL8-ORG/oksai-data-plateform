@@ -19,3 +19,8 @@ export {
 
 // 平台模块
 export { OksaiPlatformModule, type OksaiPlatformModuleOptions } from './lib/modules/oksai-platform.module';
+
+// 重导出常用服务
+export { OksaiLoggerService } from '@oksai/logger';
+export { ConfigService } from '@oksai/config';
+export { TenantContextService } from '@oksai/context';
