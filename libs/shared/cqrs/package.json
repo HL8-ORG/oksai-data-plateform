@@ -1,7 +1,7 @@
 {
 	"name": "@oksai/cqrs",
-	"version": "0.1.0",
-	"description": "CQRS 模块 - 命令查询分离、命令总线、查询总线",
+	"version": "0.2.0",
+	"description": "CQRS 模块 - 命令查询分离、Pipeline 模式、NestJS 集成",
 	"license": "AGPL-3.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -26,7 +26,19 @@
 		"clean": "rimraf dist coverage"
 	},
 	"dependencies": {
-		"@oksai/kernel": "workspace:*"
+		"@nestjs/common": "catalog:",
+		"@nestjs/core": "catalog:",
+		"@oksai/context": "workspace:*",
+		"@oksai/logger": "workspace:*",
+		"class-transformer": "catalog:",
+		"class-validator": "catalog:",
+		"reflect-metadata": "catalog:"
+	},
+	"devDependencies": {
+		"@types/jest": "^30.0.0",
+		"@types/node": "^22.10.7",
+		"jest": "^30.0.0",
+		"ts-jest": "^29.2.5"
 	},
 	"engines": {
 		"node": ">=20"
