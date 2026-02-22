@@ -1,5 +1,6 @@
 packages:
   - libs/**/*
+  - packages/**/*
   - apps/*
 
 # 依赖版本目录 - 统一管理所有包的依赖版本

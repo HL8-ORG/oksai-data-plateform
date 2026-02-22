@@ -14,7 +14,12 @@ alwaysApply: true
 
 ### 1.1 项目定位
 
-**本项目基于 `/home/arligle/oksai-saas/oksai-saas-api-archi/` 项目的重构**，构建企业级多租户 SaaS 数据分析平台。
+**本项目的目标是构建企业级多租户 SaaS 平台，为企业提供通知基础设施、AI应用基础服务和数据治理与分析服务。**
+
+**参考项目**：
+
+- [novu](`~/arligle/oksai-saas/oksai-data-plateform/forks/novu`)
+- [novu-docs](https://docs.novu.co/platform/overview)
 
 ### 1.2 四大核心目标
 
@@ -96,7 +101,7 @@ alwaysApply: true
 - 使用 pnpm 管理依赖并通过 monorepo 组织代码
 - 模块系统与 TypeScript 配置策略（必读）：`.cursor/docs/XS-模块系统与TypeScript配置策略.md`
     - 默认以 **CommonJS（CJS）语义**运行服务端产物（当前各包未声明 `"type": "module"`）
-    - 根 `tsconfig.base.json` 采用 `module/moduleResolution: nodenext`，用于更贴近 Node 的依赖解析（`package.json#exports`/条件导出）
+    - 根 `tsconfig.nest.json` 采用 `module/moduleResolution: nodenext`，用于更贴近 Node 的依赖解析（`package.json#exports`/条件导出）
     - 构建阶段（如 `nest build`）在 app 的 `tsconfig.build.json` 采用 `module/moduleResolution: node16`，确保编译与解析组合合法且稳定
     - `*.tsbuildinfo` 属于增量缓存，必须忽略，不得提交
 - pnpm 配置（`.npmrc`）：
@@ -111,18 +116,41 @@ alwaysApply: true
 - **包管理**：pnpm（monorepo 组织）
 - **构建**：Turborepo
 
-### 3.3 Monorepo 包命名
+### 3.3 目录结构约定
 
-所有包使用 `@oksai/` 前缀：
+| 目录 | 用途 | 技术栈 | TypeScript 配置 |
+|:---|:---|:---|:---|
+| `libs/` | 后端共享库 | NestJS / Node.js | `tsconfig.nest.json` |
+| `packages/` | 前端共享库 | React / TypeScript | `tsconfig.react.json` |
+| `apps/` | 应用入口 | 混合 | 按应用类型选择 |
+
+**说明**：
+- `libs/` 专用于存放后端依赖库子项目（领域模块、共享基础设施等）
+- `packages/` 专用于存放前端依赖库子项目（UI 组件、Hooks、工具函数等）
+- 两者明确分离，避免前后端依赖混淆
+
+### 3.4 Monorepo 包命名
+
+所有包使用 `@oksai/` 前缀，按类型区分：
 
 ```
+# 后端包（libs/）
 @oksai/kernel
 @oksai/event-store
 @oksai/cqrs
 @oksai/tenant
 @oksai/identity
 @oksai/app-kit
+
+# 前端包（packages/）
+@oksai/ui
+@oksai/hooks
+@oksai/utils
+@oksai/types
+
+# 应用（apps/）
 @oksai/app/platform-api
+@oksai/app/platform-admin-api
 ```
 
 ---

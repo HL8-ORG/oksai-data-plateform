@@ -43,7 +43,7 @@ oksai-data-plateform/
 │   └── testing/                # 测试指南 (12个)
 ├── package.json                # ✅ 完成
 ├── pnpm-workspace.yaml         # ✅ 完成
-├── tsconfig.base.json          # ✅ 完成
+├── tsconfig.nest.json          # ✅ 完成
 ├── turbo.json                  # ✅ 完成
 └── AGENTS.md                   # ✅ 完成
 ```
@@ -167,7 +167,7 @@ oksai-saas-api-archi/
 | 任务 | 状态 | 说明 |
 |:---|:---:|:---|
 | Monorepo 初始化 | ✅ | pnpm workspace |
-| TypeScript 配置 | ✅ | tsconfig.base.json |
+| TypeScript 配置 | ✅ | tsconfig.nest.json |
 | Turborepo 配置 | ✅ | turbo.json |
 | pnpm 配置 | ✅ | .npmrc |
 | 文档体系 | ✅ | 35个文档 |

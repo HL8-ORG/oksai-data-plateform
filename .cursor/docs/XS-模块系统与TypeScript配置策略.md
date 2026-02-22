@@ -15,7 +15,7 @@
     - 依据：根与 `apps/*` 的 `package.json` 目前未声明 `"type": "module"`，Node 会按 CJS 默认规则解释 `dist/*.js`。
     - 对服务端应用来说，这是 Nest 生态最“稳妥默认”的路径。
 
-- **根 TypeScript 基线（`tsconfig.base.json`）使用 `NodeNext` 语义**
+- **根 TypeScript 基线（`tsconfig.nest.json`）使用 `NodeNext` 语义**
     - 重点不是“强制 ESM”，而是让 TS 的 **模块解析** 更贴近 Node 现实世界（支持 `exports`/条件导出等）。
 
 - **构建阶段在 app 内覆盖为 `Node16`（`tsconfig.build.json`）**
@@ -23,7 +23,7 @@
 
 ## TypeScript 配置分层（monorepo）
 
-### 1) 根基线：`tsconfig.base.json`
+### 1) 根基线：`tsconfig.nest.json`
 
 定位：**所有子项目共享的编译与类型检查基线**。
 

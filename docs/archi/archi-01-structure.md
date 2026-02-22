@@ -9,11 +9,11 @@
 ```
 oksai-data-plateform/
 ├── apps/                           # 应用入口
-│   ├── platform-api/               # 平台业务 API
-│   ├── platform-admin-api/         # 平台管理 API
+│   ├── platform-api/               # 平台业务 API（NestJS）
+│   ├── platform-admin-api/         # 平台管理 API（NestJS）
 │   └── demo-api/                   # 演示 API
 │
-├── libs/                           # 共享库
+├── libs/                           # 后端共享库（NestJS/Node.js）
 │   ├── domains/                    # 领域模块
 │   │   ├── job/                    # Job 领域（示例）
 │   │   ├── tenant/                 # 租户管理领域
@@ -41,6 +41,12 @@ oksai-data-plateform/
 │       ├── ai-embeddings/          # AI 嵌入服务
 │       └── analytics/              # 分析服务
 │
+├── packages/                       # 前端共享库（React/TypeScript）
+│   ├── ui/                         # UI 组件库
+│   ├── hooks/                      # React Hooks 库
+│   ├── utils/                      # 前端工具函数
+│   └── types/                      # 前端类型定义
+│
 ├── docs/                           # 文档
 │   ├── archi/                      # 架构文档
 │   ├── spec/                       # 编码规范
@@ -58,8 +64,8 @@ oksai-data-plateform/
 │
 ├── package.json                    # 根 package.json
 ├── pnpm-workspace.yaml             # pnpm 工作区配置
-├── tsconfig.json                   # TypeScript 配置
-├── tsconfig.base.json              # TypeScript 基础配置
+├── tsconfig.nest.json              # TypeScript 后端基础配置
+├── tsconfig.react.json             # TypeScript 前端基础配置
 ├── turbo.json                      # Turborepo 配置
 ├── jest.config.js                  # Jest 测试配置
 ├── eslint.config.js                # ESLint 配置
