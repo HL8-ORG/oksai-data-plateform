@@ -1,6 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HealthController } from './health.controller';
 import { SystemController } from './system.controller';
+import { ConfigService } from '@oksai/config';
+
+/**
+ * @description 创建 ConfigService 的 mock
+ */
+const createMockConfigService = () => ({
+	getNodeEnv: jest.fn().mockReturnValue('test'),
+	get: jest.fn().mockImplementation((key: string, options?: { defaultValue?: string }) => {
+		if (key === 'TZ') {
+			return options?.defaultValue ?? 'UTC';
+		}
+		return options?.defaultValue ?? null;
+	})
+});
 
 describe('HealthController', () => {
 	let controller: HealthController;
@@ -34,10 +48,19 @@ describe('HealthController', () => {
 
 describe('SystemController', () => {
 	let controller: SystemController;
+	let mockConfigService: ReturnType<typeof createMockConfigService>;
 
 	beforeEach(async () => {
+		mockConfigService = createMockConfigService();
+
 		const module: TestingModule = await Test.createTestingModule({
-			controllers: [SystemController]
+			controllers: [SystemController],
+			providers: [
+				{
+					provide: ConfigService,
+					useValue: mockConfigService
+				}
+			]
 		}).compile();
 
 		controller = module.get<SystemController>(SystemController);
@@ -61,6 +84,8 @@ describe('SystemController', () => {
 
 			expect(result.nodeEnv).toBeDefined();
 			expect(result.tz).toBeDefined();
+			expect(mockConfigService.getNodeEnv).toHaveBeenCalled();
+			expect(mockConfigService.get).toHaveBeenCalledWith('TZ', { defaultValue: 'UTC' });
 		});
 	});
 });

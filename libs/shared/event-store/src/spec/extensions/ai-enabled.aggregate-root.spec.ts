@@ -2,7 +2,7 @@ import {
 	AIEnabledAggregateRoot,
 	type AIEnabledAggregateRootProps
 } from '../../lib/extensions/ai-enabled.aggregate-root';
-import { EmbeddingStatus } from '../../lib/extensions/enums-and-interfaces';
+import { EmbeddingStatus } from '../../lib/extensions';
 
 interface TestDocumentProps extends AIEnabledAggregateRootProps {
 	content: string;

@@ -1,9 +1,4 @@
-import {
-	EmbeddingStatus,
-	SyncStatus,
-	type AIProcessingMetadata,
-	type ETLMetadata
-} from '../../lib/extensions/enums-and-interfaces';
+import { EmbeddingStatus, SyncStatus, type AIProcessingMetadata, type ETLMetadata } from '../../lib/extensions';
 
 describe('Extensions Enums and Interfaces', () => {
 	describe('EmbeddingStatus', () => {

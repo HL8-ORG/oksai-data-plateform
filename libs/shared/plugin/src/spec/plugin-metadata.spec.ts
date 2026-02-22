@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { PLUGIN_METADATA } from '../lib/plugin-metadata';
+import { PLUGIN_METADATA } from '../lib/plugin-metadata.constants';
 
 describe('PLUGIN_METADATA', () => {
 	describe('元数据键定义', () => {

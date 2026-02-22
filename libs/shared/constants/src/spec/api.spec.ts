@@ -21,7 +21,7 @@ import {
 	DEFAULT_PAGE_NUMBER,
 	DEFAULT_PAGE_SIZE,
 	MAX_PAGE_SIZE
-} from '../lib/api';
+} from '../lib/api.constants';
 
 describe('@oksai/constants/api', () => {
 	describe('端口常量', () => {

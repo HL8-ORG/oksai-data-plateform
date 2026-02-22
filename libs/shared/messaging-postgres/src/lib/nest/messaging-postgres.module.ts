@@ -2,8 +2,8 @@ import { type DynamicModule } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { InboxRecordEntity } from '../postgres/inbox-record.entity';
 import { OutboxRecordEntity } from '../postgres/outbox-record.entity';
-import { PgInbox } from '../postgres/pg-inbox';
-import { PgOutbox } from '../postgres/pg-outbox';
+import { PgInbox } from '../postgres/pg-inbox.adapter';
+import { PgOutbox } from '../postgres/pg-outbox.adapter';
 
 export interface SetupMessagingPostgresModuleOptions {
 	/**

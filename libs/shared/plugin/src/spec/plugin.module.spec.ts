@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Injectable } from '@nestjs/common';
 import { PluginModule, OKSAI_PLUGINS_TOKEN } from '../lib/plugin.module';
-import { OksaiCorePlugin } from '../lib/plugin';
+import { OksaiCorePlugin } from '../lib/plugin.decorator';
 import type { IOnPluginBootstrap, IOnPluginDestroy } from '../lib/plugin.interface';
 
 const mockOnPluginBootstrap = jest.fn();

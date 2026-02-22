@@ -1,6 +1,6 @@
 import { DynamicModule, Inject, Logger, Module, OnModuleDestroy, OnModuleInit, type Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { getPluginModules, hasLifecycleMethod } from './plugin.helper';
+import { getPluginModules, hasLifecycleMethod } from './plugin.util';
 import type { PluginInput, PluginLifecycleMethods } from './plugin.interface';
 
 /**

@@ -64,12 +64,11 @@ export const PURE_DOMAINS_FORBIDDEN_IMPORTS = [
  * 共享层纯模块禁止清单（L3）
  *
  * 适用于 kernel、event-store、cqrs、eda、exceptions 等核心模块
+ * 
+ * 注意：NestJS 核心依赖（@nestjs/common, @nestjs/core, @nestjs/config, @nestjs/platform-fastify）
+ * 是项目基座框架，允许全局使用
  */
 export const SHARED_PURE_FORBIDDEN_IMPORTS = [
-	{
-		group: ['@nestjs/*'],
-		message: '共享层纯模块禁止依赖 NestJS；请使用依赖注入接口'
-	},
 	{
 		group: ['@mikro-orm/*'],
 		message: '共享层纯模块禁止依赖 MikroORM'

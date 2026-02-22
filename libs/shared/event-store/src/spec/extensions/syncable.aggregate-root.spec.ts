@@ -1,5 +1,5 @@
 import { SyncableAggregateRoot, type SyncableAggregateRootProps } from '../../lib/extensions/syncable.aggregate-root';
-import { SyncStatus } from '../../lib/extensions/enums-and-interfaces';
+import { SyncStatus } from '../../lib/extensions';
 
 interface TestSyncableProps extends SyncableAggregateRootProps {
 	data: string;

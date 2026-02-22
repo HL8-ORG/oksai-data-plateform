@@ -1,6 +1,6 @@
 import { BusinessDimensionCalculator } from '../../lib/calculators/business-dimension-calculator';
 import type { IFullAggregateMetadata } from '@oksai/aggregate-metadata';
-import { CommonDimensions } from '../../lib/interfaces/analytics-dimensions.interface';
+import { CommonDimensions } from '../../lib/interfaces/analytics-dimension.interface';
 
 /**
  * @description BusinessDimensionCalculator 单元测试

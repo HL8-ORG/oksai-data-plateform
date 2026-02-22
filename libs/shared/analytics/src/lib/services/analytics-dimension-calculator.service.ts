@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { IFullAggregateMetadata } from '@oksai/aggregate-metadata';
-import type { IAnalyticsDimensionCalculator, Dimensions } from '../interfaces/analytics-dimensions.interface';
+import type { IAnalyticsDimensionCalculator, Dimensions } from '../interfaces/analytics-dimension.interface';
 import { TimeDimensionCalculator } from '../calculators/time-dimension-calculator';
 import { BusinessDimensionCalculator } from '../calculators/business-dimension-calculator';
 

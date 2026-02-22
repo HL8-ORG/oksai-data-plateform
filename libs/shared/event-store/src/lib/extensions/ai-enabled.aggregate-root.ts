@@ -1,5 +1,5 @@
 import { AggregateRoot } from '@oksai/kernel';
-import { EmbeddingStatus, type AIProcessingMetadata } from './enums-and-interfaces';
+import { EmbeddingStatus, type AIProcessingMetadata } from './index';
 
 /**
  * AI 能力扩展聚合根属性

@@ -7,10 +7,10 @@
  */
 
 // 密码哈希
-export { PasswordHasher } from './lib/password-hasher';
+export { PasswordHasher } from './lib/password-hasher.service';
 
 // 令牌
 export { JwtTokenService, type ITokenService, type TokenPayload } from './lib/jwt-token.service';
 
 // 认证结果
-export { AuthenticationResult, type AuthResultData } from './lib/authentication-result';
+export { AuthenticationResult, type AuthResultData } from './lib/authentication-result.vo';

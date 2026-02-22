@@ -31,4 +31,4 @@ export {
 	type SerializedRequest,
 	type SerializedResponse,
 	type SerializedError
-} from './lib/logger-serializers';
+} from './lib/logger.serializer';

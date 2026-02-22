@@ -1,5 +1,5 @@
 import type { DynamicModule, Type } from '@nestjs/common';
-import { PLUGIN_METADATA } from './plugin-metadata';
+import { PLUGIN_METADATA } from './plugin-metadata.constants';
 import type { PluginInput, PluginLifecycleMethods, PluginMetadata } from './plugin.interface';
 
 /**

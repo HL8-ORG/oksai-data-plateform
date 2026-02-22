@@ -3,8 +3,8 @@
  *
  * 测试聚合根的领域事件管理能力
  */
-import { AggregateRoot } from '../lib/aggregate-root';
-import { UniqueEntityID } from '../lib/unique-entity-id';
+import { AggregateRoot } from '../lib/aggregate-root.aggregate';
+import { UniqueEntityID } from '../lib/unique-entity-id.vo';
 import { DomainEvent } from '../lib/domain-event';
 
 /**

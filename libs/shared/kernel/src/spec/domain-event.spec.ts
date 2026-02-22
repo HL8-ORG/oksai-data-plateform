@@ -4,7 +4,7 @@
  * 测试领域事件的基础能力
  */
 import { DomainEvent } from '../lib/domain-event';
-import { UniqueEntityID } from '../lib/unique-entity-id';
+import { UniqueEntityID } from '../lib/unique-entity-id.vo';
 
 /**
  * 测试用领域事件 - 用户创建事件

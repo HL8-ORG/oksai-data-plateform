@@ -1,7 +1,7 @@
 # Plugin 模块技术规范
 
 > 版本：1.0.0  
-> 更新日期：2026-02-21
+> 更新日期：2026-02-22
 
 ---
 
@@ -29,11 +29,11 @@
 ```
 @oksai/plugin/
 ├── lib/
-│   ├── plugin.interface.ts       # 插件接口定义
-│   ├── plugin-metadata.ts        # 元数据装饰器
-│   ├── plugin.ts                 # 插件基类
-│   ├── plugin.module.ts          # 插件模块
-│   └── plugin.helper.ts          # 辅助函数
+│   ├── plugin.interface.ts        # 插件接口定义
+│   ├── plugin-metadata.constants.ts # 元数据常量
+│   ├── plugin.decorator.ts        # 插件装饰器
+│   ├── plugin.module.ts           # 插件模块
+│   └── plugin.util.ts             # 辅助函数
 └── index.ts
 ```
 

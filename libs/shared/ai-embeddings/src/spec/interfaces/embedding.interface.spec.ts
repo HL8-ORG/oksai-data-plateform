@@ -7,7 +7,7 @@ import type {
 	VectorData,
 	EmbeddingServiceConfig,
 	VectorStoreConfig
-} from '../../lib/interfaces/embedding.interfaces';
+} from '../../lib/interfaces/embedding.interface';
 
 describe('Embedding Interfaces', () => {
 	describe('IEmbeddingService', () => {

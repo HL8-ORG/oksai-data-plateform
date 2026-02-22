@@ -10,7 +10,7 @@
 
 // 导出接口
 export * from './lib/interfaces/data-quality.interface';
-export * from './lib/interfaces/analytics-dimensions.interface';
+export * from './lib/interfaces/analytics-dimension.interface';
 export * from './lib/interfaces/analytics-report.interface';
 
 // 导出服务

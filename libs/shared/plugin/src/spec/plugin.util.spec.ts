@@ -1,13 +1,13 @@
 import 'reflect-metadata';
 import type { DynamicModule } from '@nestjs/common';
-import { PLUGIN_METADATA } from '../lib/plugin-metadata';
+import { PLUGIN_METADATA } from '../lib/plugin-metadata.constants';
 import {
 	getPluginModules,
 	hasLifecycleMethod,
 	getEntitiesFromPlugins,
 	getSubscribersFromPlugins,
 	getIntegrationEventSubscribersFromPlugins
-} from '../lib/plugin.helper';
+} from '../lib/plugin.util';
 
 describe('plugin.helper', () => {
 	beforeEach(() => {

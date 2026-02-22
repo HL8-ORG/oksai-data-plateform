@@ -1,7 +1,7 @@
 # Auth 模块技术规范
 
 > 版本：1.0.0  
-> 更新日期：2026-02-21
+> 更新日期：2026-02-22
 
 ---
 
@@ -28,9 +28,9 @@
 ```
 @oksai/auth/
 ├── lib/
-│   ├── password-hasher.ts          # 密码哈希
-│   ├── jwt-token.service.ts        # JWT 令牌服务
-│   └── authentication-result.ts    # 认证结果
+│   ├── password-hasher.service.ts   # 密码哈希
+│   ├── jwt-token.service.ts         # JWT 令牌服务
+│   └── authentication-result.vo.ts  # 认证结果
 ├── spec/
 │   └── auth.spec.ts
 └── index.ts

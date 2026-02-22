@@ -10,7 +10,7 @@ import {
 	computeLogLevel,
 	getRequestIdFromReq,
 	resolveOptionalDependency
-} from './logger-serializers';
+} from './logger.serializer';
 
 /**
  * Logger 模块配置选项

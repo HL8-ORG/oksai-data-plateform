@@ -1,7 +1,7 @@
 # Database 模块技术规范
 
-> 版本：1.0.0  
-> 更新日期：2026-02-21
+> 版本：2.0.0  
+> 更新日期：2026-02-22
 
 ---
 
@@ -9,15 +9,19 @@
 
 ### 1.1 模块定位
 
-`@oksai/database` 提供数据库访问的基础设施，包括：
+`@oksai/database` 提供基于 MikroORM 的数据库访问基础设施，包括：
 
-- **连接池管理**：统一管理数据库连接
-- **事务管理**：支持事务的开始、提交、回滚
-- **仓储基类**：提供通用的 CRUD 接口
+- **MikroORM 集成**：PostgreSQL 驱动的 MikroORM 模块装配
+- **租户感知仓储**：自动注入 tenantId 过滤条件，确保多租户数据隔离
+- **租户感知服务**：封装常用 CRUD 操作的服务基类
+- **插件元数据聚合**：从插件中聚合实体和订阅者到 MikroORM 配置
 
-### 1.2 设计说明
+### 1.2 技术栈
 
-> **注意**：当前实现为同步版本，用于测试和演示目的。生产环境应集成真实数据库驱动（如 pg, MikroORM, TypeORM）。
+- **ORM**：MikroORM 6.x
+- **数据库**：PostgreSQL
+- **框架**：NestJS 11.x
+- **驱动**：pg (node-postgres)
 
 ---
 
@@ -28,52 +32,56 @@
 ```
 @oksai/database/
 ├── lib/
-│   ├── database-config.vo.ts       # 数据库配置值对象
-│   ├── connection-pool.ts          # 连接池
-│   ├── transaction-manager.ts      # 事务管理器
-│   └── repository-base.ts          # 仓储基类
+│   ├── adapters/
+│   │   ├── mikro-orm.module.ts           # MikroORM 模块装配
+│   │   └── mikro-orm-options.adapter.ts  # 插件元数据聚合
+│   ├── config/
+│   │   └── mikro-orm.config.ts           # MikroORM 配置注册
+│   ├── repositories/
+│   │   └── tenant-aware.repository.ts    # 租户感知仓储
+│   └── services/
+│       └── tenant-aware.service.ts       # 租户感知服务基类
 ├── spec/
-│   └── database.spec.ts
+│   ├── mikro-orm-options.adapter.spec.ts
+│   ├── tenant-aware.repository.spec.ts
+│   └── tenant-aware.service.spec.ts
 └── index.ts
 ```
 
-### 2.2 核心组件
+### 2.2 核心组件架构
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      Application Layer                       │
+│                    (Plugin / Domain Module)                  │
 └─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
+                               │
+                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    RepositoryBase<T>                         │
+│                   TenantAwareService<T>                      │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │ findById()  │  │ save()      │  │ delete/findAll/count│  │
+│  │ findOne()   │  │ create()    │  │ update/delete/count │  │
+│  │ findAll()   │  │ createMany()│  │ exists/deleteMany   │  │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+│  + Lifecycle Hooks: beforeCreate/afterCreate/...            │
 └─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
+                               │
+                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                   TransactionManager                         │
+│               createTenantAwareRepository<T>()               │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │ 自动注入 tenantId 过滤条件                              │  │
+│  │ 禁止客户端覆盖 tenantId                                 │  │
+│  │ 禁止修改实体的 tenantId                                 │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    MikroORM (PostgreSQL)                     │
 │  ┌─────────────────┐  ┌─────────────────────────────────┐  │
-│  │ beginTransaction│  │ Transaction                      │  │
-│  │                 │  │ (commit/rollback/isActive)       │  │
+│  │ EntityManager   │  │ EntityRepository<T>             │  │
 │  └─────────────────┘  └─────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                     ConnectionPool                           │
-│  ┌─────────────────┐  ┌─────────────────────────────────┐  │
-│  │ connect()       │  │ acquire/release                  │  │
-│  │ disconnect()    │  │ isConnected()                    │  │
-│  └─────────────────┘  └─────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                     DatabaseConfig                           │
-│            (host, port, database, username, etc.)           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -81,232 +89,387 @@
 
 ## 三、配置选项
 
-### 3.1 DatabaseConfig
+### 3.1 环境变量
+
+| 变量名 | 必填 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `DB_HOST` | ✅ | - | 数据库主机地址 |
+| `DB_PORT` | ❌ | 5432 | 数据库端口 |
+| `DB_NAME` | ✅ | - | 数据库名称 |
+| `DB_USER` | ✅ | - | 用户名 |
+| `DB_PASS` | ✅ | - | 密码 |
+| `DB_SSL` | ❌ | false | 是否启用 SSL |
+
+### 3.2 MikroOrmConfig 接口
 
 ```typescript
-interface DatabaseConfigOptions {
+interface MikroOrmConfig {
   host: string;
-  port?: number;           // 默认 5432
-  database: string;
-  username: string;
+  port: number;
+  dbName: string;
+  user: string;
   password: string;
-  maxConnections?: number; // 默认 20
+  ssl: boolean;
 }
-
-class DatabaseConfig {
-  readonly host: string;
-  readonly port: number;
-  readonly database: string;
-  readonly username: string;
-  readonly password: string;
-  readonly maxConnections: number;
-
-  static create(options: DatabaseConfigOptions): DatabaseConfig;
-  toConnectionString(): string;
-}
-```
-
-### 3.2 连接字符串格式
-
-```
-postgresql://{username}:{password}@{host}:{port}/{database}
 ```
 
 ---
 
 ## 四、使用方式
 
-### 4.1 创建配置和连接池
+### 4.1 模块装配
 
 ```typescript
-import { DatabaseConfig, ConnectionPool } from '@oksai/database';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@oksai/config';
+import { setupMikroOrmModule, createMikroOrmConfig } from '@oksai/database';
 
-// 创建配置
-const config = DatabaseConfig.create({
-  host: 'localhost',
-  port: 5432,
-  database: 'oksai_db',
-  username: 'postgres',
-  password: 'password',
-  maxConnections: 20,
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      load: [createMikroOrmConfig],
+    }),
+    setupMikroOrmModule(),
+  ],
+})
+export class AppModule {}
+```
+
+### 4.2 自定义 MikroORM 配置
+
+```typescript
+import { setupMikroOrmModule } from '@oksai/database';
+
+setupMikroOrmModule({
+  override: {
+    debug: true,  // 开发环境启用调试
+  },
 });
+```
 
-// 创建连接池
-const pool = ConnectionPool.create(config);
+### 4.3 定义租户感知实体
 
-// 连接
-await pool.connect();
+```typescript
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { ITenantAwareEntity } from '@oksai/database';
 
-// 检查状态
-if (pool.isConnected()) {
-  console.log('数据库已连接');
+@Entity()
+export class Job implements ITenantAwareEntity {
+  @PrimaryKey()
+  id!: string;
+
+  @Property()
+  tenantId!: string;
+
+  @Property()
+  title!: string;
+
+  @Property()
+  status!: string;
 }
 ```
 
-### 4.2 获取和释放连接
+### 4.4 使用租户感知仓储
 
 ```typescript
-// 获取连接
-const connection = await pool.acquire();
+import { createTenantAwareRepository, type ITenantContextService } from '@oksai/database';
+import type { EntityManager } from '@mikro-orm/core';
+import { Job } from './job.entity';
 
-try {
-  // 使用连接执行查询...
-} finally {
-  // 释放连接
-  await pool.release(connection);
-}
-```
+class JobService {
+  private readonly repo: ITenantAwareRepository<Job>;
 
-### 4.3 事务管理
-
-```typescript
-import { TransactionManager } from '@oksai/database';
-
-const txManager = TransactionManager.create(pool);
-
-// 开始事务
-const tx = await txManager.beginTransaction();
-
-try {
-  // 执行操作...
-
-  // 提交
-  await tx.commit();
-} catch (error) {
-  // 回滚
-  await tx.rollback();
-  throw error;
-}
-```
-
-### 4.4 实现仓储
-
-```typescript
-import { RepositoryBase } from '@oksai/database';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-}
-
-class UserRepository extends RepositoryBase<User> {
-  async findById(id: string): Promise<User | null> {
-    // 实现查询逻辑
-    return null;
+  constructor(em: EntityManager, ctx: ITenantContextService) {
+    this.repo = createTenantAwareRepository(ctx, em.getRepository(Job));
   }
 
-  async save(entity: User): Promise<void> {
-    // 实现保存逻辑
+  async findById(id: string) {
+    return this.repo.findOne(id);  // 自动注入 tenantId
   }
 
-  // delete, findAll, count 可选实现
-  // 默认抛出 'xxx 方法未实现' 错误
+  async create(data: { title: string }) {
+    return this.repo.create({ ...data });  // 自动注入 tenantId
+  }
 }
+```
+
+### 4.5 使用租户感知服务基类
+
+```typescript
+import { TenantAwareService, type ITenantContextService } from '@oksai/database';
+import type { EntityManager } from '@mikro-orm/core';
+import { Job } from './job.entity';
+
+class JobService extends TenantAwareService<Job> {
+  constructor(em: EntityManager, ctx: ITenantContextService) {
+    super(em, ctx, Job);
+  }
+
+  // 可选：重写钩子方法
+  protected override async beforeCreate(data: RequiredEntityData<Job>) {
+    console.log('创建前验证:', data);
+  }
+
+  protected override async afterCreate(entity: Job) {
+    console.log('创建后处理:', entity);
+  }
+}
+
+// 使用
+const job = await jobService.create({ title: '新任务' });
+const found = await jobService.findOne('job-001');
+const all = await jobService.findAll({ status: 'active' });
+```
+
+### 4.6 插件元数据聚合
+
+```typescript
+import { composeMikroOrmOptionsFromPlugins } from '@oksai/database';
+import { PluginA, PluginB } from './plugins';
+
+const options = composeMikroOrmOptionsFromPlugins({
+  base: {
+    entities: [CoreEntity],
+    subscribers: [CoreSubscriber],
+  },
+  plugins: [PluginA, PluginB],
+  detectConflicts: true,  // 默认 true，检测类名冲突
+});
 ```
 
 ---
 
 ## 五、API 参考
 
-### 5.1 DatabaseConfig
+### 5.1 配置
 
 ```typescript
-class DatabaseConfig {
-  readonly host: string;
-  readonly port: number;
-  readonly database: string;
-  readonly username: string;
-  readonly password: string;
-  readonly maxConnections: number;
+// 创建 MikroORM 配置对象
+function createMikroOrmConfig(): { db: MikroOrmConfig };
 
-  static create(options: DatabaseConfigOptions): DatabaseConfig;
-  toConnectionString(): string;
+// @deprecated 使用 createMikroOrmConfig 代替
+function registerMikroOrmConfig(): () => { db: MikroOrmConfig };
+
+interface MikroOrmConfig {
+  host: string;
+  port: number;
+  dbName: string;
+  user: string;
+  password: string;
+  ssl: boolean;
 }
 ```
 
-### 5.2 ConnectionPool
+### 5.2 模块
 
 ```typescript
-interface IConnectionPool {
-  readonly config: DatabaseConfig;
-  isConnected(): boolean;
-  acquire(): Promise<unknown>;
-  release(connection: unknown): Promise<void>;
-  connect(): Promise<void>;
-  disconnect(): Promise<void>;
-}
+// 装配 MikroORM 模块
+function setupMikroOrmModule(options?: SetupMikroOrmModuleOptions): MaybePromise<DynamicModule>;
 
-class ConnectionPool implements IConnectionPool {
-  static create(config: DatabaseConfig): ConnectionPool;
+interface SetupMikroOrmModuleOptions {
+  override?: Partial<MikroOrmModuleOptions>;
 }
 ```
 
-### 5.3 Transaction / TransactionManager
+### 5.3 租户感知仓储
 
 ```typescript
-interface ITransaction {
-  isActive(): boolean;
-  commit(): Promise<void>;
-  rollback(): Promise<void>;
+// 创建租户感知仓储
+function createTenantAwareRepository<T extends ITenantAwareEntity>(
+  ctx: ITenantContextService,
+  repo: EntityRepository<T>
+): ITenantAwareRepository<T>;
+
+// 实体 ID 类型
+type ID = string | number;
+
+// 租户感知实体接口
+interface ITenantAwareEntity {
+  id?: ID;
+  tenantId: string;
 }
 
-class Transaction implements ITransaction {
-  isActive(): boolean;
-  commit(): Promise<void>;
-  rollback(): Promise<void>;
+// 租户上下文服务接口
+interface ITenantContextService {
+  getTenantId(): string | undefined;
 }
 
-interface ITransactionManager {
-  beginTransaction(): Promise<ITransaction>;
-}
-
-class TransactionManager implements ITransactionManager {
-  static create(pool: IConnectionPool): TransactionManager;
-  beginTransaction(): Promise<ITransaction>;
+// 租户感知仓储接口
+interface ITenantAwareRepository<T extends ITenantAwareEntity> {
+  findOne(id: ID): Promise<T | null>;
+  findOneBy(where: FilterQuery<T>): Promise<T | null>;
+  findAll(where?: FilterQuery<T>): Promise<T[]>;
+  find(where?: FilterQuery<T>): Promise<T[]>;
+  create(data: RequiredEntityData<T>): Promise<T>;
+  createMany(dataList: RequiredEntityData<T>[]): Promise<T[]>;
+  update(id: ID, data: Partial<T>): Promise<T | null>;
+  delete(id: ID): Promise<boolean>;
+  count(where?: FilterQuery<T>): Promise<number>;
+  exists(where: FilterQuery<T>): Promise<boolean>;
 }
 ```
 
-### 5.4 RepositoryBase
+### 5.4 租户感知服务
 
 ```typescript
-abstract class RepositoryBase<T> {
-  abstract findById(id: string): Promise<T | null>;
-  abstract save(entity: T): Promise<void>;
+// 租户感知服务基类
+abstract class TenantAwareService<T extends ITenantAwareEntity> {
+  protected readonly repo: ITenantAwareRepository<T>;
 
-  async delete(id: string): Promise<void>;    // 默认抛出未实现错误
-  async findAll(): Promise<T[]>;              // 默认抛出未实现错误
-  async count(): Promise<number>;             // 默认抛出未实现错误
+  protected constructor(
+    em: EntityManager,
+    ctx: ITenantContextService,
+    entityClass: new () => T
+  );
+
+  // 租户上下文
+  protected requireTenantId(): string;
+  protected getTenantId(): string;
+
+  // 查询方法
+  findOne(id: ID): Promise<T | null>;
+  findOneBy(where: FilterQuery<T>): Promise<T | null>;
+  findAll(where?: FilterQuery<T>, options?: { offset?: number; limit?: number }): Promise<T[]>;
+
+  // 创建方法（支持钩子）
+  create(data: RequiredEntityData<T>): Promise<T>;
+  createMany(dataList: RequiredEntityData<T>[]): Promise<T[]>;
+
+  // 更新方法（支持钩子）
+  update(id: ID, data: Partial<T>): Promise<T | null>;
+
+  // 删除方法（支持钩子）
+  delete(id: ID): Promise<boolean>;
+  deleteMany(where: FilterQuery<T>): Promise<number>;
+
+  // 统计方法
+  count(where?: FilterQuery<T>): Promise<number>;
+  exists(where: FilterQuery<T>): Promise<boolean>;
+
+  // 生命周期钩子（可重写）
+  protected beforeCreate(data: RequiredEntityData<T>): Promise<void>;
+  protected afterCreate(entity: T): Promise<void>;
+  protected beforeCreateMany(dataList: RequiredEntityData<T>[]): Promise<void>;
+  protected afterCreateMany(entities: T[]): Promise<void>;
+  protected beforeUpdate(id: ID, data: Partial<T>): Promise<void>;
+  protected afterUpdate(entity: T): Promise<void>;
+  protected beforeDelete(id: ID): Promise<void>;
+  protected afterDelete(id: ID): Promise<void>;
+}
+```
+
+### 5.5 插件元数据聚合
+
+```typescript
+// 聚合插件元数据到 MikroORM 配置
+function composeMikroOrmOptionsFromPlugins(
+  input: ComposeMikroOrmOptionsFromPluginsInput
+): Partial<MikroOrmModuleOptions>;
+
+interface ComposeMikroOrmOptionsFromPluginsInput {
+  base?: Partial<MikroOrmModuleOptions>;
+  plugins?: PluginInput[];
+  detectConflicts?: boolean;  // 默认 true
 }
 ```
 
 ---
 
-## 六、测试覆盖
+## 六、多租户隔离机制
 
-| 指标 | 覆盖率 |
-|------|--------|
-| Statements | 100% |
-| Branches | 100% |
-| Functions | 100% |
-| Lines | 100% |
+### 6.1 隔离策略
+
+| 操作 | 隔离机制 |
+|------|----------|
+| `findOne` | 强制添加 `{ id, tenantId }` 条件 |
+| `findOneBy` | 移除客户端传入的 tenantId，注入上下文中的值 |
+| `findAll` | 移除客户端传入的 tenantId，注入上下文中的值 |
+| `create` | 移除客户端传入的 tenantId，注入上下文中的值 |
+| `update` | 禁止修改 tenantId，移除客户端传入的值 |
+| `delete` | 强制添加 `{ id, tenantId }` 条件 |
+| `count` | 移除客户端传入的 tenantId，注入上下文中的值 |
+
+### 6.2 安全保证
+
+1. **查询隔离**：所有查询自动添加 tenantId 过滤
+2. **创建隔离**：创建时强制使用上下文中的 tenantId
+3. **更新隔离**：禁止修改实体的 tenantId
+4. **删除隔离**：删除前验证实体属于当前租户
 
 ---
 
-## 七、注意事项
+## 七、测试覆盖
 
-1. **当前为同步实现**：生产环境需集成真实数据库驱动
-2. **事务状态检查**：对已结束的事务调用 commit/rollback 会抛出错误
-3. **连接池状态**：未连接时调用 acquire 会抛出错误
-4. **仓储基类方法**：`delete`, `findAll`, `count` 默认抛出未实现错误
+| 文件 | 覆盖率 | 说明 |
+|------|--------|------|
+| `mikro-orm-options.adapter.ts` | 100% | 完整覆盖 |
+| `tenant-aware.service.ts` | 100% | 完整覆盖 |
+| `tenant-aware.repository.ts` | 86.88% | 核心逻辑覆盖 |
+| `mikro-orm.module.ts` | 0% | 需集成测试 |
+| `mikro-orm.config.ts` | 0% | 需集成测试 |
+| **总体** | **83.9%** | ✅ 达标 |
 
 ---
 
-## 八、错误处理
+## 八、依赖关系
+
+### 8.1 生产依赖
+
+```json
+{
+  "@mikro-orm/core": "catalog:",
+  "@mikro-orm/migrations": "catalog:",
+  "@mikro-orm/nestjs": "catalog:",
+  "@mikro-orm/postgresql": "catalog:",
+  "@nestjs/common": "catalog:",
+  "@nestjs/config": "catalog:",
+  "@oksai/config": "workspace:*",
+  "@oksai/plugin": "workspace:*",
+  "pg": "catalog:"
+}
+```
+
+### 8.2 Peer 依赖
+
+```json
+{
+  "@mikro-orm/core": "^6.0.0",
+  "@mikro-orm/nestjs": "^6.0.0",
+  "@mikro-orm/postgresql": "^6.0.0",
+  "@nestjs/common": "^11.0.0",
+  "@nestjs/config": "^4.0.0"
+}
+```
+
+---
+
+## 九、错误处理
 
 | 场景 | 错误消息 |
 |------|----------|
-| 连接池未连接时 acquire | `连接池未连接` |
-| 事务已结束时 commit | `事务已结束` |
-| 事务已结束时 rollback | `事务已结束` |
-| 未实现的仓储方法 | `xxx 方法未实现` |
+| 缺少 tenantId | `缺少 tenantId` |
+| 实体冲突 | `插件元数据冲突（请重命名或调整装配列表）：` |
+| 订阅者冲突 | `订阅者冲突：{className}（{firstSource} vs {secondSource}）` |
+
+---
+
+## 十、迁移指南（v1 → v2）
+
+### 10.1 已移除的 API
+
+| v1 API | 状态 | 替代方案 |
+|--------|------|----------|
+| `DatabaseConfig` | ❌ 移除 | 使用 `MikroOrmConfig` |
+| `ConnectionPool` | ❌ 移除 | 使用 MikroORM 连接池 |
+| `TransactionManager` | ❌ 移除 | 使用 MikroORM 事务 |
+| `RepositoryBase` | ❌ 移除 | 使用 `TenantAwareService` 或 `createTenantAwareRepository` |
+
+### 10.2 新增的 API
+
+| v2 API | 说明 |
+|--------|------|
+| `createMikroOrmConfig` | 创建 MikroORM 配置 |
+| `setupMikroOrmModule` | 装配 MikroORM 模块 |
+| `createTenantAwareRepository` | 创建租户感知仓储 |
+| `TenantAwareService` | 租户感知服务基类 |
+| `composeMikroOrmOptionsFromPlugins` | 插件元数据聚合 |

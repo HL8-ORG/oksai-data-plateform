@@ -1,5 +1,5 @@
 import { AggregateRoot } from '@oksai/kernel';
-import { SyncStatus, type ETLMetadata } from './enums-and-interfaces';
+import { SyncStatus, type ETLMetadata } from './index';
 
 /**
  * 外部系统标识映射

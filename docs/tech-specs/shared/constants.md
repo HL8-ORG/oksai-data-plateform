@@ -28,9 +28,9 @@
 ```
 @oksai/constants/
 ├── lib/
-│   ├── api.ts              # API 相关常量
+│   ├── api.constants.ts              # API 相关常量
 │   ├── api.spec.ts
-│   ├── reflect-metadata.ts # 反射元数据键常量
+│   ├── reflect-metadata.constants.ts # 反射元数据键常量
 │   └── reflect-metadata.spec.ts
 └── index.ts
 ```

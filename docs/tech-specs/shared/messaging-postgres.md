@@ -1,7 +1,7 @@
 # Messaging Postgres 模块技术规范
 
 > 版本：1.0.0  
-> 更新日期：2026-02-21
+> 更新日期：2026-02-22
 
 ---
 
@@ -33,10 +33,10 @@
 ├── lib/
 │   ├── types.ts
 │   ├── nest/
-│   │   └── setup-messaging-postgres-module.ts
+│   │   └── messaging-postgres.module.ts
 │   └── postgres/
-│       ├── pg-outbox.ts
-│       ├── pg-inbox.ts
+│       ├── pg-outbox.adapter.ts
+│       ├── pg-inbox.adapter.ts
 │       ├── outbox-record.entity.ts
 │       └── inbox-record.entity.ts
 └── index.ts
@@ -102,11 +102,11 @@ Message Consumer
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { setupMessagingPostgresModule } from '@oksai/messaging-postgres';
+import { MessagingPostgresModule } from '@oksai/messaging-postgres';
 
 @Module({
   imports: [
-    setupMessagingPostgresModule({
+    MessagingPostgresModule.forRoot({
       pool: dbPool,
       outbox: {
         tableName: 'outbox_records',
@@ -126,10 +126,10 @@ export class AppModule {}
 ### 3.2 使用 Outbox
 
 ```typescript
-import { PgOutbox } from '@oksai/messaging-postgres';
+import { PgOutboxAdapter } from '@oksai/messaging-postgres';
 
 class CreateJobHandler {
-  constructor(private readonly outbox: PgOutbox) {}
+  constructor(private readonly outbox: PgOutboxAdapter) {}
 
   async handle(command: CreateJobCommand) {
     // 在事务中
@@ -158,10 +158,10 @@ class CreateJobHandler {
 ### 3.3 使用 Inbox
 
 ```typescript
-import { PgInbox } from '@oksai/messaging-postgres';
+import { PgInboxAdapter } from '@oksai/messaging-postgres';
 
 class JobEventConsumer {
-  constructor(private readonly inbox: PgInbox) {}
+  constructor(private readonly inbox: PgInboxAdapter) {}
 
   async handle(message: IntegrationEvent) {
     // 幂等处理
@@ -226,7 +226,7 @@ interface InboxRecord {
 }
 ```
 
-### 4.3 PgOutbox
+### 4.3 PgOutboxAdapter
 
 ```typescript
 interface OutboxMessage {
@@ -237,7 +237,7 @@ interface OutboxMessage {
   metadata?: Record<string, unknown>;
 }
 
-class PgOutbox {
+class PgOutboxAdapter {
   /**
    * 追加消息到 Outbox
    */
@@ -265,10 +265,10 @@ class PgOutbox {
 }
 ```
 
-### 4.4 PgInbox
+### 4.4 PgInboxAdapter
 
 ```typescript
-class PgInbox {
+class PgInboxAdapter {
   /**
    * 检查是否已处理
    */

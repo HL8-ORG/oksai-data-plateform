@@ -1,7 +1,7 @@
 # Authorization 模块技术规范
 
 > 版本：1.0.0  
-> 更新日期：2026-02-21
+> 更新日期：2026-02-22
 
 ---
 
@@ -43,9 +43,9 @@
 ```
 @oksai/authorization/
 ├── lib/
-│   ├── role.ts                    # 角色值对象
-│   ├── permission.ts              # 权限值对象
-│   └── authorization-service.ts   # 授权服务
+│   ├── role.vo.ts                  # 角色值对象
+│   ├── permission.vo.ts            # 权限值对象
+│   └── authorization.service.ts    # 授权服务
 └── index.ts
 ```
 

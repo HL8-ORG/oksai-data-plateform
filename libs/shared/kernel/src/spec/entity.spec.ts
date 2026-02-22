@@ -4,7 +4,7 @@
  * 测试实体的标识符比较能力
  */
 import { Entity } from '../lib/entity';
-import { UniqueEntityID } from '../lib/unique-entity-id';
+import { UniqueEntityID } from '../lib/unique-entity-id.vo';
 
 /**
  * 测试用实体 - 用户

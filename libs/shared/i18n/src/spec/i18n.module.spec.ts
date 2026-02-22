@@ -1,4 +1,4 @@
-import { setupI18nModule } from '../lib/setup-i18n-module';
+import { setupI18nModule } from '../lib/i18n.module';
 import { HeaderResolver } from 'nestjs-i18n';
 
 describe('setupI18nModule', () => {

@@ -31,7 +31,7 @@
  * }
  * ```
  */
-import { UniqueEntityID } from './unique-entity-id';
+import { UniqueEntityID } from './unique-entity-id.vo';
 
 export abstract class Entity<T> {
 	/**

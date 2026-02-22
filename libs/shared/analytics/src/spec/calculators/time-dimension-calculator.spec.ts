@@ -1,6 +1,6 @@
 import { TimeDimensionCalculator } from '../../lib/calculators/time-dimension-calculator';
 import type { IFullAggregateMetadata } from '@oksai/aggregate-metadata';
-import { CommonDimensions } from '../../lib/interfaces/analytics-dimensions.interface';
+import { CommonDimensions } from '../../lib/interfaces/analytics-dimension.interface';
 
 /**
  * @description TimeDimensionCalculator 单元测试

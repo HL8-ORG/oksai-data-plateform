@@ -8,7 +8,7 @@
 
 import 'reflect-metadata';
 
-export { OksaiCorePlugin } from './lib/plugin';
+export { OksaiCorePlugin } from './lib/plugin.decorator';
 export {
 	type LazyValue,
 	type PluginMetadata,
@@ -23,6 +23,6 @@ export {
 	getEntitiesFromPlugins,
 	getSubscribersFromPlugins,
 	getIntegrationEventSubscribersFromPlugins
-} from './lib/plugin.helper';
-export { PLUGIN_METADATA } from './lib/plugin-metadata';
+} from './lib/plugin.util';
+export { PLUGIN_METADATA } from './lib/plugin-metadata.constants';
 export { PluginModule, OKSAI_PLUGINS_TOKEN } from './lib/plugin.module';

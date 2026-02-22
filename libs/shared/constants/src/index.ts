@@ -8,5 +8,5 @@
  * @module @oksai/constants
  */
 
-export * from './lib/api';
-export * from './lib/reflect-metadata';
+export * from './lib/api.constants';
+export * from './lib/reflect-metadata.constants';

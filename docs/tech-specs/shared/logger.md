@@ -40,7 +40,7 @@
 @oksai/logger/
 ├── lib/
 │   ├── logger.module.ts           # 模块定义（forRoot/forRootAsync）
-│   ├── logger-serializers.ts      # 序列化器（req/res/err）
+│   ├── logger.serializer.ts       # 序列化器（req/res/err）
 │   └── oksai-logger.service.ts    # 日志服务（实现 LoggerService）
 ├── spec/
 │   └── internal-functions.spec.ts # 单元测试

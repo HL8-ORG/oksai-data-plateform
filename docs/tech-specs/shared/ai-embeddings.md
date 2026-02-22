@@ -1,7 +1,7 @@
 # AI Embeddings 模块技术规范
 
 > 版本：1.0.0  
-> 更新日期：2026-02-21
+> 更新日期：2026-02-22
 
 ---
 
@@ -32,7 +32,7 @@
 @oksai/ai-embeddings/
 ├── lib/
 │   ├── interfaces/
-│   │   └── embedding.interfaces.ts
+│   │   └── embedding.interface.ts
 │   └── adapters/
 │       ├── openai-embedding.service.ts
 │       └── pgvector.store.ts

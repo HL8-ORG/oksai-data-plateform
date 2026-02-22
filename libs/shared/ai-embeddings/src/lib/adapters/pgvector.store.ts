@@ -7,7 +7,7 @@ import type {
 	VectorSearchResult,
 	VectorDeleteParams,
 	VectorData
-} from '../interfaces/embedding.interfaces';
+} from '../interfaces/embedding.interface';
 
 /**
  * PostgreSQL PGVector 向量存储适配器

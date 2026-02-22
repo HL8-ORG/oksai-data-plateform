@@ -1,4 +1,4 @@
-import type { Dimensions } from './analytics-dimensions.interface';
+import type { Dimensions } from './analytics-dimension.interface';
 
 /**
  * @description 分析报表类型

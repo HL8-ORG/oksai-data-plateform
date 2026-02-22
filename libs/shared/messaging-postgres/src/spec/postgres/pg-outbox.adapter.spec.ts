@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { PgOutbox } from '../../lib/postgres/pg-outbox';
+import { PgOutbox } from '../../lib/postgres/pg-outbox.adapter';
 
 /**
  * 模拟 DatabaseTransactionHost 类型

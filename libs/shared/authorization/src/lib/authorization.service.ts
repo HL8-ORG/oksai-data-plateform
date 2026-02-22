@@ -1,8 +1,8 @@
 /**
  * 授权服务接口
  */
-import { Role } from './role';
-import { Permission } from './permission';
+import { Role } from './role.vo';
+import { Permission } from './permission.vo';
 
 export interface IAuthorizationService {
 	/**

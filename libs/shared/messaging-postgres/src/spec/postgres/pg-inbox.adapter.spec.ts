@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { PgInbox } from '../../lib/postgres/pg-inbox';
+import { PgInbox } from '../../lib/postgres/pg-inbox.adapter';
 
 /**
  * 模拟 DatabaseTransactionHost 类型

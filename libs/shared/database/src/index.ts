@@ -1,24 +1,31 @@
 /**
  * @oksai/database
  *
- * 数据库访问模块，提供连接管理、事务管理和仓储基类。
+ * 数据库访问模块 - MikroORM 集成、租户感知仓储、事务管理
  *
  * @packageDocumentation
  */
 
 // 配置
-export { DatabaseConfig, type DatabaseConfigProps } from './lib/database-config.vo';
+export { createMikroOrmConfig, registerMikroOrmConfig, type MikroOrmConfig } from './lib/config/mikro-orm.config';
 
-// 连接池
-export { ConnectionPool, type IConnectionPool } from './lib/connection-pool';
+// 模块
+export { setupMikroOrmModule, type SetupMikroOrmModuleOptions } from './lib/adapters/mikro-orm.module';
 
-// 事务
+// 插件元数据聚合
 export {
-	TransactionManager,
-	Transaction,
-	type ITransactionManager,
-	type ITransaction
-} from './lib/transaction-manager';
+	composeMikroOrmOptionsFromPlugins,
+	type ComposeMikroOrmOptionsFromPluginsInput
+} from './lib/adapters/mikro-orm-options.adapter';
 
 // 仓储
-export { RepositoryBase } from './lib/repository-base';
+export {
+	createTenantAwareRepository,
+	type ID,
+	type ITenantAwareEntity,
+	type ITenantContextService,
+	type ITenantAwareRepository
+} from './lib/repositories/tenant-aware.repository';
+
+// 服务
+export { TenantAwareService } from './lib/services/tenant-aware.service';

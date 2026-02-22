@@ -28,7 +28,7 @@
  * }
  * ```
  */
-import { UniqueEntityID } from './unique-entity-id';
+import { UniqueEntityID } from './unique-entity-id.vo';
 
 /**
  * 领域事件构造参数

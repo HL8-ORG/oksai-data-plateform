@@ -18,7 +18,7 @@
  * );
  * ```
  */
-import { Permission } from './permission';
+import { Permission } from './permission.vo';
 
 export interface RoleProps {
 	/**

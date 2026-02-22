@@ -3,7 +3,7 @@
  *
  * 测试值对象的不可变性和相等性比较
  */
-import { ValueObject } from '../lib/value-object';
+import { ValueObject } from '../lib/value-object.vo';
 
 /**
  * 测试用值对象 - 姓名

@@ -1,7 +1,7 @@
 # Kernel 模块技术规范
 
 > 版本：1.0.0  
-> 更新日期：2026-02-21
+> 更新日期：2026-02-22
 
 ---
 
@@ -32,12 +32,12 @@
 ```
 @oksai/kernel/
 ├── lib/
-│   ├── aggregate-root.ts           # 聚合根基类
-│   ├── entity.ts                   # 实体基类
-│   ├── value-object.ts             # 值对象基类
-│   ├── unique-entity-id.ts         # 唯一标识
-│   ├── result.ts                   # Result 类型
-│   └── domain-event.base.ts        # 领域事件基类
+│   ├── aggregate-root.aggregate.ts  # 聚合根基类
+│   ├── entity.ts                    # 实体基类
+│   ├── value-object.vo.ts           # 值对象基类
+│   ├── unique-entity-id.vo.ts       # 唯一标识
+│   ├── result.ts                    # Result 类型
+│   └── domain-event.base.ts         # 领域事件基类
 ├── spec/
 │   ├── aggregate-root.spec.ts
 │   ├── entity.spec.ts

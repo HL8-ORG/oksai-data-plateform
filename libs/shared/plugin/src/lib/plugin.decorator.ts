@@ -1,7 +1,7 @@
 import type { ModuleMetadata } from '@nestjs/common';
 import { Module } from '@nestjs/common';
 import { MODULE_METADATA } from '@nestjs/common/constants';
-import { PLUGIN_METADATA } from './plugin-metadata';
+import { PLUGIN_METADATA } from './plugin-metadata.constants';
 import type { PluginMetadata } from './plugin.interface';
 
 /**

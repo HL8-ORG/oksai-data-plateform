@@ -8,9 +8,9 @@
 
 // 核心类型
 export { Result } from './lib/result';
-export { UniqueEntityID } from './lib/unique-entity-id';
-export { ValueObject } from './lib/value-object';
+export { UniqueEntityID } from './lib/unique-entity-id.vo';
+export { ValueObject } from './lib/value-object.vo';
 export { Entity } from './lib/entity';
-export { AggregateRoot } from './lib/aggregate-root';
+export { AggregateRoot } from './lib/aggregate-root.aggregate';
 export { DomainEvent, type DomainEventProps } from './lib/domain-event';
 export { Guard } from './lib/guard';

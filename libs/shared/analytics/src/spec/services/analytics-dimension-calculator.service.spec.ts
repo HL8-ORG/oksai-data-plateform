@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AnalyticsDimensionCalculatorService } from '../../lib/services/analytics-dimension-calculator.service';
 import type { IFullAggregateMetadata } from '@oksai/aggregate-metadata';
-import type { IAnalyticsDimensionCalculator, Dimensions } from '../../lib/interfaces/analytics-dimensions.interface';
+import type { IAnalyticsDimensionCalculator, Dimensions } from '../../lib/interfaces/analytics-dimension.interface';
 
 /**
  * @description AnalyticsDimensionCalculatorService 单元测试

@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import type { IEmbeddingService, EmbeddingServiceConfig } from '../interfaces/embedding.interfaces';
+import type { IEmbeddingService, EmbeddingServiceConfig } from '../interfaces/embedding.interface';
 
 /**
  * OpenAI Embeddings 服务适配器

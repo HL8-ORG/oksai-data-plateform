@@ -16,7 +16,7 @@ import {
 	EVENT_HANDLER_METADATA,
 	CACHE_KEY_METADATA,
 	CACHE_TTL_METADATA
-} from '../lib/reflect-metadata';
+} from '../lib/reflect-metadata.constants';
 
 describe('@oksai/constants/reflect-metadata', () => {
 	describe('认证相关元数据', () => {

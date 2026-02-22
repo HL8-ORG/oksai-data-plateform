@@ -7,10 +7,10 @@
  */
 
 // 权限
-export { Permission, type PermissionProps } from './lib/permission';
+export { Permission, type PermissionProps } from './lib/permission.vo';
 
 // 角色
-export { Role, type RoleProps } from './lib/role';
+export { Role, type RoleProps } from './lib/role.vo';
 
 // 授权服务
-export { AuthorizationService, type IAuthorizationService } from './lib/authorization-service';
+export { AuthorizationService, type IAuthorizationService } from './lib/authorization.service';
