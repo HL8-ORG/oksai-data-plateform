@@ -6,16 +6,14 @@ module.exports = {
 	testMatch: ['**/*.spec.ts'],
 	collectCoverageFrom: ['lib/**/*.ts', '!lib/**/*.spec.ts', '!lib/index.ts'],
 	coverageDirectory: '../coverage',
-	// 迁移阶段：主要逻辑需要集成测试（DB + Kafka）
-	// 单元测试覆盖纯函数和简单逻辑分支
 	coverageThreshold: {
 		global: {
-			branches: 40,
-			functions: 50,
-			lines: 50,
-			statements: 50
-		}
+			branches: 80,
+			functions: 80,
+			lines: 80,
+			statements: 80,
+		},
 	},
 	moduleFileExtensions: ['ts', 'js', 'json'],
-	verbose: true
+	verbose: true,
 };

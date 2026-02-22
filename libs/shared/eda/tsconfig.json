@@ -10,5 +10,11 @@
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist", "src/**/*.spec.ts"],
-	"references": [{ "path": "../kernel" }]
+	"references": [
+		{ "path": "../config" },
+		{ "path": "../context" },
+		{ "path": "../contracts" },
+		{ "path": "../kernel" },
+		{ "path": "../logger" }
+	]
 }

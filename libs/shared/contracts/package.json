@@ -1,7 +1,7 @@
 {
-	"name": "@oksai/eda",
-	"version": "0.2.0",
-	"description": "事件驱动架构模块 - Outbox/Inbox、Kafka、事件总线",
+	"name": "@oksai/contracts",
+	"version": "0.1.0",
+	"description": "共享契约 - 集成事件、通用接口定义",
 	"license": "AGPL-3.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -25,20 +25,7 @@
 		"lint:fix": "eslint src/ --ext .ts --fix",
 		"clean": "rimraf dist coverage"
 	},
-	"dependencies": {
-		"@mikro-orm/core": "catalog:",
-		"@nestjs/common": "catalog:",
-		"@nestjs/core": "catalog:",
-		"@oksai/config": "workspace:*",
-		"@oksai/context": "workspace:*",
-		"@oksai/contracts": "workspace:*",
-		"@oksai/kernel": "workspace:*",
-		"@oksai/logger": "workspace:*"
-	},
-	"optionalDependencies": {
-		"kafkajs": "^2.2.4",
-		"prom-client": "^15.1.3"
-	},
+	"dependencies": {},
 	"engines": {
 		"node": ">=20"
 	}
