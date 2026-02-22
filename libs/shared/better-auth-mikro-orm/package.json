@@ -1,0 +1,42 @@
+{
+	"name": "@oksai/better-auth-mikro-orm",
+	"version": "0.1.0",
+	"description": "Mikro ORM Adapter for Better Auth - oksai 定制版",
+	"keywords": [
+		"auth",
+		"better-auth",
+		"database",
+		"adapter",
+		"mikro-orm"
+	],
+	"license": "MIT",
+	"private": true,
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"build:watch": "tsc -p tsconfig.build.json --watch",
+		"typecheck": "tsc --noEmit",
+		"clean": "rimraf dist"
+	},
+	"dependencies": {
+		"dset": "^3.1.4"
+	},
+	"peerDependencies": {
+		"@mikro-orm/core": ">=6.0.0",
+		"better-auth": ">=1.0.0"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}

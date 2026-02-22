@@ -14,6 +14,7 @@
 | [04-安全机制.md](./04-安全机制.md) | 密码哈希、登录锁定、密码重置限流、CORS 配置 |
 | [05-缓存与会话管理.md](./05-缓存与会话管理.md) | LRU 缓存架构、会话上下文传递、缓存失效策略 |
 | [06-Better-Auth集成.md](./06-Better-Auth集成.md) | Better Auth 深入研究：前后端职责划分、组件实现、配置指南 |
+| [07-Better-Auth可行性评估-oksai.md](./07-Better-Auth可行性评估-oksai.md) | oksai 平台集成 Better Auth 的可行性评估、架构设计、工作量估算 |
 
 ## 认证方式总览
 
