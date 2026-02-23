@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import type { MikroORM } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 
 import type { IAuthPort, AuthResult, SessionData } from '@oksai/identity';

@@ -3,6 +3,33 @@ import { Collection, Entity, ManyToOne, OneToMany, type Opt, Property, Unique } 
 import { BetterAuthBaseEntity } from './base.entity.js';
 
 /**
+ * Better Auth User 实体
+ *
+ * 对应 Better Auth 的 user 表
+ */
+@Entity({ tableName: 'auth_user' })
+export class BetterAuthUserEntity extends BetterAuthBaseEntity {
+	@Property({ type: 'string' })
+	@Unique()
+	email!: string;
+
+	@Property({ type: 'boolean', default: false })
+	emailVerified: Opt<boolean> = false;
+
+	@Property({ type: 'string' })
+	name!: string;
+
+	@Property({ type: 'string', nullable: true })
+	image?: string | null;
+
+	@OneToMany(() => BetterAuthSession, (session) => session.user)
+	sessions = new Collection<BetterAuthSession, this>(this);
+
+	@OneToMany(() => BetterAuthAccount, (account) => account.user)
+	accounts = new Collection<BetterAuthAccount, this>(this);
+}
+
+/**
  * Better Auth Session 实体
  *
  * 对应 Better Auth 的 session 表
@@ -79,31 +106,4 @@ export class BetterAuthVerification extends BetterAuthBaseEntity {
 
 	@Property({ type: 'Date' })
 	expiresAt!: Date;
-}
-
-/**
- * Better Auth User 实体
- *
- * 对应 Better Auth 的 user 表
- */
-@Entity({ tableName: 'auth_user' })
-export class BetterAuthUserEntity extends BetterAuthBaseEntity {
-	@Property({ type: 'string' })
-	@Unique()
-	email!: string;
-
-	@Property({ type: 'boolean', default: false })
-	emailVerified: Opt<boolean> = false;
-
-	@Property({ type: 'string' })
-	name!: string;
-
-	@Property({ type: 'string', nullable: true })
-	image?: string | null;
-
-	@OneToMany(() => BetterAuthSession, (session) => session.user)
-	sessions = new Collection<BetterAuthSession, this>(this);
-
-	@OneToMany(() => BetterAuthAccount, (account) => account.user)
-	accounts = new Collection<BetterAuthAccount, this>(this);
 }

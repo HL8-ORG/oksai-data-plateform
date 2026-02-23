@@ -20,10 +20,16 @@ import type { IAuthPort } from '@oksai/identity';
  * 提供 Better Auth 集成的 NestJS 模块。
  * 此模块是全局模块，导出 BetterAuthAdapter、UserSyncService、Guards、Handlers 供其他模块使用。
  *
+ * 前置条件：应用层需要配置 MikroORM（通过 @oksai/database 的 setupMikroOrmModule）
+ *
  * @example
  * ```typescript
  * @Module({
- *   imports: [AuthModule],
+ *   imports: [
+ *     ConfigModule.forRoot({ load: [createMikroOrmConfig] }),
+ *     setupMikroOrmModule(),
+ *     AuthModule
+ *   ],
  * })
  * export class AppModule {}
  * ```

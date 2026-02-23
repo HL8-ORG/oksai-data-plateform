@@ -169,18 +169,12 @@ export class OksaiPlatformModule {
 			imports: [
 				// 使用 forRootSync 保持同步初始化
 				ConfigModule.forRootSync({ isGlobal }),
-				LoggerModule.forRootAsync({
+				// 使用 forRoot 同步初始化 Logger，避免 forRootAsync 的依赖注入问题
+				LoggerModule.forRoot({
 					isGlobal,
-					useFactory: async (...args: unknown[]) => {
-						const opts = await options.useFactory(...args);
-						return {
-							isGlobal: true,
-							level: opts.logLevel,
-							pretty: opts.prettyLog,
-							enableContext: true
-						};
-					},
-					inject: options.inject ?? []
+					level: 'info', // 默认级别，后续可通过 OksaiLoggerService.setContext 调整
+					pretty: true, // 开发环境默认美化
+					enableContext: true
 				})
 			],
 			// ConfigService 由 ConfigModule 提供，OksaiLoggerService 由 LoggerModule（global）提供
