@@ -7,7 +7,7 @@ import { BetterAuthBaseEntity } from './base.entity.js';
  *
  * 对应 Better Auth 的 user 表
  */
-@Entity({ tableName: 'auth_user' })
+@Entity({ tableName: 'user' })
 export class BetterAuthUserEntity extends BetterAuthBaseEntity {
 	@Property({ type: 'string' })
 	@Unique()
@@ -34,7 +34,7 @@ export class BetterAuthUserEntity extends BetterAuthBaseEntity {
  *
  * 对应 Better Auth 的 session 表
  */
-@Entity({ tableName: 'auth_session' })
+@Entity({ tableName: 'session' })
 export class BetterAuthSession extends BetterAuthBaseEntity {
 	@Property({ type: 'string' })
 	@Unique()
@@ -58,7 +58,7 @@ export class BetterAuthSession extends BetterAuthBaseEntity {
  *
  * 对应 Better Auth 的 account 表（用于 OAuth 等外部账户）
  */
-@Entity({ tableName: 'auth_account' })
+@Entity({ tableName: 'account' })
 export class BetterAuthAccount extends BetterAuthBaseEntity {
 	@Property({ type: 'string' })
 	accountId!: string;
@@ -96,7 +96,7 @@ export class BetterAuthAccount extends BetterAuthBaseEntity {
  *
  * 对应 Better Auth 的 verification 表（用于邮箱验证、密码重置等）
  */
-@Entity({ tableName: 'auth_verification' })
+@Entity({ tableName: 'verification' })
 export class BetterAuthVerification extends BetterAuthBaseEntity {
 	@Property({ type: 'string' })
 	identifier!: string;

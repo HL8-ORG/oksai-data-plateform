@@ -1,8 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { MikroORM } from '@mikro-orm/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@oksai/config';
 import { OksaiLoggerService } from '@oksai/logger';
+import { createSchema } from '@oksai/database';
 import { BetterAuthAdapter } from '@oksai/auth';
 import { appConfigSchema, createAppConfiguration } from './app.config';
 
@@ -32,6 +34,20 @@ async function bootstrap() {
 
 	// 设置全局前缀
 	app.setGlobalPrefix(appConfig.apiPrefix);
+
+	// 开发环境自动创建数据库 schema
+	if (appConfig.isDevelopment) {
+		try {
+			const orm = app.get(MikroORM);
+			const generator = orm.getSchemaGenerator();
+
+			// 检查并创建不存在的表
+			await generator.updateSchema();
+			logger.log('数据库 schema 已同步');
+		} catch (error) {
+			logger.warn(`Schema 同步失败: ${(error as Error).message}`);
+		}
+	}
 
 	// 挂载 Better Auth 处理器
 	// Better Auth 路由挂载在 /api/auth 下，与 AuthController 的路由对应

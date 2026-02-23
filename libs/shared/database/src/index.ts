@@ -10,7 +10,7 @@
 export { createMikroOrmConfig, registerMikroOrmConfig, type MikroOrmConfig } from './lib/config/mikro-orm.config';
 
 // 模块
-export { setupMikroOrmModule, type SetupMikroOrmModuleOptions } from './lib/adapters/mikro-orm.module';
+export { setupMikroOrmModule, createSchema, type SetupMikroOrmModuleOptions } from './lib/adapters/mikro-orm.module';
 
 // 插件元数据聚合
 export {

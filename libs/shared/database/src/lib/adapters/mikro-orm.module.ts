@@ -10,7 +10,7 @@ import type { DynamicModule } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MikroOrmModule, type MikroOrmModuleOptions, type MaybePromise } from '@mikro-orm/nestjs';
 import { Migrator } from '@mikro-orm/migrations';
-import { PostgreSqlDriver } from '@mikro-orm/postgresql';
+import { type MikroORM, PostgreSqlDriver } from '@mikro-orm/postgresql';
 
 /**
  * @description MikroORM 模块装配选项
@@ -25,6 +25,12 @@ export interface SetupMikroOrmModuleOptions {
 	 * @description 额外的实体类
 	 */
 	entities?: NonNullable<MikroOrmModuleOptions['entities']>;
+
+	/**
+	 * @description 是否在启动时自动创建 schema（仅开发环境推荐）
+	 * @default false
+	 */
+	autoCreateSchema?: boolean;
 }
 
 /**
@@ -68,6 +74,8 @@ export function setupMikroOrmModule(options: SetupMikroOrmModuleOptions = {}): M
 			const user = config.getOrThrow<string>('db.user');
 			const password = config.getOrThrow<string>('db.password');
 			const ssl = config.get<boolean>('db.ssl') ?? false;
+			const nodeEnv = config.get<string>('NODE_ENV') ?? 'development';
+			const autoCreateSchema = options.autoCreateSchema ?? nodeEnv === 'development';
 
 			const base: MikroOrmModuleOptions = {
 				driver: PostgreSqlDriver,
@@ -76,8 +84,8 @@ export function setupMikroOrmModule(options: SetupMikroOrmModuleOptions = {}): M
 				dbName,
 				user,
 				password,
-				// 生产环境禁用调试
-				debug: false,
+				// 开发环境启用调试
+				debug: nodeEnv === 'development',
 				// 禁用全局上下文，避免隐式依赖
 				allowGlobalContext: false,
 				// 启用迁移扩展
@@ -93,8 +101,8 @@ export function setupMikroOrmModule(options: SetupMikroOrmModuleOptions = {}): M
 					pathTs: path.join(process.cwd(), 'libs/shared/database/src/lib/migrations'),
 					glob: '!(*.d).{js,ts}'
 				},
-				// 允许在没有实体的情况下启动
-				// 后续通过 forFeature() 动态添加实体
+				// 开发环境自动创建 schema
+				...(autoCreateSchema ? { schemaGenerator: { createForeignKeyConstraints: true } } : {}),
 				...(ssl ? { ssl: true } : {})
 			} as MikroOrmModuleOptions;
 
@@ -106,4 +114,14 @@ export function setupMikroOrmModule(options: SetupMikroOrmModuleOptions = {}): M
 			return { ...base, ...(options.override ?? {}) };
 		}
 	});
+}
+
+/**
+ * 创建 Schema 的辅助函数
+ *
+ * 在开发环境启动时调用，自动创建数据库表
+ */
+export async function createSchema(orm: MikroORM): Promise<void> {
+	const generator = orm.getSchemaGenerator();
+	await generator.createSchema();
 }

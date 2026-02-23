@@ -8,7 +8,7 @@ import { BetterAuthUserEntity } from './user.entity.js';
  *
  * 对应 Better Auth organization 插件的 organization 表
  */
-@Entity({ tableName: 'auth_organization' })
+@Entity({ tableName: 'organization' })
 export class BetterAuthOrganization extends BetterAuthBaseEntity {
 	@Property({ type: 'string' })
 	@Unique()
@@ -32,7 +32,7 @@ export class BetterAuthOrganization extends BetterAuthBaseEntity {
  *
  * 对应 Better Auth organization 插件的 member 表
  */
-@Entity({ tableName: 'auth_member' })
+@Entity({ tableName: 'member' })
 export class BetterAuthMember extends BetterAuthBaseEntity {
 	@Property({ type: 'string' })
 	role!: string;
@@ -49,7 +49,7 @@ export class BetterAuthMember extends BetterAuthBaseEntity {
  *
  * 对应 Better Auth organization 插件的 invitation 表
  */
-@Entity({ tableName: 'auth_invitation' })
+@Entity({ tableName: 'invitation' })
 export class BetterAuthInvitation extends BetterAuthBaseEntity {
 	@Property({ type: 'string' })
 	email!: string;
