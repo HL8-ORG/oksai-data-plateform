@@ -20,6 +20,11 @@ export interface SetupMikroOrmModuleOptions {
 	 * @description MikroORM 模块选项（允许应用级覆盖）
 	 */
 	override?: Partial<MikroOrmModuleOptions>;
+
+	/**
+	 * @description 额外的实体类
+	 */
+	entities?: NonNullable<MikroOrmModuleOptions['entities']>;
 }
 
 /**
@@ -88,8 +93,15 @@ export function setupMikroOrmModule(options: SetupMikroOrmModuleOptions = {}): M
 					pathTs: path.join(process.cwd(), 'libs/shared/database/src/lib/migrations'),
 					glob: '!(*.d).{js,ts}'
 				},
+				// 允许在没有实体的情况下启动
+				// 后续通过 forFeature() 动态添加实体
 				...(ssl ? { ssl: true } : {})
 			} as MikroOrmModuleOptions;
+
+			// 合并额外实体
+			if (options.entities && options.entities.length > 0) {
+				base.entities = options.entities;
+			}
 
 			return { ...base, ...(options.override ?? {}) };
 		}

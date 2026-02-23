@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@oksai/config';
 import { OksaiPlatformModule } from '@oksai/app-kit';
 import { setupMikroOrmModule, createMikroOrmConfig } from '@oksai/database';
-import { AuthModule } from '@oksai/auth';
+import { AuthModule, betterAuthEntities } from '@oksai/auth';
 import { HealthController } from './health.controller';
 import { AuthTestController } from './auth-test.controller.js';
 import { appConfigSchema, createAppConfiguration } from './app.config';
@@ -39,8 +39,10 @@ import { appConfigSchema, createAppConfiguration } from './app.config';
 			},
 			inject: [ConfigService]
 		}),
-		// 数据库模块 - MikroORM
-		setupMikroOrmModule(),
+		// 数据库模块 - MikroORM（包含 Better Auth 实体）
+		setupMikroOrmModule({
+			entities: betterAuthEntities
+		}),
 		// 认证模块 - 提供 Better Auth 集成
 		AuthModule
 	],
