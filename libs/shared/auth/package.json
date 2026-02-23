@@ -4,13 +4,13 @@
 	"description": "认证模块 - Better Auth 集成、用户认证、会话管理",
 	"license": "AGPL-3.0",
 	"private": true,
-	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
 		}
 	},
 	"scripts": {

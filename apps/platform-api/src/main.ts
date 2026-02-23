@@ -3,6 +3,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { AppModule } from './app.module';
 import { ConfigService } from '@oksai/config';
 import { OksaiLoggerService } from '@oksai/logger';
+import { BetterAuthAdapter } from '@oksai/auth';
 import { appConfigSchema, createAppConfiguration } from './app.config';
 
 /**
@@ -32,10 +33,34 @@ async function bootstrap() {
 	// 设置全局前缀
 	app.setGlobalPrefix(appConfig.apiPrefix);
 
+	// 挂载 Better Auth 处理器
+	// Better Auth 路由挂载在 /api/auth 下，与 AuthController 的路由对应
+	try {
+		const authAdapter = app.get(BetterAuthAdapter);
+		const auth = authAdapter.getAuthInstance();
+		const authHandler = (auth as any).handler;
+
+		if (authHandler) {
+			// 获取底层 Fastify 实例并注册 Better Auth 处理器
+			const fastifyInstance = app.getHttpAdapter().getInstance() as any;
+			fastifyInstance.all('/api/auth/*', async (request: any, reply: any) => {
+				return authHandler(request.raw, reply.raw || reply);
+			});
+
+			logger.log('Better Auth 处理器已挂载在 /api/auth');
+		}
+	} catch (error) {
+		logger.warn('Better Auth 处理器挂载失败，认证功能可能不可用');
+		if (logger.debug) {
+			logger.debug(`错误详情: ${(error as Error).message}`);
+		}
+	}
+
 	await app.listen(appConfig.port, '0.0.0.0');
 
 	logger.log(`平台 API 已启动: http://localhost:${appConfig.port}`);
 	logger.log(`运行环境: ${appConfig.nodeEnv}`);
+	logger.log(`API 前缀: ${appConfig.apiPrefix}`);
 }
 
 bootstrap();

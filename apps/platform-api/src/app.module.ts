@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@oksai/config';
 import { OksaiPlatformModule } from '@oksai/app-kit';
+import { AuthModule } from '@oksai/auth';
 import { HealthController } from './health.controller';
+import { AuthTestController } from './auth-test.controller.js';
 import { appConfigSchema, createAppConfiguration } from './app.config';
 
 /**
@@ -9,7 +11,8 @@ import { appConfigSchema, createAppConfiguration } from './app.config';
  *
  * 职责：
  * - 导入并装配 OksaiPlatformModule
- * - 注册全局控制器（健康检查等）
+ * - 导入 AuthModule 提供认证功能
+ * - 注册全局控制器（健康检查、认证测试等）
  * - 配置中间件和拦截器
  */
 @Module({
@@ -32,9 +35,11 @@ import { appConfigSchema, createAppConfiguration } from './app.config';
 				};
 			},
 			inject: [ConfigService]
-		})
+		}),
+		// 认证模块 - 提供 Better Auth 集成
+		AuthModule
 	],
-	controllers: [HealthController],
+	controllers: [HealthController, AuthTestController],
 	providers: [
 		{
 			provide: 'APP_CONFIG',
