@@ -5,7 +5,7 @@
  */
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { SignUpHandler } from '../../lib/application/handlers/sign-up.handler.js';
+import { SignUpHandler } from '../../../lib/application/handlers/sign-up.handler';
 import { SignUpCommand, type AuthResult, UserId, Email } from '@oksai/identity';
 
 describe('SignUpHandler', () => {

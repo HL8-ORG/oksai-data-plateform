@@ -5,7 +5,7 @@
  */
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { GetCurrentUserHandler } from '../../lib/application/handlers/get-current-user.handler.js';
+import { GetCurrentUserHandler } from '../../../lib/application/handlers/get-current-user.handler';
 import { GetCurrentUserQuery, type SessionData } from '@oksai/identity';
 
 describe('GetCurrentUserHandler', () => {

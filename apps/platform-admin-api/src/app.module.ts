@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@oksai/config';
 import { OksaiPlatformModule } from '@oksai/app-kit';
+import { setupMikroOrmModule, createMikroOrmConfig } from '@oksai/database';
+import { AuthModule, betterAuthEntities } from '@oksai/auth';
 import { HealthController } from './health.controller';
 import { SystemController } from './system.controller';
+import { AuthTestController } from './auth-test.controller.js';
 import { appConfigSchema, createAppConfiguration } from './app.config';
 
 /**
@@ -10,15 +13,18 @@ import { appConfigSchema, createAppConfiguration } from './app.config';
  *
  * 职责：
  * - 导入并装配 OksaiPlatformModule
- * - 注册管理控制器（健康检查、系统状态等）
+ * - 配置 MikroORM 数据库连接
+ * - 导入 AuthModule 提供认证功能
+ * - 注册管理控制器（健康检查、系统状态、认证测试等）
  * - 配置管理中间件和拦截器
  */
 @Module({
 	imports: [
-		// 配置模块 - 使用 zod schema 验证
+		// 配置模块 - 使用 zod schema 验证，加载数据库配置
 		ConfigModule.forRoot({
 			isGlobal: true,
-			schema: appConfigSchema
+			schema: appConfigSchema,
+			load: [createMikroOrmConfig]
 		}),
 		// 平台装配模块
 		OksaiPlatformModule.initAsync({
@@ -33,9 +39,15 @@ import { appConfigSchema, createAppConfiguration } from './app.config';
 				};
 			},
 			inject: [ConfigService]
-		})
+		}),
+		// 数据库模块 - MikroORM（包含 Better Auth 实体）
+		setupMikroOrmModule({
+			entities: betterAuthEntities
+		}),
+		// 认证模块 - 提供 Better Auth 集成
+		AuthModule
 	],
-	controllers: [HealthController, SystemController],
+	controllers: [HealthController, SystemController, AuthTestController],
 	providers: [
 		{
 			provide: 'APP_CONFIG',

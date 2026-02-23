@@ -71,6 +71,8 @@ export const mikroOrmAdapter = (orm: MikroORM, { debugLogs, supportsJSON = true 
 		adapter() {
 			const { getEntityMetadata, getFieldPath, normalizeInput, normalizeOutput, normalizeWhereClauses } =
 				createAdapterUtils(orm);
+			// 使用 fork 创建新的 EntityManager 上下文，避免全局上下文冲突
+			const em = orm.em.fork();
 
 			return {
 				/**
@@ -80,9 +82,9 @@ export const mikroOrmAdapter = (orm: MikroORM, { debugLogs, supportsJSON = true 
 					const metadata = getEntityMetadata(model);
 					const input = normalizeInput(metadata, data);
 
-					const entity = orm.em.create(metadata.class, input);
+					const entity = em.create(metadata.class, input);
 
-					await orm.em.persistAndFlush(entity);
+					await em.persistAndFlush(entity);
 
 					return normalizeOutput(metadata, entity, select) as any;
 				},
@@ -93,7 +95,7 @@ export const mikroOrmAdapter = (orm: MikroORM, { debugLogs, supportsJSON = true 
 				async count({ model, where }): Promise<number> {
 					const metadata = getEntityMetadata(model);
 
-					return orm.em.count(metadata.class, normalizeWhereClauses(metadata, where));
+					return em.count(metadata.class, normalizeWhereClauses(metadata, where));
 				},
 
 				/**
@@ -102,7 +104,7 @@ export const mikroOrmAdapter = (orm: MikroORM, { debugLogs, supportsJSON = true 
 				async findOne({ model, where, select }) {
 					const metadata = getEntityMetadata(model);
 
-					const entity = await orm.em.findOne(metadata.class, normalizeWhereClauses(metadata, where));
+					const entity = await em.findOne(metadata.class, normalizeWhereClauses(metadata, where));
 
 					if (!entity) {
 						return null;
@@ -127,7 +129,7 @@ export const mikroOrmAdapter = (orm: MikroORM, { debugLogs, supportsJSON = true 
 						dset(options, ['orderBy', ...path], sortBy.direction);
 					}
 
-					const rows = await orm.em.find(metadata.class, normalizeWhereClauses(metadata, where), options);
+					const rows = await em.find(metadata.class, normalizeWhereClauses(metadata, where), options);
 
 					return rows.map((row) => normalizeOutput(metadata, row)) as any;
 				},
@@ -138,15 +140,15 @@ export const mikroOrmAdapter = (orm: MikroORM, { debugLogs, supportsJSON = true 
 				async update({ model, where, update }) {
 					const metadata = getEntityMetadata(model);
 
-					const entity = await orm.em.findOne(metadata.class, normalizeWhereClauses(metadata, where));
+					const entity = await em.findOne(metadata.class, normalizeWhereClauses(metadata, where));
 
 					if (!entity) {
 						return null;
 					}
 
-					orm.em.assign(entity, normalizeInput(metadata, update as any));
+					em.assign(entity, normalizeInput(metadata, update as any));
 
-					await orm.em.flush();
+					await em.flush();
 
 					return normalizeOutput(metadata, entity) as any;
 				},
@@ -157,7 +159,7 @@ export const mikroOrmAdapter = (orm: MikroORM, { debugLogs, supportsJSON = true 
 				async updateMany({ model, where, update }) {
 					const metadata = getEntityMetadata(model);
 
-					return orm.em.nativeUpdate(
+					return em.nativeUpdate(
 						metadata.class,
 						normalizeWhereClauses(metadata, where),
 						normalizeInput(metadata, update as any)
@@ -170,12 +172,12 @@ export const mikroOrmAdapter = (orm: MikroORM, { debugLogs, supportsJSON = true 
 				async delete({ model, where }) {
 					const metadata = getEntityMetadata(model);
 
-					const entity = await orm.em.findOne(metadata.class, normalizeWhereClauses(metadata, where), {
+					const entity = await em.findOne(metadata.class, normalizeWhereClauses(metadata, where), {
 						fields: ['id']
 					});
 
 					if (entity) {
-						await orm.em.removeAndFlush(entity);
+						await em.removeAndFlush(entity);
 					}
 				},
 
@@ -185,7 +187,7 @@ export const mikroOrmAdapter = (orm: MikroORM, { debugLogs, supportsJSON = true 
 				async deleteMany({ model, where }) {
 					const metadata = getEntityMetadata(model);
 
-					return orm.em.nativeDelete(metadata.class, normalizeWhereClauses(metadata, where));
+					return em.nativeDelete(metadata.class, normalizeWhereClauses(metadata, where));
 				}
 			};
 		}

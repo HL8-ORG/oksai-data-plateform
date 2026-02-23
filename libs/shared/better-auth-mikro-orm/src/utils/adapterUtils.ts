@@ -76,22 +76,59 @@ export function createAdapterUtils(orm: MikroORM): AdapterUtils {
 	const metadata = orm.getMetadata();
 
 	/**
+	 * Better Auth 实体名称到表名的映射
+	 * Better Auth 使用 "User", "Session" 等名称，我们需要映射到实际表名
+	 */
+	const betterAuthTableMap: Record<string, string> = {
+		user: 'user',
+		session: 'session',
+		account: 'account',
+		verification: 'verification',
+		organization: 'organization',
+		member: 'member',
+		invitation: 'invitation'
+	};
+
+	/**
 	 * 规范化实体名称
 	 */
-	const normalizeEntityName: AdapterUtils['normalizeEntityName'] = (name) =>
-		naming.getEntityName(naming.classToTableName(name));
+	const normalizeEntityName: AdapterUtils['normalizeEntityName'] = (name) => {
+		const lowerName = name.toLowerCase();
+		if (betterAuthTableMap[lowerName]) {
+			return betterAuthTableMap[lowerName];
+		}
+		return naming.getEntityName(naming.classToTableName(name));
+	};
 
 	/**
 	 * 获取实体元数据
 	 */
 	const getEntityMetadata: AdapterUtils['getEntityMetadata'] = (entityName: string) => {
-		entityName = normalizeEntityName(entityName);
+		const normalizedName = normalizeEntityName(entityName);
 
-		if (!metadata.has(entityName)) {
-			createAdapterError(`无法找到 "${entityName}" 实体的元数据。请确保已定义并列入 Mikro ORM 配置中。`);
+		// 首先尝试直接查找（通过类名）
+		if (metadata.has(entityName)) {
+			return metadata.get(entityName);
 		}
 
-		return metadata.get(entityName);
+		// 尝试通过规范化名称查找
+		if (metadata.has(normalizedName)) {
+			return metadata.get(normalizedName);
+		}
+
+		// 如果找不到，尝试在所有实体中查找匹配表名的实体
+		const allMetadata = metadata.getAll();
+		for (const meta of Object.values(allMetadata)) {
+			if (meta.tableName === normalizedName) {
+				return meta;
+			}
+		}
+
+		// 仍然找不到，打印可用的实体名称用于调试
+		const availableEntities = Object.keys(allMetadata).filter((k) => !k.startsWith('Base'));
+		createAdapterError(
+			`无法找到 "${entityName}" 实体的元数据。规范化名称: "${normalizedName}"。可用的实体: ${availableEntities.join(', ')}`
+		);
 	};
 
 	/**
@@ -199,10 +236,23 @@ export function createAdapterUtils(orm: MikroORM): AdapterUtils {
 	/**
 	 * 规范化输出
 	 */
-	const normalizeOutput: AdapterUtils['normalizeOutput'] = (metadata, output) => {
+	const normalizeOutput: AdapterUtils['normalizeOutput'] = (metadata, output, select) => {
 		output = serialize(output);
 
 		const result: Record<string, any> = {};
+
+		// 如果有 select，只返回选中的字段
+		if (select && select.length > 0) {
+			for (const field of select) {
+				const prop = metadata.props.find((p) => p.name === field);
+				if (prop && output[field] !== undefined) {
+					result[field] = output[field];
+				}
+			}
+			return result;
+		}
+
+		// 返回所有字段
 		Object.entries(output)
 			.map(([key, value]) => ({
 				path: getReferencedPropertyName(metadata, getPropertyMetadata(metadata, key)),

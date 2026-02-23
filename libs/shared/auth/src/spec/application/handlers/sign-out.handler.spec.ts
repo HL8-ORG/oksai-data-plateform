@@ -5,7 +5,7 @@
  */
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { SignOutHandler } from '../../lib/application/handlers/sign-out.handler.js';
+import { SignOutHandler } from '../../../lib/application/handlers/sign-out.handler';
 import { SignOutCommand } from '@oksai/identity';
 
 describe('SignOutHandler', () => {

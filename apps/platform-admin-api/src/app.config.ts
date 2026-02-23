@@ -50,7 +50,54 @@ export const appConfigSchema = z.object({
 	PRETTY_LOG: z
 		.string()
 		.transform((v) => v === 'true' || v === '1')
-		.optional()
+		.optional(),
+
+	/**
+	 * Better Auth 密钥
+	 *
+	 * 用于签名 JWT 令牌，至少 32 个字符
+	 */
+	BETTER_AUTH_SECRET: z.string().min(32).default('your-secret-key-min-32-characters-long-change-in-production'),
+
+	/**
+	 * Better Auth 基础 URL
+	 *
+	 * 应用的基础 URL，用于生成回调链接
+	 */
+	BETTER_AUTH_BASE_URL: z.string().url().default('http://localhost:3001'),
+
+	/**
+	 * 数据库主机
+	 */
+	DB_HOST: z.string().default('localhost'),
+
+	/**
+	 * 数据库端口
+	 */
+	DB_PORT: z.coerce.number().int().min(1).max(65535).default(5433),
+
+	/**
+	 * 数据库名称
+	 */
+	DB_NAME: z.string().default('test_oksai'),
+
+	/**
+	 * 数据库用户名
+	 */
+	DB_USER: z.string().default('postgres'),
+
+	/**
+	 * 数据库密码
+	 */
+	DB_PASS: z.string().default('test_password'),
+
+	/**
+	 * 是否启用 SSL
+	 */
+	DB_SSL: z
+		.string()
+		.transform((v) => v === 'true' || v === '1')
+		.default('false')
 });
 
 /**
@@ -106,6 +153,16 @@ export interface AppConfiguration {
 	 * 是否启用日志美化
 	 */
 	readonly prettyLog: boolean;
+
+	/**
+	 * Better Auth 密钥
+	 */
+	readonly betterAuthSecret: string;
+
+	/**
+	 * Better Auth 基础 URL
+	 */
+	readonly betterAuthBaseUrl: string;
 }
 
 /**
@@ -127,6 +184,8 @@ export function createAppConfiguration(config: AppConfig): AppConfiguration {
 		enableSwagger: config.ENABLE_SWAGGER && !isProduction,
 		logLevel: config.LOG_LEVEL,
 		// 开发环境默认启用美化日志
-		prettyLog: config.PRETTY_LOG ?? isDevelopment
+		prettyLog: config.PRETTY_LOG ?? isDevelopment,
+		betterAuthSecret: config.BETTER_AUTH_SECRET,
+		betterAuthBaseUrl: config.BETTER_AUTH_BASE_URL
 	};
 }

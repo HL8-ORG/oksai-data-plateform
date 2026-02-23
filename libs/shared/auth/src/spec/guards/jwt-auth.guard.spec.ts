@@ -6,8 +6,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 
-import { JwtAuthGuard, OptionalJwtAuthGuard } from '../../lib/guards/jwt-auth.guard.js';
-import { BetterAuthAdapter } from '../../lib/adapters/secondary/better-auth/better-auth.adapter.js';
+import { JwtAuthGuard, OptionalJwtAuthGuard } from '../../lib/guards/jwt-auth.guard';
+import { BetterAuthAdapter } from '../../lib/adapters/secondary/better-auth/better-auth.adapter';
 import type { SessionData } from '@oksai/identity';
 
 describe('JwtAuthGuard', () => {

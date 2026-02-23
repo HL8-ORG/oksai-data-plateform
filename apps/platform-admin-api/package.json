@@ -24,6 +24,7 @@
 	},
 	"dependencies": {
 		"@fastify/static": "catalog:",
+		"@mikro-orm/core": "catalog:",
 		"@nestjs/common": "catalog:",
 		"@nestjs/core": "catalog:",
 		"@nestjs/platform-fastify": "catalog:",

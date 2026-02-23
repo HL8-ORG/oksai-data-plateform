@@ -1,0 +1,17 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"outDir": "../../dist/spec",
+		"rootDir": "./src",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"target": "es2021",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"resolvePackageJsonExports": false,
+		"resolvePackageJsonImports": false,
+		"types": ["node", "jest"]
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist"]
+}

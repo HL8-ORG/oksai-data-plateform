@@ -5,7 +5,7 @@
  */
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { GetSessionHandler } from '../../lib/application/handlers/get-session.handler.js';
+import { GetSessionHandler } from '../../../lib/application/handlers/get-session.handler';
 import { GetSessionQuery, type SessionData } from '@oksai/identity';
 
 describe('GetSessionHandler', () => {

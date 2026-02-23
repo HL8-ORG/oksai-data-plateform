@@ -44,6 +44,7 @@ export class BetterAuthAdapter implements IAuthPort {
 	private initializeAuth(): BetterAuthInstance {
 		const secret = this.configService.get<string>('BETTER_AUTH_SECRET');
 		const baseURL = this.configService.get<string>('BETTER_AUTH_BASE_URL');
+		const nodeEnv = this.configService.get<string>('NODE_ENV', 'development');
 
 		if (!secret || !baseURL) {
 			throw new Error('BETTER_AUTH_SECRET and BETTER_AUTH_BASE_URL must be configured');
@@ -52,7 +53,9 @@ export class BetterAuthAdapter implements IAuthPort {
 		return createBetterAuthInstance({
 			secret,
 			baseURL,
-			orm: this.orm
+			orm: this.orm,
+			// 开发环境禁用邮箱验证
+			requireEmailVerification: nodeEnv === 'production'
 		});
 	}
 
@@ -136,18 +139,35 @@ export class BetterAuthAdapter implements IAuthPort {
 	 * 验证会话
 	 *
 	 * 实现 IAuthPort.verifySession
+	 * 直接查询数据库验证 token，不依赖 Better Auth 的 cookie 机制
 	 */
 	async verifySession(token: string): Promise<SessionData | null> {
 		try {
-			const session = await this.auth.api.getSession({
-				headers: this.getAuthHeaders(token)
-			});
+			// 直接查询数据库验证 session
+			const session = await this.orm.em.findOne('BetterAuthSession' as any, { token });
 
-			if (!session || !session.user) {
+			if (!session) {
+				this.logger.debug('未找到会话');
 				return null;
 			}
 
-			return this.mapToSessionData(session as unknown as BetterAuthResult);
+			const sessionObj = session as any;
+
+			// 检查会话是否过期
+			if (new Date(sessionObj.expiresAt) < new Date()) {
+				this.logger.debug('会话已过期');
+				return null;
+			}
+
+			return {
+				userId: sessionObj.user.id || sessionObj.user_id,
+				tenantId: '',
+				organizationId: undefined,
+				roles: [],
+				permissions: [],
+				sessionId: sessionObj.id,
+				expiresAt: new Date(sessionObj.expiresAt)
+			};
 		} catch (error) {
 			this.logger.error('会话验证失败', error);
 			return null;

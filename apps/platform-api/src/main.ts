@@ -4,8 +4,8 @@ import { MikroORM } from '@mikro-orm/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@oksai/config';
 import { OksaiLoggerService } from '@oksai/logger';
-import { createSchema } from '@oksai/database';
 import { BetterAuthAdapter } from '@oksai/auth';
+import { setupSwagger } from '@oksai/app-kit';
 import { appConfigSchema, createAppConfiguration } from './app.config';
 
 /**
@@ -35,6 +35,35 @@ async function bootstrap() {
 	// 设置全局前缀
 	app.setGlobalPrefix(appConfig.apiPrefix);
 
+	// 配置 Swagger API 文档
+	const swaggerResult = setupSwagger(app, {
+		title: 'OKsai Platform API',
+		description: `多租户 SaaS 数据分析平台 API 文档
+
+## 认证说明
+
+大部分 API 需要 Bearer Token 认证。请先通过 \`/api/auth/sign-in\` 登录获取 Token，然后在右上角点击 "Authorize" 按钮输入 Token。`,
+		version: '1.0.0',
+		prefix: appConfig.apiPrefix,
+		enableBearerAuth: true,
+		disableInProduction: true,
+		contact: {
+			name: 'OKsai Team',
+			email: 'support@oksai.com'
+		},
+		license: {
+			name: 'AGPL-3.0',
+			url: 'https://www.gnu.org/licenses/agpl-3.0.html'
+		},
+		scalarTheme: 'purple',
+		withFastify: true
+	});
+
+	if (swaggerResult.enabled) {
+		logger.log(`Swagger UI: http://localhost:${appConfig.port}/swagger`);
+		logger.log(`Scalar API 文档: http://localhost:${appConfig.port}/docs`);
+	}
+
 	// 开发环境自动创建数据库 schema
 	if (appConfig.isDevelopment) {
 		try {
@@ -54,13 +83,40 @@ async function bootstrap() {
 	try {
 		const authAdapter = app.get(BetterAuthAdapter);
 		const auth = authAdapter.getAuthInstance();
-		const authHandler = (auth as any).handler;
+		const authHandler = (auth as Record<string, unknown>).handler;
 
-		if (authHandler) {
+		if (authHandler && typeof authHandler === 'function') {
 			// 获取底层 Fastify 实例并注册 Better Auth 处理器
-			const fastifyInstance = app.getHttpAdapter().getInstance() as any;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const fastifyInstance = app.getHttpAdapter().getInstance();
+			const baseUrl = configService.get<string>('BETTER_AUTH_BASE_URL') || `http://localhost:${appConfig.port}`;
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 			fastifyInstance.all('/api/auth/*', async (request: any, reply: any) => {
-				return authHandler(request.raw, reply.raw || reply);
+				// Better Auth 需要标准的 Web API Request 对象
+				const fullUrl = `${baseUrl}${request.url}`;
+
+				// 将 Fastify 请求转换为标准 Web API Request
+				const webRequest = new Request(fullUrl, {
+					method: request.method,
+					headers: new Headers(request.headers as Record<string, string>),
+					body: request.body ? JSON.stringify(request.body) : undefined
+				});
+
+				// 调用 Better Auth 处理器
+				const response = await (authHandler as (req: Request) => Promise<Response>)(webRequest);
+
+				// 将 Web API Response 转换回 Fastify 响应
+				reply.status(response.status);
+
+				// 复制响应头
+				response.headers.forEach((value: string, key: string) => {
+					reply.header(key, value);
+				});
+
+				// 返回响应体
+				const body = await response.text();
+				return reply.send(body);
 			});
 
 			logger.log('Better Auth 处理器已挂载在 /api/auth');
